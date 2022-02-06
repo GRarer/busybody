@@ -1,5 +1,6 @@
-import Fastify, { FastifyInstance } from "fastify"
+import Fastify, { FastifyInstance } from "fastify";
 import fastifyCors from "fastify-cors";
+import {ServerStatusResponse} from "busybody-core";
 
 const SERVER_PORT = 3001;
 
@@ -9,10 +10,11 @@ const server: FastifyInstance = Fastify({})
 server.register(fastifyCors, {origin: true});
 
 server.get('/status', {}, async (request, reply) => {
-  return {
-    identity: "BusyBody server",
-    time: new Date()
+  const status: ServerStatusResponse = {
+    status: "BusyBody server online",
+    time: (new Date()).toString()
   }
+  return status;
 });
 
 const start = async () => {

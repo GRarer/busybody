@@ -13,9 +13,10 @@ function getTokenHeader(): {} | {token: string}  {
 }
 
 
-export async function apiGet<Response>(path: string,) {
+export async function apiGet<Response>(path: string,): Promise<Response> {
   const result = await axios.get(API_BASE_URL + path, {
     headers: getTokenHeader()
   });
+  // TODO validate response type
   return result.data;
 }
