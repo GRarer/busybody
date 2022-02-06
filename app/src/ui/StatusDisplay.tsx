@@ -1,17 +1,16 @@
 import axios from 'axios';
 import React, { useState } from 'react';
+import { apiGet } from '../api/requests';
 
 export function StatusDisplay(): JSX.Element {
     const [timeStamp, setTimeStamp] = useState<string | undefined>(undefined);
 
     function refreshStatus(): void {
         console.log("todo refresh status");
-        setTimeStamp("not implemented");
-        axios.get("http://localhost:3001/status", {headers: {token: "token-123"}}).then(
+        apiGet("status").then(
             response => {
                 console.log(response);
-                const data = response.data;
-                setTimeStamp(data.time)
+                setTimeStamp(response.time);
             }
         ).catch(error => console.error(error));
     }
