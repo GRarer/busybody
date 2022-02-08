@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@nprindle/augustus": "^1.0.3",
     "busybody-core": "file:../core",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
