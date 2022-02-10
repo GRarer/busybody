@@ -8,13 +8,10 @@ export function attachHandlerWithSafeWrapper<Request, Query, Response>(
   endpoint: Endpoint<Request, Query, Response>,
   handler: (requestBody: Request, queryParams: Query) => Promise<Response>
 ): void {
-  // TODO support methods other than GET
-  //const addMethod = (path: string, handlerWrapper: any) => server.get(path, handlerWrapper);
-  server.get(endpoint.relativePath, {}, async (request, reply) => {
-    let reqBody: unknown = request.body ?? undefined;
-    // TODO fastify sometimes converts strings to numbers, we have to undo that to preserve same representation as sender
-    let reqQueryParams: unknown = request.query ?? {};
-
+  const method: "get" | "post" | "put" | "delete" = endpoint.method;
+  server[method](endpoint.relativePath, {}, async (request, reply) => {
+    const reqBody: unknown = request.body ?? undefined;
+    const reqQueryParams: unknown = request.query ?? {};
     if (!endpoint.requestSchema.validate(reqBody)) {
       reply.code(400);
       throw new Error("request body did not match expected format");
