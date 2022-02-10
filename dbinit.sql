@@ -12,11 +12,16 @@ CREATE DATABASE busybody
 CREATE TABLE users(
     user_uuid UUID PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
-    -- bcrypt "hashes" actually contain both the password hash and salt as one string
-    bcrypt_hash TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     nickname TEXT NOT NULL,
     email TEXT NOT NULL
+);
+
+-- user log-in sessions
+CREATE TABLE sessions(
+    token TEXT PRIMARY KEY,
+    user_uuid UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE,
 );
 
 
