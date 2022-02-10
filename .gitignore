@@ -6,3 +6,5 @@ core/dist
 server/node_modules
 app/node_modules
 core/node_modules
+# server environment config includes secrets
+server/.env

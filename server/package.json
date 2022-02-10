@@ -12,10 +12,13 @@
   "author": "Grace Rarer",
   "license": "MIT",
   "dependencies": {
-    "busybody-core": "file:../core",
     "@types/node": "^17.0.15",
+    "@types/pg": "^8.6.4",
+    "busybody-core": "file:../core",
+    "dotenv": "^16.0.0",
     "fastify": "^3.27.1",
     "fastify-cors": "^6.0.2",
+    "pg": "^8.7.3",
     "typescript": "^4.5.5"
   }
 }
