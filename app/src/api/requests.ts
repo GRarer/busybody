@@ -14,7 +14,7 @@ function getTokenHeader(): {} | {token: string}  {
   }
 }
 
-function decodeResult<T>(data: unknown, schema: Schema<T, unknown>): T {
+function decodeResult<T,S>(data: S, schema: Schema<T, S>): T {
   if (schema.validate(data)) {
     return schema.decode(data);
   } else {

@@ -2,17 +2,14 @@
 
 import { Schema, Schemas } from "@nprindle/augustus";
 
-// TODO constrain representation types to extend JsonValue or undefined
-type JsonRepresentation = unknown;
-
 // endpoints specify the url path, HTTP method, and the schemas of the request and response types
 // request type for GET and Delete must be undefined
-export type Endpoint<Request, Query, Response, > = (
+export type Endpoint<Request, Query, Response, RequestR=Request, ResponseR=Response> = (
   {
     relativePath: string,
-    requestSchema: Schema<Request, JsonRepresentation>,
+    requestSchema: Schema<Request, RequestR>,
     querySchema: Schema<Query, Record<string, string>>,
-    responseSchema: Schema<Response, JsonRepresentation>,
+    responseSchema: Schema<Response, ResponseR>,
   } & (
     {
       method: "post" | "put"
@@ -24,7 +21,8 @@ export type Endpoint<Request, Query, Response, > = (
   )
 )
 
-export type GetEndpoint<Query, Response> = Endpoint<undefined, Query, Response> & {method: "get"};
+
+export type GetEndpoint<Query, Response, ResponseR=Response> = Endpoint<undefined, Query, Response, undefined, ResponseR> & {method: "get"};
 
 
 // TODO this appears to allow some problems

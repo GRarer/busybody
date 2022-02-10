@@ -13,7 +13,7 @@ export function isArrayOf<T>(xs: unknown[], guard: (x: unknown) => x is T): xs i
   return xs.every(guard);
 }
 
-export function elementsMatchSchema<S>(schema: Schema<unknown,S>): (xs: unknown[]) => xs is S[] {
+export function elementsMatchSchema<S, D=S>(schema: Schema<D,S>): (xs: unknown[]) => xs is S[] {
   return (xs: unknown[]): xs is S[] => isArrayOf(xs, schema.validate);
 }
 

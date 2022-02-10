@@ -13,7 +13,7 @@ export async function dbTransaction<Result>(
       validation: (xs: unknown[]) => xs is T[]
     ) => Promise<T[]>
   ) =>  Promise<Result>
-) {
+): Promise<Result> {
   const client = await pool.connect();
 
   try {

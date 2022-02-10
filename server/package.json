@@ -12,7 +12,7 @@
   "author": "Grace Rarer",
   "license": "MIT",
   "dependencies": {
-    "@nprindle/augustus": "^1.0.3",
+    "@nprindle/augustus": "^3.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/lru-cache": "^5.1.1",
     "@types/node": "^17.0.15",
