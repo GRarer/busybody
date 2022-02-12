@@ -1,28 +1,29 @@
 // common utilities for API endpoints
 
-import { Schema, Schemas } from "@nprindle/augustus";
+import { Schema } from '@nprindle/augustus';
 
 // endpoints specify the url path, HTTP method, and the schemas of the request and response types
 // request type for GET and Delete must be undefined
 export type Endpoint<Request, Query, Response, RequestR=Request, ResponseR=Response> = (
   {
-    relativePath: string,
-    requestSchema: Schema<Request, RequestR>,
-    querySchema: Schema<Query, Record<string, string>>,
-    responseSchema: Schema<Response, ResponseR>,
+    relativePath: string;
+    requestSchema: Schema<Request, RequestR>;
+    querySchema: Schema<Query, Record<string, string>>;
+    responseSchema: Schema<Response, ResponseR>;
   } & (
     {
-      method: "post" | "put"
+      method: 'post' | 'put';
     } | {
-      method: "get" | "delete",
+      method: 'get' | 'delete';
       // get and delete cannot have request data
-      requestSchema: Schema<undefined, undefined>
+      requestSchema: Schema<undefined, undefined>;
     }
   )
-)
+);
 
 
-export type GetEndpoint<Query, Response, ResponseR=Response> = Endpoint<undefined, Query, Response, undefined, ResponseR> & {method: "get"};
+export type GetEndpoint<Query, Response, ResponseR=Response>
+  = Endpoint<undefined, Query, Response, undefined, ResponseR> & {method: 'get';};
 
 
 // TODO this appears to allow some problems

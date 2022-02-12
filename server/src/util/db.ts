@@ -1,5 +1,5 @@
-import pg from "pg";
-import { serverConfiguration } from "./config.js";
+import pg from 'pg';
+import { serverConfiguration } from './config.js';
 
 const pool = new pg.Pool(serverConfiguration.postgresConfig);
 
@@ -12,7 +12,7 @@ export async function dbTransaction<Result>(
       params: unknown[],
       validation: (xs: unknown[]) => xs is T[]
     ) => Promise<T[]>
-  ) =>  Promise<Result>
+  ) => Promise<Result>
 ): Promise<Result> {
   const client = await pool.connect();
 
@@ -21,13 +21,13 @@ export async function dbTransaction<Result>(
     // caller provides an action function that consumes a type-safe query function
     const result = await action(async (queryString, params, validation) => {
       const rows: unknown[] = (await pool.query(queryString, params)).rows;
-      if(validation(rows)) {
+      if (validation(rows)) {
         return rows;
       } else {
         // TODO custom error type
-        console.error("unexpected response:");
+        console.error('unexpected response:');
         console.log(rows);
-        throw new Error("unexpected database query response");
+        throw new Error('unexpected database query response');
       }
     });
     await client.query('COMMIT');
@@ -36,7 +36,7 @@ export async function dbTransaction<Result>(
     await client.query('ROLLBACK');
     throw error;
   } finally {
-    client.release()
+    client.release();
   }
 }
 

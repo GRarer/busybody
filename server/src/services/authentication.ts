@@ -1,9 +1,9 @@
-import LRUCache from "lru-cache";
-import { dbTransaction } from "../util/db";
-import { Schemas } from "@nprindle/augustus";
-import { elementsMatchSchema, isArray, isArrayOf } from "../util/typeGuards";
-import { UserException } from "../util/errors";
-import bcrypt from "bcrypt";
+import LRUCache from 'lru-cache';
+import { dbTransaction } from '../util/db';
+import { Schemas } from '@nprindle/augustus';
+import { elementsMatchSchema, isArray } from '../util/typeGuards';
+import { UserException } from '../util/errors';
+import bcrypt from 'bcrypt';
 import { v4 as uuidV4 } from 'uuid';
 
 // maps recently-used session tokens to user uuids
@@ -15,11 +15,11 @@ export async function logIn(username: string, password: string): Promise<string>
   return await dbTransaction(async query => {
     // retrieve credentials from database
     const matching = await query(
-      `SELECT "user_uuid", "password_hash" from users where username = $1;`,
+      'SELECT "user_uuid", "password_hash" from users where username = $1;',
       [username],
       elementsMatchSchema(Schemas.recordOf({
-        "user_uuid": Schemas.aString,
-        "password_hash": Schemas.aString
+        'user_uuid': Schemas.aString,
+        'password_hash': Schemas.aString
       }))
     );
     if (matching.length < 1) {
@@ -33,9 +33,9 @@ export async function logIn(username: string, password: string): Promise<string>
     const token = `session-${uuidV4()}`;
     // add session to database and cache
     const userId = matching[0].user_uuid;
-    await query(`INSERT INTO sessions(token, user_uuid) VALUES ($1, $2);`, [token, userId], isArray);
+    await query('INSERT INTO sessions(token, user_uuid) VALUES ($1, $2);', [token, userId], isArray);
     sessionCache.set(token, userId);
 
-    return token
+    return token;
   });
 }

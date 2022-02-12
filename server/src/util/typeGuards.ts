@@ -1,5 +1,5 @@
 // common type guards, useful for validating database query responses
-import { Schema } from "@nprindle/augustus";
+import { Schema } from '@nprindle/augustus';
 
 export function isEmpty(xs: unknown[]): xs is never[] {
   return xs.length === 0;
@@ -13,7 +13,7 @@ export function isArrayOf<T>(xs: unknown[], guard: (x: unknown) => x is T): xs i
   return xs.every(guard);
 }
 
-export function elementsMatchSchema<S, D=S>(schema: Schema<D,S>): (xs: unknown[]) => xs is S[] {
+export function elementsMatchSchema<S, D=S>(schema: Schema<D, S>): (xs: unknown[]) => xs is S[] {
   return (xs: unknown[]): xs is S[] => isArrayOf(xs, schema.validate);
 }
 

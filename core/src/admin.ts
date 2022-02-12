@@ -1,5 +1,5 @@
-import { DomainOf, Schema, Schemas } from "@nprindle/augustus"
-import { Endpoint, GetEndpoint } from "./apis"
+import { DomainOf, Schemas } from '@nprindle/augustus';
+import { Endpoint, GetEndpoint } from './apis';
 
 const ServerStatusResponseSchema = Schemas.recordOf({
   status: Schemas.aString,
@@ -10,8 +10,8 @@ const ServerStatusResponseSchema = Schemas.recordOf({
 export type ServerStatusResponse = DomainOf<typeof ServerStatusResponseSchema>;
 
 export const serverStatusEndpoint: GetEndpoint<{}, ServerStatusResponse> = {
-  relativePath: "/status",
-  method: "get",
+  relativePath: '/status',
+  method: 'get',
   requestSchema: Schemas.anUndefined,
   querySchema: Schemas.recordOf({}),
   responseSchema: ServerStatusResponseSchema,
@@ -19,8 +19,8 @@ export const serverStatusEndpoint: GetEndpoint<{}, ServerStatusResponse> = {
 
 
 export const serverStatusEndpoint2: Endpoint<undefined, {}, ServerStatusResponse> = {
-  relativePath: "/status",
-  method: "get",
+  relativePath: '/status',
+  method: 'get',
   requestSchema: Schemas.anUndefined,
   querySchema: Schemas.recordOf({}),
   responseSchema: ServerStatusResponseSchema,

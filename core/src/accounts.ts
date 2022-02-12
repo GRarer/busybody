@@ -1,4 +1,4 @@
-import { DomainOf, Schemas } from "@nprindle/augustus";
+import { DomainOf, Schemas } from '@nprindle/augustus';
 
 export const registrationRequestSchema = Schemas.recordOf({
   username: Schemas.aString,
