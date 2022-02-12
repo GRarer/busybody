@@ -1,6 +1,7 @@
-import { Endpoint, serverStatusEndpoint } from 'busybody-core';
+import { Endpoint, loginEndpoint, serverStatusEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { getServerStatus } from './services/admin.js';
+import { logIn } from './services/authentication.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 
 // associates handlers with API endpoints and wraps them to provide consistent type-safety of API boundary
@@ -10,6 +11,12 @@ export function attachHandlers(server: FastifyInstance): void {
     e: Endpoint<Request, Query, Response>,
     h: (requestBody: Request, queryParams: Query) => Promise<Response>
   ): void => attachHandlerWithSafeWrapper(server, e, h);
+
   // all API endpoint handlers are attached here
+
+  // server admin and testing stuff
   addHandler(serverStatusEndpoint, getServerStatus);
+
+  // user accounts
+  addHandler(loginEndpoint, logIn)
 }

@@ -15,13 +15,13 @@ CREATE TABLE users(
     password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     nickname TEXT NOT NULL,
-    email TEXT NOT NULL
+    email TEXT NOT NULL UNIQUE
 );
 
 -- user log-in sessions
 CREATE TABLE sessions(
     token TEXT PRIMARY KEY,
-    user_uuid UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE,
+    user_uuid UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE
 );
 
 
@@ -39,7 +39,7 @@ declare
 
 begin
     INSERT INTO users
-      ("user_uuid", "username", "full_name", "nickname", "bcrypt_hash", "email") VALUES
+      ("user_uuid", "username", "full_name", "nickname", "password_hash", "email") VALUES
     -- gpb (George P Burdell)
     (georgeUUID, 'gpb', 'George P. Burdell', 'George', example_password_hash,'gburdell@gatech.edu');
 

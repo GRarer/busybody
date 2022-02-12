@@ -2,7 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { attachHandlers } from './endpointHandlers.js';
 import { serverConfiguration } from './util/config.js';
-import { dbTransaction } from './util/db.js';
+import { dbTransaction, disconnectDatabase } from './util/db.js';
 
 const SERVER_PORT = serverConfiguration.apiPort;
 
@@ -24,6 +24,26 @@ async function start(): Promise<void> {
   const port = typeof address === 'string' ? address : address?.port;
   console.log(`Started server on ${port}`);
 }
+
+// set up handlers for server shutdown
+async function cleanShutdown(): Promise<void> {
+  await server.close();
+  await disconnectDatabase();
+}
+// attach signal/event handlers to run before exiting
+["SIGINT", "SIGTERM", "SIGHUP"].forEach(signal => {
+  process.on(signal, function() {
+    console.log("shutting down...");
+    cleanShutdown().then(() => {
+      console.log("shutdown complete");
+    }).catch(reason => {
+      console.error("failed to shut down cleanly");
+      console.log(reason);
+    }).finally(() => {
+      process.exit();
+    });
+  });
+});
 
 start().catch(err => {
   server.log.error(err);
