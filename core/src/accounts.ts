@@ -21,9 +21,9 @@ export type LoginRequest = DomainOf<typeof loginRequestSchema>;
 // creates a new user session and returns the session token
 // will throw "unauthorized" exception if credentials are incorrect
 export const loginEndpoint: PostEndpoint<LoginRequest, {}, string> = {
-  method: "post",
-  relativePath: "/login",
+  method: 'post',
+  relativePath: '/login',
   requestSchema: loginRequestSchema,
   querySchema: Schemas.recordOf({}),
   responseSchema: Schemas.aString
-}
+};

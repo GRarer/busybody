@@ -5,10 +5,10 @@ import { elementsMatchSchema, isArray } from '../util/typeGuards.js';
 import { UserException } from '../util/errors.js';
 import bcrypt from 'bcrypt';
 import { v4 as uuidV4 } from 'uuid';
-import { LoginRequest } from 'busybody-core'
+import { LoginRequest } from 'busybody-core';
 
 // maps recently-used session tokens to user uuids
-const sessionCache = new LRUCache<string, string>({max: 1000});
+const sessionCache = new LRUCache<string, string>({ max: 1000 });
 
 // logs user in, creates new session, and returns session token
 // throws exception if credentials are incorrect

@@ -31,13 +31,13 @@ async function cleanShutdown(): Promise<void> {
   await disconnectDatabase();
 }
 // attach signal/event handlers to run before exiting
-["SIGINT", "SIGTERM", "SIGHUP"].forEach(signal => {
+['SIGINT', 'SIGTERM', 'SIGHUP'].forEach(signal => {
   process.on(signal, function() {
-    console.log("shutting down...");
+    console.log('shutting down...');
     cleanShutdown().then(() => {
-      console.log("shutdown complete");
+      console.log('shutdown complete');
     }).catch(reason => {
-      console.error("failed to shut down cleanly");
+      console.error('failed to shut down cleanly');
       console.log(reason);
     }).finally(() => {
       process.exit();

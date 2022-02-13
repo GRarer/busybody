@@ -18,5 +18,5 @@ export function attachHandlers(server: FastifyInstance): void {
   addHandler(serverStatusEndpoint, getServerStatus);
 
   // user accounts
-  addHandler(loginEndpoint, logIn)
+  addHandler(loginEndpoint, logIn);
 }

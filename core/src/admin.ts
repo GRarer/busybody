@@ -1,5 +1,5 @@
 import { DomainOf, Schemas } from '@nprindle/augustus';
-import { Endpoint, GetEndpoint } from './apis';
+import { GetEndpoint } from './apis';
 
 const ServerStatusResponseSchema = Schemas.recordOf({
   status: Schemas.aString,

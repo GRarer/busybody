@@ -27,6 +27,6 @@ export type GetEndpoint<Query, Response, ResponseR=Response>
 export type DeleteEndpoint<Query, Response, ResponseR=Response>
   = Endpoint<undefined, Query, Response, undefined, ResponseR> & {method: 'delete';};
 export type PostEndpoint<Request, Query, Response, RequestR=Request, ResponseR=Response>
-  = Endpoint<Request, Query, Response, RequestR, ResponseR> & {method: 'post'};
+  = Endpoint<Request, Query, Response, RequestR, ResponseR> & {method: 'post';};
 export type PutEndpoint<Request, Query, Response, RequestR=Request, ResponseR=Response>
-= Endpoint<Request, Query, Response, RequestR, ResponseR> & {method: 'put'};
+= Endpoint<Request, Query, Response, RequestR, ResponseR> & {method: 'put';};
