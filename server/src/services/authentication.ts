@@ -1,11 +1,11 @@
 import LRUCache from 'lru-cache';
 import { dbTransaction } from '../util/db.js';
 import { Schemas } from '@nprindle/augustus';
-import { elementsMatchSchema, isArray } from '../util/typeGuards.js';
 import { UserException } from '../util/errors.js';
 import bcrypt from 'bcrypt';
 import { v4 as uuidV4 } from 'uuid';
 import { LoginRequest } from 'busybody-core';
+import { dontValidate, matchesSchema } from '../util/typeGuards.js';
 
 // maps recently-used session tokens to user uuids
 const sessionCache = new LRUCache<string, string>({ max: 1000 });
@@ -18,7 +18,7 @@ export async function logIn(loginRequest: LoginRequest): Promise<string> {
     const matching = await query(
       'SELECT "user_uuid", "password_hash" from users where username = $1;',
       [loginRequest.username],
-      elementsMatchSchema(Schemas.recordOf({
+      matchesSchema(Schemas.recordOf({
         'user_uuid': Schemas.aString,
         'password_hash': Schemas.aString
       }))
@@ -34,7 +34,7 @@ export async function logIn(loginRequest: LoginRequest): Promise<string> {
     const token = `session-${uuidV4()}`;
     // add session to database and cache
     const userId = matching[0].user_uuid;
-    await query('INSERT INTO sessions(token, user_uuid) VALUES ($1, $2);', [token, userId], isArray);
+    await query('INSERT INTO sessions(token, user_uuid) VALUES ($1, $2);', [token, userId], dontValidate);
     sessionCache.set(token, userId);
 
     return token;

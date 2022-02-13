@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { serverConfiguration } from './config.js';
+import { UserException } from './errors.js';
 
 const pool = new pg.Pool(serverConfiguration.postgresConfig);
 
@@ -10,7 +11,7 @@ export async function dbTransaction<Result>(
     queryFunction: <T extends unknown>(
       queryString: string,
       params: unknown[],
-      validation: (xs: unknown[]) => xs is T[]
+      validation: (xs: unknown) => xs is T
     ) => Promise<T[]>
   ) => Promise<Result>
 ): Promise<Result> {
@@ -21,13 +22,12 @@ export async function dbTransaction<Result>(
     // caller provides an action function that consumes a type-safe query function
     const result = await action(async (queryString, params, validation) => {
       const rows: unknown[] = (await pool.query(queryString, params)).rows;
-      if (validation(rows)) {
+      if (rows.every(validation)) {
         return rows;
       } else {
-        // TODO custom error type
-        console.error('unexpected response:');
+        console.error('unexpected database response:');
         console.log(rows);
-        throw new Error('unexpected database query response');
+        throw new UserException(500);
       }
     });
     await client.query('COMMIT');
@@ -40,9 +40,6 @@ export async function dbTransaction<Result>(
   }
 }
 
-
-
-// TODO make this happen when server closes
 // should be called only when the server exits
 export async function disconnectDatabase(): Promise<void> {
   return await pool.end();
