@@ -1,12 +1,10 @@
 import { ServerStatusResponse } from 'busybody-core';
-import { dbTransaction } from '../util/db.js';
+import { dbQuery } from '../util/db.js';
 import { dontValidate } from '../util/typeGuards.js';
 
 export async function getServerStatus(): Promise<ServerStatusResponse> {
 
-  const userCount = await dbTransaction(async query => {
-    return (await query('select 1 from users', [], dontValidate)).length;
-  });
+  const userCount = (await dbQuery('select 1 from users', [], dontValidate)).length;
 
   return {
     status: 'BusyBody server online',

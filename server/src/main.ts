@@ -2,7 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { attachHandlers } from './endpointHandlers.js';
 import { serverConfiguration } from './util/config.js';
-import { dbTransaction, disconnectDatabase } from './util/db.js';
+import { dbQuery, disconnectDatabase } from './util/db.js';
 import { dontValidate } from './util/typeGuards.js';
 
 const SERVER_PORT = serverConfiguration.apiPort;
@@ -13,9 +13,7 @@ const server: FastifyInstance = Fastify({});
 
 async function start(): Promise<void> {
   // verify database is connected
-  await dbTransaction(async (query) => {
-    await query('select 1;', [], dontValidate);
-  });
+  await dbQuery('select 1;', [], dontValidate);
   console.log('Database connected');
   console.log('Starting http server...');
   await server.register(fastifyCors, { origin: true });

@@ -40,6 +40,23 @@ export async function dbTransaction<Result>(
   }
 }
 
+// performs a single query and validates the return value of the rows
+// for multiple dependent queries, use dbTransaction instead
+export async function dbQuery<T>(
+  queryString: string,
+  params: unknown[],
+  validation: (xs: unknown) => xs is T
+): Promise<T[]> {
+  const rows: unknown[] = (await pool.query(queryString, params)).rows;
+  if (rows.every(validation)) {
+    return rows;
+  } else {
+    console.error('unexpected database response:');
+    console.log(rows);
+    throw new UserException(500);
+  }
+}
+
 // should be called only when the server exits
 export async function disconnectDatabase(): Promise<void> {
   return await pool.end();
