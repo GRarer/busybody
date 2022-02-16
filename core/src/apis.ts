@@ -2,6 +2,8 @@
 
 import { Schema } from '@nprindle/augustus';
 
+export const BUSYBODY_TOKEN_HEADER_NAME = 'bb_token';
+
 // endpoints specify the url path, HTTP method, and the schemas of the request and response types
 // request type for GET and Delete must be undefined
 export type Endpoint<Request, Query, Response, RequestR=Request, ResponseR=Response> = (

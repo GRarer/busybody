@@ -40,3 +40,24 @@ export async function logIn(loginRequest: LoginRequest): Promise<string> {
     return token;
   });
 }
+
+export async function logOut(token: string): Promise<void> {
+  if (sessionCache.has(token)) {
+    // todo cache.del is deprecated but type definitions don't include new cache.delete
+    sessionCache.del(token);
+  }
+  await dbTransaction(async query => {
+    await query('delete from sessions where token = $1;', [token], dontValidate);
+  });
+}
+
+// checks whether a token corresponds to an active session
+export async function isValidSession(token: string): Promise<boolean> {
+  if (sessionCache.has(token)) {
+    return true;
+  }
+  return await dbTransaction(async query => {
+    const matchingSessions = await query('select 1 from sessions where token = $1;', [token], dontValidate);
+    return matchingSessions.length > 0;
+  });
+}

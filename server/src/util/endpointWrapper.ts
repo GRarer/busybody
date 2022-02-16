@@ -1,4 +1,4 @@
-import { Endpoint } from 'busybody-core';
+import { BUSYBODY_TOKEN_HEADER_NAME, Endpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { UserException } from './errors.js';
 
@@ -7,7 +7,7 @@ import { UserException } from './errors.js';
 export function attachHandlerWithSafeWrapper<Request, Query, Response>(
   server: FastifyInstance,
   endpoint: Endpoint<Request, Query, Response>,
-  handler: (requestBody: Request, queryParams: Query) => Promise<Response>
+  handler: (requestBody: Request, queryParams: Query, token: string) => Promise<Response>
 ): void {
   const method: 'get' | 'post' | 'put' | 'delete' = endpoint.method;
   server[method](endpoint.relativePath, {}, async (request, reply) => {
@@ -20,9 +20,14 @@ export function attachHandlerWithSafeWrapper<Request, Query, Response>(
       if (!endpoint.querySchema.validate(reqQueryParams)) {
         throw new UserException(400, 'query parameters did not match expected format');
       }
+
+      const token_header = request.headers[BUSYBODY_TOKEN_HEADER_NAME];
+      const token = typeof token_header === 'string' ? token_header : '';
+
       const response = await handler(
         endpoint.requestSchema.decode(reqBody),
-        endpoint.querySchema.decode(reqQueryParams)
+        endpoint.querySchema.decode(reqQueryParams),
+        token
       );
       return endpoint.responseSchema.encode(response);
     } catch (error: unknown) {
