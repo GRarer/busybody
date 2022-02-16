@@ -21,7 +21,7 @@ export async function dbTransaction<Result>(
     await client.query('BEGIN');
     // caller provides an action function that consumes a type-safe query function
     const result = await action(async (queryString, params, validation) => {
-      const rows: unknown[] = (await pool.query(queryString, params)).rows;
+      const rows: unknown[] = (await client.query(queryString, params)).rows;
       if (rows.every(validation)) {
         return rows;
       } else {
