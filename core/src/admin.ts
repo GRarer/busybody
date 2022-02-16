@@ -12,8 +12,8 @@ export type ServerStatusResponse = DomainOf<typeof ServerStatusResponseSchema>;
 export const serverStatusEndpoint: GetEndpoint<{}, ServerStatusResponse> = {
   relativePath: '/status',
   method: 'get',
-  requestSchema: Schemas.anUndefined,
+  requestValidator: Schemas.anUndefined.validate,
   querySchema: Schemas.recordOf({}),
-  responseSchema: ServerStatusResponseSchema,
+  responseValidator: ServerStatusResponseSchema.validate,
 };
 

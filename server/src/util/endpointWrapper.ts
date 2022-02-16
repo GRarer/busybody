@@ -1,10 +1,15 @@
+import { Json } from '@nprindle/augustus';
 import { BUSYBODY_TOKEN_HEADER_NAME, Endpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { UserException } from './errors.js';
 
 // adds a handler for the specified endpoint to the server
 // with a wrapper that automatically validates the types of request body, query parameters, and response
-export function attachHandlerWithSafeWrapper<Request, Query, Response>(
+export function attachHandlerWithSafeWrapper<
+  Request extends Json.JsonValue | undefined,
+  Query,
+  Response extends Json.JsonValue
+>(
   server: FastifyInstance,
   endpoint: Endpoint<Request, Query, Response>,
   handler: (requestBody: Request, queryParams: Query, token: string) => Promise<Response>
@@ -14,7 +19,7 @@ export function attachHandlerWithSafeWrapper<Request, Query, Response>(
     try {
       const reqBody: unknown = request.body ?? undefined;
       const reqQueryParams: unknown = request.query ?? {};
-      if (!endpoint.requestSchema.validate(reqBody)) {
+      if (!endpoint.requestValidator(reqBody)) {
         throw new UserException(400, 'request body did not match expected format');
       }
       if (!endpoint.querySchema.validate(reqQueryParams)) {
@@ -24,12 +29,9 @@ export function attachHandlerWithSafeWrapper<Request, Query, Response>(
       const token_header = request.headers[BUSYBODY_TOKEN_HEADER_NAME];
       const token = typeof token_header === 'string' ? token_header : '';
 
-      const response = await handler(
-        endpoint.requestSchema.decode(reqBody),
-        endpoint.querySchema.decode(reqQueryParams),
-        token
-      );
-      return endpoint.responseSchema.encode(response);
+      const query: Query = endpoint.querySchema.decode(reqQueryParams);
+
+      return await handler(reqBody, query, token);
     } catch (error: unknown) {
       if (error instanceof UserException) {
         return error;

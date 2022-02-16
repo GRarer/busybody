@@ -11,7 +11,7 @@ import { dontValidate, matchesSchema } from '../util/typeGuards.js';
 // extra type assertion is necessary here because DefinitelyTyped hasn't updated its lru-cache type definitions
 // to support the new `delete` method and the deprecated `del` method results in a runtime warning message
 const sessionCache = new LRUCache<string, string>({ max: 1000 }) as
-  LRUCache<string, string> & {delete: (key: string) => void};
+  LRUCache<string, string> & {delete: (key: string) => void;};
 
 
 // logs user in, creates new session, and returns session token

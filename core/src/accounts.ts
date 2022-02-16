@@ -16,6 +16,7 @@ export const loginRequestSchema = Schemas.recordOf({
   password: Schemas.aString,
 });
 
+
 export type LoginRequest = DomainOf<typeof loginRequestSchema>;
 
 // creates a new user session and returns the session token
@@ -23,25 +24,28 @@ export type LoginRequest = DomainOf<typeof loginRequestSchema>;
 export const loginEndpoint: PostEndpoint<LoginRequest, {}, string> = {
   method: 'post',
   relativePath: '/login',
-  requestSchema: loginRequestSchema,
+  requestValidator: Schemas.recordOf({
+    username: Schemas.aString,
+    password: Schemas.aString,
+  }).validate,
   querySchema: Schemas.recordOf({}),
-  responseSchema: Schemas.aString // returns token
+  responseValidator: Schemas.aString.validate // returns token
 };
 
 export const logoutEndpoint: PostEndpoint<undefined, {}, null> = {
   method: 'post',
   relativePath: '/logout',
-  requestSchema: Schemas.anUndefined,
+  requestValidator: Schemas.anUndefined.validate,
   querySchema: Schemas.recordOf({}),
-  responseSchema: Schemas.aNull,
+  responseValidator: Schemas.aNull.validate,
 };
 
 export const sessionActiveEndpoint: GetEndpoint<{}, boolean> = {
   method: 'get',
   relativePath: '/session_is_active',
-  requestSchema: Schemas.anUndefined,
+  requestValidator: Schemas.anUndefined.validate,
   querySchema: Schemas.recordOf({}),
-  responseSchema: Schemas.aBoolean,
+  responseValidator: Schemas.aBoolean.validate,
 };
 
 export type SelfInfoResponse = {
@@ -54,12 +58,12 @@ export type SelfInfoResponse = {
 export const selfInfoEndpoint: GetEndpoint<{}, SelfInfoResponse> = {
   method: 'get',
   relativePath: '/self',
-  requestSchema: Schemas.anUndefined,
+  requestValidator: Schemas.anUndefined.validate,
   querySchema: Schemas.recordOf({}),
-  responseSchema: Schemas.recordOf({
+  responseValidator: Schemas.recordOf({
     username: Schemas.aString,
     fullName: Schemas.aString,
     nickname: Schemas.aString,
     email: Schemas.aString,
-  })
+  }).validate
 };

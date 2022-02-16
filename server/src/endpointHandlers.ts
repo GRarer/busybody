@@ -1,3 +1,4 @@
+import { Json } from '@nprindle/augustus';
 import { Endpoint, loginEndpoint, logoutEndpoint, selfInfoEndpoint, serverStatusEndpoint,
   sessionActiveEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
@@ -9,7 +10,7 @@ import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 // associates handlers with API endpoints and wraps them to provide consistent type-safety of API boundary
 
 export function attachHandlers(server: FastifyInstance): void {
-  const addHandler = <Request, Query, Response>(
+  const addHandler = <Request extends Json.JsonValue | undefined, Query, Response extends Json.JsonValue>(
     e: Endpoint<Request, Query, Response>,
     h: (requestBody: Request, queryParams: Query, token: string) => Promise<Response>
   ): void => attachHandlerWithSafeWrapper(server, e, h);

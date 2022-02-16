@@ -1,12 +1,12 @@
-import { Schema } from '@nprindle/augustus';
+import { Json } from '@nprindle/augustus';
 import axios from 'axios';
 import { BUSYBODY_TOKEN_HEADER_NAME, GetEndpoint, PostEndpoint } from 'busybody-core';
 
 const API_BASE_URL = 'http://localhost:3001';
 
-function decodeResult<T, S>(data: S, schema: Schema<T, S>): T {
-  if (schema.validate(data)) {
-    return schema.decode(data);
+function validateResult<T, S>(data: S, validate: (x: unknown) => x is T): T {
+  if (validate(data)) {
+    return data;
   } else {
     throw new Error('Server response did not match expected format');
   }
@@ -20,8 +20,8 @@ function tokenHeader(token: string | null): { [BUSYBODY_TOKEN_HEADER_NAME]: stri
   }
 }
 
-export async function apiGet<Query, Response, ResponseR=Response>(
-  endpoint: GetEndpoint<Query, Response, ResponseR>,
+export async function apiGet<Query, Response extends Json.JsonValue>(
+  endpoint: GetEndpoint<Query, Response>,
   queryParams: Query,
   token: string | null
 ): Promise<Response> {
@@ -33,24 +33,23 @@ export async function apiGet<Query, Response, ResponseR=Response>(
       headers: tokenHeader(token)
     }
   );
-  return decodeResult(result.data, endpoint.responseSchema);
+  return validateResult(result.data, endpoint.responseValidator);
 }
 
-export async function apiPost<Request, Query, Response, RequestR=Request, ResponseR=Response>(
-  endpoint: PostEndpoint<Request, Query, Response, RequestR, ResponseR>,
+export async function apiPost<Request extends Json.JsonValue | undefined, Query, Response extends Json.JsonValue>(
+  endpoint: PostEndpoint<Request, Query, Response>,
   request: Request,
   queryParams: Query,
   token: string | null
 ): Promise<Response> {
-  const payload = endpoint.requestSchema.encode(request);
   // TODO safer url append
   const result = await axios.post(
     API_BASE_URL + endpoint.relativePath,
-    payload,
+    request,
     {
       params: endpoint.querySchema.encode(queryParams),
       headers: tokenHeader(token)
     }
   );
-  return decodeResult(result.data, endpoint.responseSchema);
+  return validateResult(result.data, endpoint.responseValidator);
 }
