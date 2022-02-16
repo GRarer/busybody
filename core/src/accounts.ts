@@ -28,12 +28,12 @@ export const loginEndpoint: PostEndpoint<LoginRequest, {}, string> = {
   responseSchema: Schemas.aString // returns token
 };
 
-export const logoutEndpoint: PostEndpoint<undefined, {}, undefined> = {
+export const logoutEndpoint: PostEndpoint<undefined, {}, null> = {
   method: 'post',
   relativePath: '/logout',
   requestSchema: Schemas.anUndefined,
   querySchema: Schemas.recordOf({}),
-  responseSchema: Schemas.anUndefined,
+  responseSchema: Schemas.aNull,
 };
 
 export const sessionActiveEndpoint: GetEndpoint<{}, boolean> = {

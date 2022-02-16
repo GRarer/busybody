@@ -8,7 +8,11 @@ import { LoginRequest } from 'busybody-core';
 import { dontValidate, matchesSchema } from '../util/typeGuards.js';
 
 // maps recently-used session tokens to user uuids
-const sessionCache = new LRUCache<string, string>({ max: 1000 });
+// extra type assertion is necessary here because DefinitelyTyped hasn't updated its lru-cache type definitions
+// to support the new `delete` method and the deprecated `del` method results in a runtime warning message
+const sessionCache = new LRUCache<string, string>({ max: 1000 }) as
+  LRUCache<string, string> & {delete: (key: string) => void};
+
 
 // logs user in, creates new session, and returns session token
 // throws exception if credentials are incorrect
@@ -43,10 +47,7 @@ export async function logIn(loginRequest: LoginRequest): Promise<string> {
 }
 
 export async function logOut(token: string): Promise<void> {
-  if (sessionCache.has(token)) {
-    // todo cache.del is deprecated but type definitions don't include new cache.delete
-    sessionCache.del(token);
-  }
+  sessionCache.delete(token);
   await dbQuery('delete from sessions where token = $1;', [token], dontValidate);
 }
 

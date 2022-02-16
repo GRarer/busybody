@@ -23,7 +23,7 @@ export function attachHandlers(server: FastifyInstance): void {
   addHandler(loginEndpoint, logIn);
   addHandler(logoutEndpoint, async (body, params, token) => {
     await logOut(token);
-    return undefined;
+    return null;
   });
   addHandler(sessionActiveEndpoint, async (body, params, token) => isValidSession(token));
 
