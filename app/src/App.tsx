@@ -1,9 +1,10 @@
-import { LinearProgress } from '@mui/material';
+import { AppBar, LinearProgress, Toolbar, Typography } from '@mui/material';
 import { sessionActiveEndpoint } from 'busybody-core';
 import React, { useEffect, useState } from 'react';
 import { apiGet } from './api/requests';
 import { HomeRoot } from './ui/home/homeRoot';
 import { LandingPage } from './ui/landing/Landing';
+import { SettingsMenu } from './ui/menu/settingsMenu';
 import { saveToken } from './util/persistence';
 
 function App(
@@ -13,7 +14,7 @@ function App(
 ): JSX.Element {
   // uncheckedSavedToken is true if we are using a token read from local storage
   // and have not yet checked it with the server to make sure it's still valid
-  const [state, setState] = useState<{token: string | null; uncheckedSavedToken: boolean;}>({
+  const [state, setState] = useState<{ token: string | null; uncheckedSavedToken: boolean; }>({
     token: props.initialSavedToken,
     uncheckedSavedToken: props.initialSavedToken !== null
   });
@@ -22,6 +23,7 @@ function App(
     setState({ token, uncheckedSavedToken: false });
   };
 
+  // when using a saved token from local storage, we need to check with the server to make sure the session is valid
   useEffect(() => {
     if (state.uncheckedSavedToken) {
       apiGet(sessionActiveEndpoint, {}, state.token).then(sessionIsValid => {
@@ -44,19 +46,27 @@ function App(
     setToken(token);
   };
 
+  // show loading bar if we haven't yet validated the saved session
   if (state.uncheckedSavedToken) {
-    return (<LinearProgress/>);
-  } else if (state.token) {
-    // todo return home screen which contains all pages for signed-in users
-    return (
-      <HomeRoot token={state.token} onLogOut={() => { changeSession(null); }}/>
-    );
-  } else {
-    return (
-      // landing page is root of pages for not-signed-in users
-      <LandingPage setSessionToken={changeSession}/>
-    );
+    return (<LinearProgress />);
   }
+
+  return (<>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" style={{ flexGrow: 1 }}>
+          Busybody
+        </Typography>
+        {state.token
+          ? <SettingsMenu token={state.token} onLogOut={() => changeSession(null)} />
+          : <></>
+        }
+      </Toolbar>
+    </AppBar>
+    {state.token
+      ? <HomeRoot token={state.token}/>
+      : <LandingPage setSessionToken={changeSession} />}
+  </>);
 
 
 }
