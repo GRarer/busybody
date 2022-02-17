@@ -7,6 +7,7 @@ import { logoutEndpoint } from 'busybody-core';
 import { ChangePersonalInfoDialog } from './changeInfoMenu';
 import { ChangeEmailDialog } from './changeEmailMenu';
 import { ChangePasswordDialog } from './changePasswordMenu';
+import { ManageDataDialog } from './manageDataMenu';
 
 export function SettingsMenu(props: {
   token: string;
@@ -17,6 +18,7 @@ export function SettingsMenu(props: {
   const [showNameDialog, setShowNameDialog] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showManageDataDialog, setShowManageDataDialog] = useState(false);
 
 
   const open = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
@@ -65,7 +67,7 @@ export function SettingsMenu(props: {
           <ListItemText>Change Password</ListItemText>
         </MenuItem>
         <Divider />
-        <MenuItem>
+        <MenuItem onClick={() => setShowManageDataDialog(true)}>
           <ListItemIcon><DataArray fontSize="small" /></ListItemIcon>
           <ListItemText>Manage Personal Data</ListItemText>
         </MenuItem>
@@ -81,6 +83,8 @@ export function SettingsMenu(props: {
         onClose={() => setShowEmailDialog(false)}/>
       <ChangePasswordDialog token={props.token} open={showPasswordDialog}
         onClose={() => setShowPasswordDialog(false)}/>
+      <ManageDataDialog token={props.token} open={showManageDataDialog}
+        onClose={() => setShowManageDataDialog(false)} onDeleteAccount={props.onLogOut}/>
 
     </>
   );

@@ -1,5 +1,5 @@
 import { Schemas } from '@nprindle/augustus';
-import { passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
+import { ExportedPersonalData, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
   usernameRequirementProblem } from 'busybody-core';
 import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
@@ -105,4 +105,37 @@ export async function updatePassword(newPassword: string, sessionToken: string):
   await dbQuery('update users set password_hash = $1 where user_uuid = $2',
     [hash, userId], dontValidate
   );
+}
+
+export async function exportAccountData(token: string): Promise<ExportedPersonalData> {
+  const userId = await lookupSessionUser(token);
+
+  const userIdentityRows = await dbQuery(
+    'select username, full_name, nickname, email from users where user_uuid = $1;', [userId],
+    Schemas.recordOf({
+      username: Schemas.aString,
+      full_name: Schemas.aString,
+      nickname: Schemas.aString,
+      email: Schemas.aString
+    }).validate
+  );
+
+  const userIdentity
+    = userIdentityRows[0] ?? new UserException(500, 'session appears valid but user account info could not be found');
+
+  return {
+    description: 'data exported from Busybody app',
+    dateExported: `${new Date(Date.now())}`,
+    personalInfo: {
+      username: userIdentity.username,
+      fullName: userIdentity.full_name,
+      nickname: userIdentity.nickname,
+      email: userIdentity.email
+    }
+  };
+}
+
+export async function deleteAccount(token: string): Promise<void> {
+  const userId = await lookupSessionUser(token);
+  await dbQuery('delete from users where user_uuid = $1;', [userId], dontValidate);
 }

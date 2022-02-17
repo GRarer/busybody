@@ -1,11 +1,9 @@
 import { Json } from '@nprindle/augustus';
-import { Endpoint, loginEndpoint, logoutEndpoint, registrationEndpoint, selfInfoEndpoint, serverStatusEndpoint,
-  sessionActiveEndpoint,
-  updateEmailEndpoint,
-  updatePasswordEndpoint,
-  updatePersonalInfoEndpoint } from 'busybody-core';
+import { deleteAccountEndpoint, Endpoint, exportPersonalDataEndpoint, loginEndpoint, logoutEndpoint,
+  registrationEndpoint, selfInfoEndpoint, serverStatusEndpoint, sessionActiveEndpoint, updateEmailEndpoint,
+  updatePasswordEndpoint, updatePersonalInfoEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
-import { getSelfInfo, register, updateAccountInfo, updateEmailAddress,
+import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
   updatePassword } from './services/accountInfo.js';
 import { getServerStatus } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
@@ -49,7 +47,11 @@ export function attachHandlers(server: FastifyInstance): void {
     await updatePassword(body, token);
     return null;
   });
-
-
-
+  addHandler(exportPersonalDataEndpoint, async (body, params, token) => {
+    return await exportAccountData(token);
+  });
+  addHandler(deleteAccountEndpoint, async (body, params, token) => {
+    await deleteAccount(token);
+    return null;
+  });
 }
