@@ -5,6 +5,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { apiPost } from '../../api/requests';
 import { logoutEndpoint } from 'busybody-core';
 import { ChangePersonalInfoDialog } from './changeInfoMenu';
+import { ChangeEmailDialog } from './changeEmailMenu';
+import { ChangePasswordDialog } from './changePasswordMenu';
 
 export function SettingsMenu(props: {
   token: string;
@@ -13,6 +15,8 @@ export function SettingsMenu(props: {
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [showNameDialog, setShowNameDialog] = useState(false);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
 
 
   const open = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
@@ -52,11 +56,11 @@ export function SettingsMenu(props: {
           <ListItemIcon><AccountBox fontSize="small" /></ListItemIcon>
           <ListItemText>Change Personal Info</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => setShowEmailDialog(true)}>
           <ListItemIcon><AlternateEmail fontSize="small" /></ListItemIcon>
           <ListItemText>Change Email Address</ListItemText>
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={() => setShowPasswordDialog(true)}>
           <ListItemIcon><VpnKey fontSize="small" /></ListItemIcon>
           <ListItemText>Change Password</ListItemText>
         </MenuItem>
@@ -73,6 +77,11 @@ export function SettingsMenu(props: {
       </Menu>
       <ChangePersonalInfoDialog token={props.token} open={showNameDialog}
         onClose={() => setShowNameDialog(false)}/>
+      <ChangeEmailDialog token={props.token} open={showEmailDialog}
+        onClose={() => setShowEmailDialog(false)}/>
+      <ChangePasswordDialog token={props.token} open={showPasswordDialog}
+        onClose={() => setShowPasswordDialog(false)}/>
+
     </>
   );
 }

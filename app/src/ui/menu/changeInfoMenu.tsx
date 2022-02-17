@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
   LinearProgress } from '@mui/material';
-import { selfInfoEndpoint, UpdatePersonalInfoEndpoint, usernameRequirementProblem } from 'busybody-core';
+import { selfInfoEndpoint, updatePersonalInfoEndpoint, usernameRequirementProblem } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { apiGet, apiPut } from '../../api/requests';
@@ -47,7 +47,7 @@ export function ChangePersonalInfoDialog(
   const canUpdate = username && fullName && nickname && Boolean(!usernameProblem);
 
   const update = (): void => {
-    apiPut(UpdatePersonalInfoEndpoint, { username, fullName, nickname }, {}, props.token)
+    apiPut(updatePersonalInfoEndpoint, { username, fullName, nickname }, {}, props.token)
       .then(() => {
         enqueueSnackbar('Your info has been updated', { variant: 'success' });
         props.onClose();

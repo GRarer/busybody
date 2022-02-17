@@ -3,7 +3,7 @@ import {
   Button, FilledInput, FormControl, FormControlLabel, FormGroup, InputLabel,
   Switch } from '@mui/material';
 import { Box } from '@mui/material';
-import { passwordRequirementProblem, RegistrationEndpoint, RegistrationRequest,
+import { passwordRequirementProblem, registrationEndpoint, RegistrationRequest,
   usernameRequirementProblem } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -45,7 +45,7 @@ export function RegisterForm(props: {
 
   const register = (): void => {
     const request: RegistrationRequest = { username, password, fullName, nickname, email };
-    apiPut(RegistrationEndpoint, request, {}, null)
+    apiPut(registrationEndpoint, request, {}, null)
       .then(props.onSignIn)
       .catch(error => {
         const problem = errorToMessage(error);

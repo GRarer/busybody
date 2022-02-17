@@ -71,11 +71,11 @@ export async function register(request: RegistrationRequest): Promise<string> {
 }
 
 export async function updateAccountInfo(request: {
-  username: string, fullName: string, nickname: string
+  username: string; fullName: string; nickname: string;
 }, token: string): Promise<void> {
   const userId = await lookupSessionUser(token);
   try {
-    await dbQuery(`update users set username = $1, full_name = $2, nickname = $3 where user_uuid = $4` ,
+    await dbQuery('update users set username = $1, full_name = $2, nickname = $3 where user_uuid = $4',
       [request.username, request.fullName, request.nickname, userId], dontValidate
     );
   } catch (err: unknown) {
@@ -89,4 +89,20 @@ export async function updateAccountInfo(request: {
     }
     throw err;
   }
+}
+
+// TODO replace this one-step process with a two-step process that requires a validation code from the new email address
+export async function updateEmailAddress(newAddress: string, sessionToken: string): Promise<void> {
+  const userId = await lookupSessionUser(sessionToken);
+  await dbQuery('update users set email = $1 where user_uuid = $2',
+    [newAddress, userId], dontValidate
+  );
+}
+
+export async function updatePassword(newPassword: string, sessionToken: string): Promise<void> {
+  const userId = await lookupSessionUser(sessionToken);
+  const hash = await bcrypt.hash(newPassword, 10);
+  await dbQuery('update users set password_hash = $1 where user_uuid = $2',
+    [hash, userId], dontValidate
+  );
 }

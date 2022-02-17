@@ -12,11 +12,14 @@ function validateResult<T, S>(data: S, validate: (x: unknown) => x is T): T {
   }
 }
 
-function tokenHeader(token: string | null): { [BUSYBODY_TOKEN_HEADER_NAME]: string; } | Record<never, never> {
+function getHeader(token: string | null): { [BUSYBODY_TOKEN_HEADER_NAME]: string; } | Record<never, never> {
   if (token === null) {
-    return {};
+    return { 'Content-Type': 'application/json' };
   } else {
-    return ({ [BUSYBODY_TOKEN_HEADER_NAME]: token });
+    return ({
+      'Content-Type': 'application/json',
+      [BUSYBODY_TOKEN_HEADER_NAME]: token
+    });
   }
 }
 
@@ -30,7 +33,7 @@ export async function apiGet<Query, Response extends Json.JsonValue>(
     API_BASE_URL + endpoint.relativePath,
     {
       params: endpoint.querySchema.encode(queryParams),
-      headers: tokenHeader(token)
+      headers: getHeader(token)
     }
   );
   return validateResult(result.data, endpoint.responseValidator);
@@ -48,7 +51,7 @@ export async function apiPost<Request extends Json.JsonValue | undefined, Query,
     request,
     {
       params: endpoint.querySchema.encode(queryParams),
-      headers: tokenHeader(token)
+      headers: getHeader(token)
     }
   );
   return validateResult(result.data, endpoint.responseValidator);
@@ -66,7 +69,7 @@ export async function apiPut<Request extends Json.JsonValue | undefined, Query, 
     request,
     {
       params: endpoint.querySchema.encode(queryParams),
-      headers: tokenHeader(token)
+      headers: getHeader(token)
     }
   );
   return validateResult(result.data, endpoint.responseValidator);

@@ -1,9 +1,12 @@
 import { Json } from '@nprindle/augustus';
-import { Endpoint, loginEndpoint, logoutEndpoint, RegistrationEndpoint, selfInfoEndpoint, serverStatusEndpoint,
+import { Endpoint, loginEndpoint, logoutEndpoint, registrationEndpoint, selfInfoEndpoint, serverStatusEndpoint,
   sessionActiveEndpoint,
-  UpdatePersonalInfoEndpoint} from 'busybody-core';
+  updateEmailEndpoint,
+  updatePasswordEndpoint,
+  updatePersonalInfoEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
-import { getSelfInfo, register, updateAccountInfo } from './services/accountInfo.js';
+import { getSelfInfo, register, updateAccountInfo, updateEmailAddress,
+  updatePassword } from './services/accountInfo.js';
 import { getServerStatus } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
@@ -18,7 +21,7 @@ export function attachHandlers(server: FastifyInstance): void {
 
   // all API endpoint handlers are attached here
 
-  // server admin and testing stuff
+  // server admin and testing
   addHandler(serverStatusEndpoint, getServerStatus);
 
   // authentication
@@ -27,17 +30,26 @@ export function attachHandlers(server: FastifyInstance): void {
     await logOut(token);
     return null;
   });
-  addHandler(RegistrationEndpoint, register);
+  addHandler(registrationEndpoint, register);
   addHandler(sessionActiveEndpoint, async (body, params, token) => isValidSession(token));
 
-  // user accounts
+  // user accounts and settings
   addHandler(selfInfoEndpoint, async (body, params, token) => {
     return await getSelfInfo(token);
   });
-  addHandler(UpdatePersonalInfoEndpoint, async (body, params, token) => {
+  addHandler(updatePersonalInfoEndpoint, async (body, params, token) => {
     await updateAccountInfo(body, token);
     return null;
-  })
+  });
+  addHandler(updateEmailEndpoint, async (body, params, token) => {
+    await updateEmailAddress(body, token);
+    return null;
+  });
+  addHandler(updatePasswordEndpoint, async (body, params, token) => {
+    await updatePassword(body, token);
+    return null;
+  });
+
 
 
 }

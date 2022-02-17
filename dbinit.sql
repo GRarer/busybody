@@ -15,7 +15,7 @@ CREATE TABLE users(
     password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     nickname TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE
+    email TEXT NOT NULL
 );
 
 -- user log-in sessions

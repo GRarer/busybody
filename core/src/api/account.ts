@@ -11,7 +11,7 @@ export const registrationRequestSchema = Schemas.recordOf({
 
 export type RegistrationRequest = DomainOf<typeof registrationRequestSchema>;
 
-export const RegistrationEndpoint: PutEndpoint<RegistrationRequest, {}, string> = {
+export const registrationEndpoint: PutEndpoint<RegistrationRequest, {}, string> = {
   method: 'put',
   relativePath: '/register',
   requestValidator: registrationRequestSchema.validate,
@@ -39,7 +39,7 @@ export const selfInfoEndpoint: GetEndpoint<{}, SelfInfoResponse> = {
   }).validate
 };
 
-export const UpdatePersonalInfoEndpoint: PutEndpoint<{
+export const updatePersonalInfoEndpoint: PutEndpoint<{
   username: string; fullName: string; nickname: string;
 }, {}, null> = {
   method: 'put',
@@ -49,6 +49,22 @@ export const UpdatePersonalInfoEndpoint: PutEndpoint<{
     fullName: Schemas.aString,
     nickname: Schemas.aString
   }).validate,
+  querySchema: Schemas.recordOf({}),
+  responseValidator: Schemas.aNull.validate
+};
+
+export const updateEmailEndpoint: PutEndpoint<string, {}, null> = {
+  method: 'put',
+  relativePath: '/update_email_address',
+  requestValidator: Schemas.aString.validate,
+  querySchema: Schemas.recordOf({}),
+  responseValidator: Schemas.aNull.validate
+};
+
+export const updatePasswordEndpoint: PutEndpoint<string, {}, null> = {
+  method: 'put',
+  relativePath: '/update_password',
+  requestValidator: Schemas.aString.validate,
   querySchema: Schemas.recordOf({}),
   responseValidator: Schemas.aNull.validate
 };
