@@ -10,7 +10,7 @@ trim_trailing_whitespace = true
  # unix-style line endings on all files
 end_of_line = lf
 
-[*.{js,ts}]
+[*.{js,ts,tsx}]
 charset = utf-8
 # indent javascript/typescript files with 2 spaces
 indent_style = space
