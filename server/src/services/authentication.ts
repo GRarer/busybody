@@ -13,6 +13,9 @@ import { dontValidate, matchesSchema } from '../util/typeGuards.js';
 const sessionCache = new LRUCache<string, string>({ max: 1000 }) as
   LRUCache<string, string> & {delete: (key: string) => void;};
 
+export function generateRandomToken(): string {
+  return `session-${uuidV4()}`;
+}
 
 // logs user in, creates new session, and returns session token
 // throws exception if credentials are incorrect
@@ -35,7 +38,7 @@ export async function logIn(loginRequest: LoginRequest): Promise<string> {
       throw new UserException(403, 'Incorrect username or password');
     }
     // randomly generate new session token
-    const token = `session-${uuidV4()}`;
+    const token = generateRandomToken();
     // add session to database and cache
     const userId = matching[0].user_uuid;
     await query('INSERT INTO sessions(token, user_uuid) VALUES ($1, $2);', [token, userId], dontValidate);

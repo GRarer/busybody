@@ -1,5 +1,6 @@
-import { Button, Card, CardActions, CardContent, FilledInput, FormControl, InputLabel,
-  Typography } from '@mui/material';
+import { Login } from '@mui/icons-material';
+import { Button, FilledInput, FormControl, InputLabel } from '@mui/material';
+import { Box } from '@mui/material';
 import { loginEndpoint, LoginRequest } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -26,24 +27,28 @@ export function SignInForm(props: {
       });
   };
 
+  const handleKeypress: React.KeyboardEventHandler<HTMLDivElement> = (ev): void => {
+    if (ev.key === 'Enter' && canSignIn) {
+      signIn();
+    }
+  };
+
   return (
-    <Card sx={{ minWidth: 275, marginTop: '10px' }}>
-      <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-              Sign In
-        </Typography>
+    <Box>
+      <Box sx={{ marginTop: '10px', marginBottom: '10px' }} onKeyPress={handleKeypress}>
         <FormControl variant="filled" style={{ width: '100%' }}>
           <InputLabel htmlFor="username-input">Username</InputLabel>
-          <FilledInput id="username-input" value={username} onChange={ev => { setUsername(ev.target.value); }}/>
+          <FilledInput id="username-input" value={username} onChange={ev => { setUsername(ev.target.value); }} />
         </FormControl>
         <FormControl variant="filled" style={{ width: '100%' }}>
           <InputLabel htmlFor="password-input">Password</InputLabel>
-          <FilledInput id="password-input" value={password} onChange={ev => { setPassword(ev.target.value); }}/>
+          <FilledInput id="password-input" value={password} type="password"
+            onChange={ev => { setPassword(ev.target.value); }}/>
         </FormControl>
-      </CardContent>
-      <CardActions>
-        <Button size="small" onClick={signIn} disabled={!canSignIn}>Sign In</Button>
-      </CardActions>
-    </Card>
+      </Box>
+      <Button variant="outlined" startIcon={<Login />} onClick={signIn} disabled={!canSignIn}>
+        Sign In
+      </Button>
+    </Box>
   );
 }

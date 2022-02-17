@@ -29,9 +29,7 @@ CREATE TABLE sessions(
 do $$
 <<setup>>
 declare
-  -- currently using 'beepboop', which matches this hash
-  -- TODO change example account password and keep it secret
-  example_password_hash TEXT := '$2b$09$CNpJ2n9Tgz8Qgz0EbXfXg.ImFxY3A0sP0o3.alzzgAsxLm47O.rJm';
+  example_password_hash TEXT := '$2b$10$pXTLH5NwenRKsS33I83Mp.bAiDn1mVNh1yfDN/ogrKatvW.mlOIYS';
 
   -- fake UUIDs
   georgeUUID UUID := '00000001-0000-0000-0000-000000000000';

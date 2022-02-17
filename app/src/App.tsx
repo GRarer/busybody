@@ -52,7 +52,7 @@ function App(
   }
 
   return (<>
-    <AppBar position="static">
+    <AppBar position="static" sx={{ marginBottom:'5px' }}>
       <Toolbar>
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Busybody

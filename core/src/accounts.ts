@@ -1,5 +1,5 @@
 import { DomainOf, Schemas } from '@nprindle/augustus';
-import { GetEndpoint, PostEndpoint } from '.';
+import { GetEndpoint, PostEndpoint, PutEndpoint } from '.';
 
 export const registrationRequestSchema = Schemas.recordOf({
   username: Schemas.aString,
@@ -10,6 +10,40 @@ export const registrationRequestSchema = Schemas.recordOf({
 });
 
 export type RegistrationRequest = DomainOf<typeof registrationRequestSchema>;
+
+export const RegistrationEndpoint: PutEndpoint<RegistrationRequest, {}, string> = {
+  method: 'put',
+  relativePath: '/register',
+  requestValidator: registrationRequestSchema.validate,
+  querySchema: Schemas.recordOf({}),
+  responseValidator: Schemas.aString.validate
+};
+
+// format requirements for usernames and passwords
+// return undefined if no problem, or message if there is a problem
+export function usernameRequirementProblem(username: string): string | undefined {
+  if (username === '') {
+    return 'Username cannot be empty';
+  }
+  if (username.length > 32) {
+    return 'Username must not be longer than 32 characters';
+  }
+  // @ is disallowed to prevent usernames that look like email addresses
+  // whitespace including u00A0 non-breaking space are disallowed
+  for (const badCharacter of ['@', ' ', '\u00A0', '#', '/', '\\', "'", '"', '\n', '\t']) {
+    if (username.includes(badCharacter)) {
+      return (`Username cannot contain the character "${badCharacter}"`);
+    }
+  }
+  return undefined;
+}
+
+export function passwordRequirementProblem(password: string): string | undefined {
+  if (password.length < 8) {
+    return 'Password must be at least 8 characters';
+  }
+  return undefined;
+}
 
 export const loginRequestSchema = Schemas.recordOf({
   username: Schemas.aString,

@@ -1,8 +1,8 @@
 import { Json } from '@nprindle/augustus';
-import { Endpoint, loginEndpoint, logoutEndpoint, selfInfoEndpoint, serverStatusEndpoint,
+import { Endpoint, loginEndpoint, logoutEndpoint, RegistrationEndpoint, selfInfoEndpoint, serverStatusEndpoint,
   sessionActiveEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
-import { getSelfInfo } from './services/accountInfo.js';
+import { getSelfInfo, register } from './services/accountInfo.js';
 import { getServerStatus } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
@@ -26,6 +26,7 @@ export function attachHandlers(server: FastifyInstance): void {
     await logOut(token);
     return null;
   });
+  addHandler(RegistrationEndpoint, register);
   addHandler(sessionActiveEndpoint, async (body, params, token) => isValidSession(token));
 
   // user accounts

@@ -1,6 +1,6 @@
 import { Json } from '@nprindle/augustus';
 import axios from 'axios';
-import { BUSYBODY_TOKEN_HEADER_NAME, GetEndpoint, PostEndpoint } from 'busybody-core';
+import { BUSYBODY_TOKEN_HEADER_NAME, GetEndpoint, PostEndpoint, PutEndpoint } from 'busybody-core';
 
 const API_BASE_URL = 'http://localhost:3001';
 
@@ -44,6 +44,24 @@ export async function apiPost<Request extends Json.JsonValue | undefined, Query,
 ): Promise<Response> {
   // TODO safer url append
   const result = await axios.post(
+    API_BASE_URL + endpoint.relativePath,
+    request,
+    {
+      params: endpoint.querySchema.encode(queryParams),
+      headers: tokenHeader(token)
+    }
+  );
+  return validateResult(result.data, endpoint.responseValidator);
+}
+
+export async function apiPut<Request extends Json.JsonValue | undefined, Query, Response extends Json.JsonValue>(
+  endpoint: PutEndpoint<Request, Query, Response>,
+  request: Request,
+  queryParams: Query,
+  token: string | null
+): Promise<Response> {
+  // TODO safer url append
+  const result = await axios.put(
     API_BASE_URL + endpoint.relativePath,
     request,
     {
