@@ -54,7 +54,7 @@ export function ChangeEmailDialog(
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <DialogTitle>Change Personal Info</DialogTitle>
+      <DialogTitle>Change Email Address</DialogTitle>
       {props.open && !loadedCurrent
         ? <LinearProgress />
         : <>
