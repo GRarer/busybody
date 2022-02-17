@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { apiPost } from '../../api/requests';
 import { logoutEndpoint } from 'busybody-core';
+import { ChangePersonalInfoDialog } from './changeInfoMenu';
 
 export function SettingsMenu(props: {
   token: string;
@@ -11,6 +12,9 @@ export function SettingsMenu(props: {
 }): JSX.Element {
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [showNameDialog, setShowNameDialog] = useState(false);
+
+
   const open = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     setAnchorEl(event.currentTarget);
   };
@@ -42,8 +46,9 @@ export function SettingsMenu(props: {
         anchorEl={anchorEl}
         open={anchorEl !== null}
         onClose={close}
+        onClick={close}
       >
-        <MenuItem>
+        <MenuItem onClick={() => setShowNameDialog(true)}>
           <ListItemIcon><AccountBox fontSize="small" /></ListItemIcon>
           <ListItemText>Change Personal Info</ListItemText>
         </MenuItem>
@@ -66,6 +71,8 @@ export function SettingsMenu(props: {
           <ListItemText>Sign Out</ListItemText>
         </MenuItem>
       </Menu>
+      <ChangePersonalInfoDialog token={props.token} open={showNameDialog}
+        onClose={() => setShowNameDialog(false)}/>
     </>
   );
 }

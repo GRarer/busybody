@@ -1,6 +1,5 @@
 import { BottomNavigation, BottomNavigationAction, Container, Paper } from '@mui/material';
 import React, { useState } from 'react';
-import { HomeInfo } from './homeInfo';
 import TaskIcon from '@mui/icons-material/Task';
 import GroupsIcon from '@mui/icons-material/Groups';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -12,7 +11,7 @@ export function HomeRoot(props: {
   const [pageIndex, setPageIndex] = useState<number>(0);
 
   const page = {
-    0: <HomeInfo token={props.token}></HomeInfo>,
+    0: <p>Watched tasks will go here</p>,
     1: <p>Tasks list will go here</p>,
     2: <p>Friends list will go here</p>
   }[pageIndex] ?? <p>Something went wrong, invalid page index!</p>;

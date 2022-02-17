@@ -1,6 +1,6 @@
 import { Check } from '@mui/icons-material';
 import {
-  Button, FilledInput, FormControl, FormControlLabel, FormGroup, FormHelperText, InputLabel,
+  Button, FilledInput, FormControl, FormControlLabel, FormGroup, InputLabel,
   Switch } from '@mui/material';
 import { Box } from '@mui/material';
 import { passwordRequirementProblem, RegistrationEndpoint, RegistrationRequest,
@@ -9,16 +9,7 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { apiPut } from '../../api/requests';
 import { errorToMessage } from '../../util/util';
-
-function OptionalInputWarning(props: {
-  message: string | undefined;
-}): JSX.Element {
-  if (props.message) {
-    return (<FormHelperText>{props.message}</FormHelperText>);
-  } else {
-    return (<></>);
-  }
-}
+import { OptionalInputWarning } from '../common';
 
 export function RegisterForm(props: {
   onSignIn: (token: string) => void;

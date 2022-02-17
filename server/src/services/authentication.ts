@@ -64,3 +64,19 @@ export async function isValidSession(token: string): Promise<boolean> {
     return matchingSessions.length > 0;
   });
 }
+
+// maps from session token to user UUID
+export async function lookupSessionUser(token: string): Promise<string> {
+  const cached = sessionCache.get(token);
+  if (cached) {
+    return cached;
+  }
+  const rows = await dbQuery(
+    `select user_uuid from sessions where token = $1;`, [token],
+    Schemas.recordOf({user_uuid: Schemas.aString}).validate
+  );
+  if (rows.length < 0) {
+    throw new UserException(401, "Your session is not authenticated. Try signing out and signing back in.");
+  }
+  return rows[0].user_uuid;
+}

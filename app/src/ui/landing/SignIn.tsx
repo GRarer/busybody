@@ -1,7 +1,7 @@
 import { Login } from '@mui/icons-material';
 import { Button, FilledInput, FormControl, InputLabel } from '@mui/material';
 import { Box } from '@mui/material';
-import { loginEndpoint, LoginRequest } from 'busybody-core';
+import { loginEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { apiPost } from '../../api/requests';
@@ -19,7 +19,6 @@ export function SignInForm(props: {
   const canSignIn = !!(username && password);
 
   const signIn = (): void => {
-    const request: LoginRequest = { username, password };
     apiPost(loginEndpoint, { username, password }, {}, null)
       .then(props.onSignIn)
       .catch(error => {

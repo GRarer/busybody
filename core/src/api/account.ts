@@ -1,5 +1,5 @@
-import { DomainOf, Schemas } from "@nprindle/augustus";
-import { GetEndpoint, PutEndpoint } from "..";
+import { DomainOf, Schemas } from '@nprindle/augustus';
+import { GetEndpoint, PutEndpoint } from '..';
 
 export const registrationRequestSchema = Schemas.recordOf({
   username: Schemas.aString,
@@ -37,4 +37,18 @@ export const selfInfoEndpoint: GetEndpoint<{}, SelfInfoResponse> = {
     nickname: Schemas.aString,
     email: Schemas.aString,
   }).validate
+};
+
+export const UpdatePersonalInfoEndpoint: PutEndpoint<{
+  username: string; fullName: string; nickname: string;
+}, {}, null> = {
+  method: 'put',
+  relativePath: '/update_personal_info',
+  requestValidator: Schemas.recordOf({
+    username: Schemas.aString,
+    fullName: Schemas.aString,
+    nickname: Schemas.aString
+  }).validate,
+  querySchema: Schemas.recordOf({}),
+  responseValidator: Schemas.aNull.validate
 };

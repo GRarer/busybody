@@ -1,8 +1,9 @@
 import { Json } from '@nprindle/augustus';
 import { Endpoint, loginEndpoint, logoutEndpoint, RegistrationEndpoint, selfInfoEndpoint, serverStatusEndpoint,
-  sessionActiveEndpoint } from 'busybody-core';
+  sessionActiveEndpoint,
+  UpdatePersonalInfoEndpoint} from 'busybody-core';
 import { FastifyInstance } from 'fastify';
-import { getSelfInfo, register } from './services/accountInfo.js';
+import { getSelfInfo, register, updateAccountInfo } from './services/accountInfo.js';
 import { getServerStatus } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
@@ -33,6 +34,10 @@ export function attachHandlers(server: FastifyInstance): void {
   addHandler(selfInfoEndpoint, async (body, params, token) => {
     return await getSelfInfo(token);
   });
+  addHandler(UpdatePersonalInfoEndpoint, async (body, params, token) => {
+    await updateAccountInfo(body, token);
+    return null;
+  })
 
 
 }

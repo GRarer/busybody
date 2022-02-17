@@ -1,7 +1,7 @@
-import { Schemas, DomainOf } from "@nprindle/augustus";
-import { PostEndpoint, GetEndpoint } from "..";
+import { Schemas } from '@nprindle/augustus';
+import { PostEndpoint, GetEndpoint } from '..';
 
-export type LoginRequest = { username: string, password: string };
+export type LoginRequest = { username: string; password: string; };
 
 // creates a new user session and returns the session token
 // will throw "unauthorized" exception if credentials are incorrect

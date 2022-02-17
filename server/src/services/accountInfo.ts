@@ -4,7 +4,7 @@ import { passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
 import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
 import bcrypt from 'bcrypt';
-import { generateRandomToken } from './authentication.js';
+import { generateRandomToken, lookupSessionUser } from './authentication.js';
 import { dontValidate } from '../util/typeGuards.js';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -66,6 +66,27 @@ export async function register(request: RegistrationRequest): Promise<string> {
     }
     console.error('failed to create account');
     console.log(err);
+    throw err;
+  }
+}
+
+export async function updateAccountInfo(request: {
+  username: string, fullName: string, nickname: string
+}, token: string): Promise<void> {
+  const userId = await lookupSessionUser(token);
+  try {
+    await dbQuery(`update users set username = $1, full_name = $2, nickname = $3 where user_uuid = $4` ,
+      [request.username, request.fullName, request.nickname, userId], dontValidate
+    );
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      const message = err.message;
+      if (message.includes('duplicate key value violates unique constraint')) {
+        if (message.includes('username')) {
+          throw new UserException(409, 'That username is already taken');
+        }
+      }
+    }
     throw err;
   }
 }
