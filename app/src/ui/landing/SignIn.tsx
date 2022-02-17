@@ -20,7 +20,7 @@ export function SignInForm(props: {
 
   const signIn = (): void => {
     const request: LoginRequest = { username, password };
-    apiPost(loginEndpoint, request, {}, null)
+    apiPost(loginEndpoint, { username, password }, {}, null)
       .then(props.onSignIn)
       .catch(error => {
         enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
