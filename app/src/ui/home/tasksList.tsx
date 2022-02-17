@@ -4,7 +4,7 @@ import React from 'react';
 function TaskSkeleton(props: {lines: number;}): JSX.Element {
   const text: JSX.Element[] = [];
   for (let i = 0; i < props.lines; i++) {
-    text.push(<Skeleton variant="text" animation="wave"/>);
+    text.push(<Skeleton variant="text" animation="wave" key={i}/>);
   }
 
   return (<Box sx={{ marginBottom: '5px' }}>

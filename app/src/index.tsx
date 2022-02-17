@@ -8,7 +8,6 @@ import { loadSavedToken } from './util/persistence';
 
 // load initial state
 const savedToken = loadSavedToken();
-// TODO need to validate token with server before we can do anything else
 
 ReactDOM.render(
   <React.StrictMode>

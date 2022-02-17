@@ -19,9 +19,9 @@ export function HomeRoot(props: {
     2: <FriendsList token={props.token}/>
   }[pageIndex] ?? <p>Something went wrong, invalid page index!</p>;
 
-  return <>
-    <Box>
-      <Container maxWidth="sm" sx={{ marginBottom: 7 }}>
+  return <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ flexGrow: 1 }}>
+      <Container maxWidth="sm" sx={{ marginBottom: 7, overflowY: 'auto', paddingTop: '10px' }}>
         {page}
       </Container>
     </Box>
@@ -37,5 +37,5 @@ export function HomeRoot(props: {
         <BottomNavigationAction label="Friends" icon={<GroupsIcon />} />
       </BottomNavigation>
     </Paper>
-  </>;
+  </Box>;
 }
