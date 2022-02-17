@@ -1,4 +1,4 @@
-import { AppBar, LinearProgress, Toolbar, Typography } from '@mui/material';
+import { AppBar, LinearProgress, styled, Toolbar, Typography } from '@mui/material';
 import { sessionActiveEndpoint } from 'busybody-core';
 import React, { useEffect, useState } from 'react';
 import { apiGet } from './api/requests';
@@ -6,6 +6,8 @@ import { HomeRoot } from './ui/home/homeRoot';
 import { LandingPage } from './ui/landing/Landing';
 import { SettingsMenu } from './ui/menu/settingsMenu';
 import { saveToken } from './util/persistence';
+
+const ToolbarOffset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 function App(
   props: {
@@ -52,7 +54,7 @@ function App(
   }
 
   return (<>
-    <AppBar position="static" sx={{ marginBottom:'5px' }}>
+    <AppBar position="fixed">
       <Toolbar>
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Busybody
@@ -63,6 +65,7 @@ function App(
         }
       </Toolbar>
     </AppBar>
+    <ToolbarOffset sx={{ marginBottom:'5px' }}/>
     {state.token
       ? <HomeRoot token={state.token}/>
       : <LandingPage setSessionToken={changeSession} />}
