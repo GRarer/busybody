@@ -1,5 +1,7 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
-  LinearProgress } from '@mui/material';
+import {
+  Button, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
+  LinearProgress
+} from '@mui/material';
 import { selfInfoEndpoint, updatePersonalInfoEndpoint, usernameRequirementProblem } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -60,8 +62,9 @@ export function ChangePersonalInfoDialog(
   return (
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>Change Personal Info</DialogTitle>
-      {loadedCurrent
-        ? <>
+      {props.open && !loadedCurrent
+        ? <LinearProgress />
+        : <>
           <DialogContent>
             <FormControl variant="filled" fullWidth error={Boolean(usernameProblem)}>
               <InputLabel htmlFor="username-input">Username</InputLabel>
@@ -82,8 +85,7 @@ export function ChangePersonalInfoDialog(
             <Button onClick={props.onClose}>Cancel</Button>
             <Button onClick={update} disabled={!canUpdate}>Update</Button>
           </DialogActions>
-        </>
-        : <LinearProgress />}
+        </>}
     </Dialog>
   );
 

@@ -1,5 +1,7 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
-  LinearProgress } from '@mui/material';
+import {
+  Button, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
+  LinearProgress
+} from '@mui/material';
 import { selfInfoEndpoint, updateEmailEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -53,8 +55,9 @@ export function ChangeEmailDialog(
   return (
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>Change Personal Info</DialogTitle>
-      {loadedCurrent
-        ? <>
+      {props.open && !loadedCurrent
+        ? <LinearProgress />
+        : <>
           <DialogContent>
             <FormControl variant="filled" fullWidth >
               <InputLabel htmlFor="email-input">Username</InputLabel>
@@ -65,8 +68,7 @@ export function ChangeEmailDialog(
             <Button onClick={props.onClose}>Cancel</Button>
             <Button onClick={update} disabled={!canUpdate}>Update</Button>
           </DialogActions>
-        </>
-        : <LinearProgress />}
+        </>}
     </Dialog>
   );
 
