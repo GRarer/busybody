@@ -60,7 +60,7 @@ export function ChangeEmailDialog(
         : <>
           <DialogContent>
             <FormControl variant="filled" fullWidth >
-              <InputLabel htmlFor="email-input">Username</InputLabel>
+              <InputLabel htmlFor="email-input">Email address</InputLabel>
               <FilledInput id="email-input" value={email} onChange={ev => { setEmail(ev.target.value); }} />
             </FormControl>
           </DialogContent>
