@@ -8,3 +8,8 @@ export function matchesSchema<S, D=S>(schema: Schema<D, S>): (x: unknown) => x i
 export function dontValidate(x: unknown): x is unknown {
   return true;
 }
+
+// allows compile-time totality checking to guarantee this function is never called
+export function absurd(x: never): never {
+  throw new Error('This code should be unreachable');
+}

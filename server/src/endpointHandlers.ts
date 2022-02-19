@@ -1,12 +1,14 @@
 import { Json } from '@nprindle/augustus';
-import { deleteAccountEndpoint, Endpoint, exportPersonalDataEndpoint, loginEndpoint, logoutEndpoint,
-  registrationEndpoint, selfInfoEndpoint, serverStatusEndpoint, sessionActiveEndpoint, updateEmailEndpoint,
-  updatePasswordEndpoint, updatePersonalInfoEndpoint } from 'busybody-core';
+import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalDataEndpoint, getFriendsListEndpoint,
+  loginEndpoint, logoutEndpoint, registrationEndpoint, selfInfoEndpoint, sendFriendRequestEndpoint,
+  serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
+  updatePersonalInfoEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
   updatePassword } from './services/accountInfo.js';
 import { getServerStatus } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
+import { answerFriendRequest, getUserFriendsList, sendFriendRequest, unfriend } from './services/friends.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 
 // associates handlers with API endpoints and wraps them to provide consistent type-safety of API boundary
@@ -53,5 +55,22 @@ export function attachHandlers(server: FastifyInstance): void {
   addHandler(deleteAccountEndpoint, async (body, params, token) => {
     await deleteAccount(token);
     return null;
+  });
+
+  // friends lists
+  addHandler(getFriendsListEndpoint, async (body, params, token) => {
+    return await getUserFriendsList(token);
+  });
+  addHandler(sendFriendRequestEndpoint, async (body, params, token) => {
+    await sendFriendRequest(token, body);
+    return await getUserFriendsList(token);
+  });
+  addHandler(answerRequestEndpoint, async (body, params, token) => {
+    await answerFriendRequest(token, body);
+    return await getUserFriendsList(token);
+  });
+  addHandler(unfriendEndpoint, async (body, params, token) => {
+    await unfriend(token, body.uuid);
+    return await getUserFriendsList(token);
   });
 }
