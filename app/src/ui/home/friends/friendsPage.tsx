@@ -1,5 +1,5 @@
 
-import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Skeleton,
+import { Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   Typography } from '@mui/material';
 import { answerRequestEndpoint, cancelFriendRequestEndpoint, FriendInfo, FriendsListResponse, getFriendsListEndpoint,
   unfriendEndpoint } from 'busybody-core';
@@ -8,15 +8,8 @@ import React, { useEffect, useState } from 'react';
 import { apiGet, apiPut } from '../../../api/requests';
 import { errorToMessage } from '../../../util/util';
 import { FriendCard } from './friendCard';
+import { FriendsPageSkeleton } from './friendsPageSkeleton';
 import { FriendRequestFormCard } from './requestFormCard';
-
-function FriendSkeleton(): JSX.Element {
-  return (<Box sx={{ marginBottom: '5px' }}>
-    <Skeleton variant="circular" animation="wave" width={40} height={40} />
-    <Skeleton variant="text" animation="wave" />
-  </Box>);
-}
-
 
 export function FriendsPage(props: {
   token: string;
@@ -73,8 +66,7 @@ export function FriendsPage(props: {
   };
 
   if (friendsList === null) {
-    // TODO make placeholder content look like real content
-    return <FriendSkeleton />;
+    return <FriendsPageSkeleton />;
   }
 
   const incomingColumn = <>
