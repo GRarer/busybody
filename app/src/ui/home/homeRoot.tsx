@@ -5,7 +5,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { TasksList } from './tasksList';
 import { WatchList } from './watchList';
-import { FriendsList } from './friendsList';
+import { FriendsPage } from './friends/friendsPage';
 
 export function HomeRoot(props: {
   token: string;
@@ -16,7 +16,7 @@ export function HomeRoot(props: {
   const page = {
     0: <WatchList token={props.token}/>,
     1: <TasksList token={props.token}/>,
-    2: <FriendsList token={props.token}/>
+    2: <FriendsPage token={props.token}/>
   }[pageIndex] ?? <p>Something went wrong, invalid page index!</p>;
 
   return <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>

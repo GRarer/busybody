@@ -6,7 +6,7 @@ import { absurd, dontValidate } from '../util/typeGuards.js';
 import { lookupSessionUser } from './authentication.js';
 
 export async function getUserFriendsList(token: string): Promise<FriendsListResponse> {
-  const uuid = lookupSessionUser(token);
+  const uuid = await lookupSessionUser(token);
   const result = await dbTransaction(async query => {
 
     const friendInfoValidator = Schemas.recordOf({
@@ -49,14 +49,14 @@ export async function getUserFriendsList(token: string): Promise<FriendsListResp
 }
 
 export async function sendFriendRequest(senderToken: string, recipient: { username: string; }): Promise<void> {
-  const senderUUID = lookupSessionUser(senderToken);
+  const senderUUID = await lookupSessionUser(senderToken);
   await dbTransaction(async query => {
     // look up UUID for the given username
     const recipientInfo = await query(
-      'select user_uuid from users where username=$1', [recipient.username],
+      'select user_uuid from users where username=$1;', [recipient.username],
       Schemas.recordOf({ user_uuid: Schemas.aString }).validate
     );
-    if (recipientInfo.length > 0) {
+    if (recipientInfo.length === 0) {
       throw new UserException(404, 'No user with that username exists');
     }
     const recipientUUID = recipientInfo[0].user_uuid;
@@ -136,10 +136,17 @@ export async function answerFriendRequest(
   });
 }
 
+export async function cancelFriendRequest(sessionToken: string, recipientUUID: string): Promise<void> {
+  const userUUID = await lookupSessionUser(sessionToken);
+  await dbQuery(
+    'delete from friend_requests where from_user = $1 and to_user = $2;', [userUUID, recipientUUID], dontValidate
+  );
+}
+
 export async function unfriend(sessionToken: string, friendUUID: string): Promise<void> {
   const userUUID = await lookupSessionUser(sessionToken);
   await dbQuery(
-    'delete from friends where (((user_a = $1) and (user_b = $2)) or ((user_a = $2) and (user_b = $1)))',
+    'delete from friendships where (((user_a = $1) and (user_b = $2)) or ((user_a = $2) and (user_b = $1)))',
     [userUUID, friendUUID], dontValidate
   );
 }

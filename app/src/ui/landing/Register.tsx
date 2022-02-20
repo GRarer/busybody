@@ -15,7 +15,6 @@ export function RegisterForm(props: {
   onSignIn: (token: string) => void;
 }): JSX.Element {
 
-  // TODO remove default values
   const [username, setUsername] = useState('');
 
   const [password, setPassword] = useState('');

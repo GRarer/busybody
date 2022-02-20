@@ -52,6 +52,16 @@ export const answerRequestEndpoint: PutEndpoint<{uuid: string; accept: boolean;}
   responseValidator: friendsListResponseSchema.validate
 };
 
+export const cancelFriendRequestEndpoint: PutEndpoint<{uuid: string;}, {}, FriendsListResponse> = {
+  relativePath: '/cancel_friend_request',
+  method: 'put',
+  requestValidator: Schemas.recordOf({
+    uuid: Schemas.aString,
+  }).validate,
+  querySchema: Schemas.recordOf({}),
+  responseValidator: friendsListResponseSchema.validate
+};
+
 export const unfriendEndpoint: PutEndpoint<{uuid: string;}, {}, FriendsListResponse> = {
   relativePath: '/unfriend',
   method: 'put',

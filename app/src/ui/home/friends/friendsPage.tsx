@@ -1,0 +1,158 @@
+
+import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Skeleton,
+  Typography } from '@mui/material';
+import { answerRequestEndpoint, cancelFriendRequestEndpoint, FriendInfo, FriendsListResponse, getFriendsListEndpoint,
+  unfriendEndpoint } from 'busybody-core';
+import { useSnackbar } from 'notistack';
+import React, { useEffect, useState } from 'react';
+import { apiGet, apiPut } from '../../../api/requests';
+import { errorToMessage } from '../../../util/util';
+import { FriendCard } from './friendCard';
+import { FriendRequestFormCard } from './requestFormCard';
+
+function FriendSkeleton(): JSX.Element {
+  return (<Box sx={{ marginBottom: '5px' }}>
+    <Skeleton variant="circular" animation="wave" width={40} height={40} />
+    <Skeleton variant="text" animation="wave" />
+  </Box>);
+}
+
+
+export function FriendsPage(props: {
+  token: string;
+}): JSX.Element {
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [friendsList, setFriendsList] = useState<FriendsListResponse | null>(null);
+  const [unfriendDialogSelection, setUnfriendDialogSelection] = useState<FriendInfo | null>(null);
+
+
+
+  useEffect(() => {
+    if (friendsList === null) {
+      apiGet(getFriendsListEndpoint, {}, props.token)
+        .then(data => {
+          setFriendsList(data);
+          console.log(data); // TODO Remove
+        })
+        .catch(error => {
+          enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
+        });
+    }
+  }, [friendsList, props.token]);
+
+  const unfriendUser = (target: FriendInfo): void => {
+    apiPut(unfriendEndpoint, { uuid: target.uuid }, {}, props.token)
+      .then(newState => { setFriendsList(newState); })
+      .catch(error => {
+        const message = errorToMessage(error);
+        const severity = message.code === 500 ? 'error' : 'warning';
+        enqueueSnackbar(message.message, { variant: severity });
+      });
+  };
+
+  const answerFriendRequest = (target: FriendInfo, accept: boolean): void => {
+    apiPut(answerRequestEndpoint, { uuid: target.uuid, accept: accept }, {}, props.token)
+      .then(newState => { setFriendsList(newState); })
+      .catch(error => {
+        const message = errorToMessage(error);
+        const severity = message.code === 500 ? 'error' : 'warning';
+        enqueueSnackbar(message.message, { variant: severity });
+      });
+  };
+
+  const cancelFriendRequest = (target: FriendInfo): void => {
+    apiPut(cancelFriendRequestEndpoint, { uuid: target.uuid }, {}, props.token)
+      .then(newState => { setFriendsList(newState); })
+      .catch(error => {
+        const message = errorToMessage(error);
+        const severity = message.code === 500 ? 'error' : 'warning';
+        enqueueSnackbar(message.message, { variant: severity });
+      });
+  };
+
+  if (friendsList === null) {
+    // TODO make placeholder content look like real content
+    return <FriendSkeleton />;
+  }
+
+  const incomingColumn = <>
+    <Typography variant="h6" sx={{ textAlign: 'center' }}>Pending Friend Requests</Typography>
+    {friendsList.incomingRequests.map((friend, index) => (
+      <FriendCard info={friend} key={index}>
+        <Button size="small" onClick={() => answerFriendRequest(friend, true)}>Accept</Button>
+        <Button size="small" onClick={() => answerFriendRequest(friend, false)}>Reject</Button>
+      </FriendCard>
+    ))}
+  </>;
+
+  const outgoingColumn = <>
+    <Typography variant="h6" sx={{ textAlign: 'center' }}>Sent Friend Requests</Typography>
+    {friendsList.outgoingRequests.map((friend, index) => (
+      <FriendCard info={friend} key={index}>
+        <Button size="small" onClick={() => cancelFriendRequest(friend)}>Cancel</Button>
+      </FriendCard>
+    ))}
+  </>;
+
+  const friendsColumn = <>
+    <Typography variant="h6" sx={{ textAlign: 'center' }}>Your Friends</Typography>
+    {friendsList.friends.map((friend, index) => (
+      <FriendCard info={friend} key={index}>
+        <Button size="small" onClick={() => setUnfriendDialogSelection(friend)}>Unfriend</Button>
+      </FriendCard>
+    ))}
+  </>;
+
+  return <>
+    <Container maxWidth="xs">
+      <Typography variant="h6" sx={{ textAlign: 'center' }}>Add Friends</Typography>
+      <FriendRequestFormCard token={props.token} onRequestSent={(data) => setFriendsList(data)}/>
+      {friendsList.incomingRequests.length > 0
+        ? incomingColumn
+        : <></>
+      }
+      {friendsList.outgoingRequests.length > 0
+        ? outgoingColumn
+        : <></>
+      }
+      {friendsList.friends.length > 0
+        ? friendsColumn
+        : <Typography variant="body1" sx={{ textAlign: 'center' }}>
+          Your haven&apos;t connected with any friends yet. Send and receive friend requests
+          to connect with your friends.
+        </Typography>
+      }
+    </Container>
+    <Dialog
+      open={unfriendDialogSelection !== null}
+      onClose={() => setUnfriendDialogSelection(null)}
+    >
+      <DialogTitle>
+        {`Unfriend ${unfriendDialogSelection?.fullName}?`}
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          {/* TODO use correct gender pronouns? */}
+          Do you want to remove {unfriendDialogSelection?.fullName} ({unfriendDialogSelection?.username}) from
+          your friends list? You will be unable to watch their tasks and they will be unable to watch your tasks.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setUnfriendDialogSelection(null)}>Cancel</Button>
+        <Button onClick={() => {
+          unfriendUser(unfriendDialogSelection!);
+          setUnfriendDialogSelection(null);
+        }} color="warning">
+          Unfriend
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </>;
+
+
+
+
+
+}

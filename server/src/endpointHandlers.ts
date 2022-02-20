@@ -2,13 +2,14 @@ import { Json } from '@nprindle/augustus';
 import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalDataEndpoint, getFriendsListEndpoint,
   loginEndpoint, logoutEndpoint, registrationEndpoint, selfInfoEndpoint, sendFriendRequestEndpoint,
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
-  updatePersonalInfoEndpoint } from 'busybody-core';
+  updatePersonalInfoEndpoint, cancelFriendRequestEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
   updatePassword } from './services/accountInfo.js';
 import { getServerStatus } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
-import { answerFriendRequest, getUserFriendsList, sendFriendRequest, unfriend } from './services/friends.js';
+import { answerFriendRequest, cancelFriendRequest, getUserFriendsList, sendFriendRequest,
+  unfriend } from './services/friends.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 
 // associates handlers with API endpoints and wraps them to provide consistent type-safety of API boundary
@@ -71,6 +72,10 @@ export function attachHandlers(server: FastifyInstance): void {
   });
   addHandler(unfriendEndpoint, async (body, params, token) => {
     await unfriend(token, body.uuid);
+    return await getUserFriendsList(token);
+  });
+  addHandler(cancelFriendRequestEndpoint, async (body, params, token) => {
+    await cancelFriendRequest(token, body.uuid);
     return await getUserFriendsList(token);
   });
 }
