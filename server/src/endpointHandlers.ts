@@ -15,7 +15,11 @@ import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 // associates handlers with API endpoints and wraps them to provide consistent type-safety of API boundary
 
 export function attachHandlers(server: FastifyInstance): void {
-  const addHandler = <Request extends Json.JsonValue | undefined, Query, Response extends Json.JsonValue>(
+  const addHandler = <
+    Request extends Json.JsonValue | undefined,
+    Query extends Record<string, string>,
+    Response extends Json.JsonValue
+  >(
     e: Endpoint<Request, Query, Response>,
     h: (requestBody: Request, queryParams: Query, token: string) => Promise<Response>
   ): void => attachHandlerWithSafeWrapper(server, e, h);

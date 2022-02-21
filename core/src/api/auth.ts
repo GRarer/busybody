@@ -12,7 +12,7 @@ export const loginEndpoint: PostEndpoint<LoginRequest, {}, string> = {
     username: Schemas.aString,
     password: Schemas.aString,
   }).validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: Schemas.aString.validate // returns token
 };
 
@@ -21,7 +21,7 @@ export const logoutEndpoint: PostEndpoint<undefined, {}, null> = {
   method: 'post',
   relativePath: '/logout',
   requestValidator: Schemas.anUndefined.validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: Schemas.aNull.validate,
 };
 
@@ -29,6 +29,6 @@ export const sessionActiveEndpoint: GetEndpoint<{}, boolean> = {
   method: 'get',
   relativePath: '/session_is_active',
   requestValidator: Schemas.anUndefined.validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: Schemas.aBoolean.validate,
 };

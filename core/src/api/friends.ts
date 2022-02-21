@@ -13,7 +13,7 @@ export type FriendsListResponse = {
   outgoingRequests: FriendInfo[];
 };
 
-const friendInfoSchema = Schemas.recordOf({
+export const friendInfoSchema = Schemas.recordOf({
   uuid: Schemas.aString,
   username: Schemas.aString,
   fullName: Schemas.aString,
@@ -29,7 +29,7 @@ export const getFriendsListEndpoint: GetEndpoint<{}, FriendsListResponse> = {
   relativePath: '/friends_list',
   method: 'get',
   requestValidator: Schemas.anUndefined.validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: friendsListResponseSchema.validate,
 };
 
@@ -37,7 +37,7 @@ export const sendFriendRequestEndpoint: PutEndpoint<{username: string;}, {}, Fri
   relativePath: '/send_friend_request',
   method: 'put',
   requestValidator: Schemas.recordOf({ username: Schemas.aString }).validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: friendsListResponseSchema.validate
 };
 
@@ -48,7 +48,7 @@ export const answerRequestEndpoint: PutEndpoint<{uuid: string; accept: boolean;}
     uuid: Schemas.aString,
     accept: Schemas.aBoolean
   }).validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: friendsListResponseSchema.validate
 };
 
@@ -58,7 +58,7 @@ export const cancelFriendRequestEndpoint: PutEndpoint<{uuid: string;}, {}, Frien
   requestValidator: Schemas.recordOf({
     uuid: Schemas.aString,
   }).validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: friendsListResponseSchema.validate
 };
 
@@ -68,6 +68,6 @@ export const unfriendEndpoint: PutEndpoint<{uuid: string;}, {}, FriendsListRespo
   requestValidator: Schemas.recordOf({
     uuid: Schemas.aString,
   }).validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: friendsListResponseSchema.validate
 };

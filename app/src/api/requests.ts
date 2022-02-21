@@ -23,7 +23,7 @@ function getHeader(token: string | null): { [BUSYBODY_TOKEN_HEADER_NAME]: string
   }
 }
 
-export async function apiGet<Query, Response extends Json.JsonValue>(
+export async function apiGet<Query extends Record<string, string>, Response extends Json.JsonValue>(
   endpoint: GetEndpoint<Query, Response>,
   queryParams: Query,
   token: string | null
@@ -32,14 +32,14 @@ export async function apiGet<Query, Response extends Json.JsonValue>(
   const result = await axios.get(
     API_BASE_URL + endpoint.relativePath,
     {
-      params: endpoint.querySchema.encode(queryParams),
+      params: queryParams,
       headers: getHeader(token)
     }
   );
   return validateResult(result.data, endpoint.responseValidator);
 }
 
-export async function apiDelete<Query, Response extends Json.JsonValue>(
+export async function apiDelete<Query extends Record<string, string>, Response extends Json.JsonValue>(
   endpoint: DeleteEndpoint<Query, Response>,
   queryParams: Query,
   token: string | null
@@ -48,14 +48,18 @@ export async function apiDelete<Query, Response extends Json.JsonValue>(
   const result = await axios.delete(
     API_BASE_URL + endpoint.relativePath,
     {
-      params: endpoint.querySchema.encode(queryParams),
+      params: queryParams,
       headers: getHeader(token)
     }
   );
   return validateResult(result.data, endpoint.responseValidator);
 }
 
-export async function apiPost<Request extends Json.JsonValue | undefined, Query, Response extends Json.JsonValue>(
+export async function apiPost<
+  Request extends Json.JsonValue | undefined,
+  Query extends Record<string, string>,
+  Response extends Json.JsonValue
+>(
   endpoint: PostEndpoint<Request, Query, Response>,
   request: Request,
   queryParams: Query,
@@ -66,14 +70,18 @@ export async function apiPost<Request extends Json.JsonValue | undefined, Query,
     API_BASE_URL + endpoint.relativePath,
     request,
     {
-      params: endpoint.querySchema.encode(queryParams),
+      params: queryParams,
       headers: getHeader(token)
     }
   );
   return validateResult(result.data, endpoint.responseValidator);
 }
 
-export async function apiPut<Request extends Json.JsonValue | undefined, Query, Response extends Json.JsonValue>(
+export async function apiPut<
+  Request extends Json.JsonValue | undefined,
+  Query extends Record<string, string>,
+  Response extends Json.JsonValue
+>(
   endpoint: PutEndpoint<Request, Query, Response>,
   request: Request,
   queryParams: Query,
@@ -84,7 +92,7 @@ export async function apiPut<Request extends Json.JsonValue | undefined, Query, 
     API_BASE_URL + endpoint.relativePath,
     request,
     {
-      params: endpoint.querySchema.encode(queryParams),
+      params: queryParams,
       headers: getHeader(token)
     }
   );

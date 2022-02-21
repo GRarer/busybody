@@ -13,7 +13,7 @@ export const serverStatusEndpoint: GetEndpoint<{}, ServerStatusResponse> = {
   relativePath: '/status',
   method: 'get',
   requestValidator: Schemas.anUndefined.validate,
-  querySchema: Schemas.recordOf({}),
+  queryValidator: Schemas.recordOf({}).validate,
   responseValidator: ServerStatusResponseSchema.validate,
 };
 

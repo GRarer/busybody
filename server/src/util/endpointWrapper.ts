@@ -7,7 +7,7 @@ import { UserException } from './errors.js';
 // with a wrapper that automatically validates the types of request body, query parameters, and response
 export function attachHandlerWithSafeWrapper<
   Request extends Json.JsonValue | undefined,
-  Query,
+  Query extends Record<string, string>,
   Response extends Json.JsonValue
 >(
   server: FastifyInstance,
@@ -22,16 +22,14 @@ export function attachHandlerWithSafeWrapper<
       if (!endpoint.requestValidator(reqBody)) {
         throw new UserException(400, 'request body did not match expected format');
       }
-      if (!endpoint.querySchema.validate(reqQueryParams)) {
+      if (!endpoint.queryValidator(reqQueryParams)) {
         throw new UserException(400, 'query parameters did not match expected format');
       }
 
       const token_header = request.headers[BUSYBODY_TOKEN_HEADER_NAME];
       const token = typeof token_header === 'string' ? token_header : '';
 
-      const query: Query = endpoint.querySchema.decode(reqQueryParams);
-
-      return await handler(reqBody, query, token);
+      return await handler(reqBody, reqQueryParams, token);
     } catch (error: unknown) {
       if (error instanceof UserException) {
         return error;
