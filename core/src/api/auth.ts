@@ -1,34 +1,19 @@
 import { Schemas } from '@nprindle/augustus';
-import { PostEndpoint, GetEndpoint } from '..';
+import { DeleteEndpointSimple, GetEndpointSimple, PostEndpointSimple } from '../apis.js';
 
 export type LoginRequest = { username: string; password: string; };
 
 // creates a new user session and returns the session token
 // will throw "unauthorized" exception if credentials are incorrect
-export const loginEndpoint: PostEndpoint<LoginRequest, {}, string> = {
-  method: 'post',
-  relativePath: '/login',
-  requestValidator: Schemas.recordOf({
+export const loginEndpoint = new PostEndpointSimple('/login', {
+  requestSchema: Schemas.recordOf({
     username: Schemas.aString,
     password: Schemas.aString,
-  }).validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aString.validate // returns token
-};
+  }),
+  responseSchema: Schemas.aString
+});
 
 // no payload or queries because the session to be logged out will be identified by its token header
-export const logoutEndpoint: PostEndpoint<undefined, {}, null> = {
-  method: 'post',
-  relativePath: '/logout',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aNull.validate,
-};
+export const logoutEndpoint = new DeleteEndpointSimple('/session_status', Schemas.aNull);
 
-export const sessionActiveEndpoint: GetEndpoint<{}, boolean> = {
-  method: 'get',
-  relativePath: '/session_is_active',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aBoolean.validate,
-};
+export const sessionActiveEndpoint = new GetEndpointSimple('/session_status', Schemas.aBoolean);

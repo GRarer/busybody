@@ -12,15 +12,16 @@ import { answerFriendRequest, cancelFriendRequest, getUserFriendsList, sendFrien
   unfriend } from './services/friends.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 
+type JsonValue = Json.JsonValue;
+
 // associates handlers with API endpoints and wraps them to provide consistent type-safety of API boundary
 
 export function attachHandlers(server: FastifyInstance): void {
   const addHandler = <
-    Request extends Json.JsonValue | undefined,
-    Query extends Record<string, string>,
-    Response extends Json.JsonValue
+    Request, Query, Response,
+    ReqRepr extends JsonValue | undefined, QRepr extends Record<string, string>, ResRepr extends JsonValue
   >(
-    e: Endpoint<Request, Query, Response>,
+    e: Endpoint<Request, Query, Response, ReqRepr, QRepr, ResRepr>,
     h: (requestBody: Request, queryParams: Query, token: string) => Promise<Response>
   ): void => attachHandlerWithSafeWrapper(server, e, h);
 

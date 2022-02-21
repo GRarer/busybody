@@ -62,7 +62,7 @@ begin
     (ramonaUUID, 'ramona', 'Ramona Cartwright Burdell', 'Ramona', example_password_hash, 'ramonac@agnesscott.example'),
     (johnUUID, 'jrainwater', 'John Rainwater', 'John', example_password_hash, 'rainwaterj@uw.example'),
     (nicolasUUID, 'newmath', 'Nicolas Bourbaki', 'Nicolas', example_password_hash, 'bourbakigroup@example.example'),
-    -- TODO fix handling of non-ascii characters in test data or change how test data is populated
+    -- // TODO fix handling of non-ascii characters in test data or change how test data is populated
     -- this user's name should be Claude Émile Jean-Baptiste Litre
     -- creating or updating data with non-ascii characters works correctly in the server and is only broken for pqsl
     (claudeUUID, 'Litre', 'Claude Emile Jean-Baptiste Litre', 'Claude', example_password_hash, 'litre@UWaterloo.example'),

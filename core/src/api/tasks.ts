@@ -1,5 +1,5 @@
 import { Schemas } from '@nprindle/augustus';
-import { DeleteEndpoint, GetEndpoint, PutEndpoint } from '../apis.js';
+import { DeleteEndpoint, GetEndpointSimple, PutEndpointSimple } from '../apis.js';
 import { FriendInfo, friendInfoSchema } from './friends.js';
 
 type BasicTaskInfo = {
@@ -25,38 +25,26 @@ export type WatchedTaskInfo = BasicTaskInfo & {
   owner: FriendInfo;
 };
 
-export const getTodoListEndpoint: GetEndpoint<{}, TodoListResponse> = {
-  method: 'get',
-  relativePath: '/todo',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.recordOf({
-    tasks: Schemas.arrayOf(Schemas.recordOf({
-      taskId: Schemas.aString,
-      title: Schemas.aString,
-      description: Schemas.aString,
-      dueDate: Schemas.aNumber,
-      overdue: Schemas.aBoolean,
-      watchers: Schemas.arrayOf(friendInfoSchema)
-    })),
-    friends: Schemas.arrayOf(friendInfoSchema)
-  }).validate
-};
-
-export const getWatchedTasksEndpoint: GetEndpoint<{}, WatchedTaskInfo[]> = {
-  method: 'get',
-  relativePath: '/watched',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.arrayOf(Schemas.recordOf({
+export const getTodoListEndpoint = new GetEndpointSimple('/todo', Schemas.recordOf({
+  tasks: Schemas.arrayOf(Schemas.recordOf({
     taskId: Schemas.aString,
     title: Schemas.aString,
     description: Schemas.aString,
     dueDate: Schemas.aNumber,
     overdue: Schemas.aBoolean,
-    owner: friendInfoSchema
-  })).validate
-};
+    watchers: Schemas.arrayOf(friendInfoSchema)
+  })),
+  friends: Schemas.arrayOf(friendInfoSchema)
+}));
+
+export const getWatchedTasksEndpoint = new GetEndpointSimple('/watched', Schemas.arrayOf(Schemas.recordOf({
+  taskId: Schemas.aString,
+  title: Schemas.aString,
+  description: Schemas.aString,
+  dueDate: Schemas.aNumber,
+  overdue: Schemas.aBoolean,
+  owner: friendInfoSchema
+})));
 
 export type UpdateTaskRequest = BasicTaskInfo & {
   watcherUUIDs: string[];
@@ -69,41 +57,31 @@ export type CreateTaskRequest = {
   watcherUUIDs: string[];
 };
 
-export const updateTaskEndpoint: PutEndpoint<UpdateTaskRequest, {}, null> = {
-  method: 'put',
-  relativePath: '/update_task',
-  requestValidator: Schemas.recordOf({
+export const updateTaskEndpoint = new PutEndpointSimple('/update_task', {
+  requestSchema: Schemas.recordOf({
     taskId: Schemas.aString,
     title: Schemas.aString,
     description: Schemas.aString,
     dueDate: Schemas.aNumber,
     overdue: Schemas.aBoolean,
     watcherUUIDs: Schemas.arrayOf(Schemas.aString)
-  }).validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aNull.validate
-};
+  }),
+  responseSchema: getWatchedTasksEndpoint.responseSchema
+});
 
-export const createTaskEndpoint: PutEndpoint<CreateTaskRequest, {}, null> = {
-  method: 'put',
-  relativePath: '/new_task',
-  requestValidator: Schemas.recordOf({
+export const createTaskEndpoint = new PutEndpointSimple('/new_task', {
+  requestSchema: Schemas.recordOf({
     title: Schemas.aString,
     description: Schemas.aString,
     dueDate: Schemas.aNumber,
     overdue: Schemas.aBoolean,
     watcherUUIDs: Schemas.arrayOf(Schemas.aString)
-  }).validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aNull.validate
-};
+  }),
+  responseSchema: getWatchedTasksEndpoint.responseSchema
+});
 
-export const unfollowTaskEndpoint: DeleteEndpoint<{task_id: string;}, WatchedTaskInfo[]> = {
-  method: 'delete',
-  relativePath: '/unfollow_task',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({
-    task_id: Schemas.aString
-  }).validate,
-  responseValidator: getWatchedTasksEndpoint.responseValidator
-};
+export const unfollowTaskEndpoint = new DeleteEndpoint('/unfollow_task', {
+  querySchema: Schemas.recordOf({ task_id: Schemas.aString }),
+  responseSchema: getWatchedTasksEndpoint.responseSchema
+});
+

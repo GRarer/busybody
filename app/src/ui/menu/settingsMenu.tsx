@@ -2,7 +2,7 @@ import { Logout, AccountBox, AlternateEmail, VpnKey, DataArray } from '@mui/icon
 import { MenuItem, ListItemIcon, ListItemText, Divider, Menu, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { apiPost } from '../../api/requests';
+import { apiDelete } from '../../api/requests';
 import { logoutEndpoint } from 'busybody-core';
 import { ChangePersonalInfoDialog } from './changeInfoMenu';
 import { ChangeEmailDialog } from './changeEmailMenu';
@@ -29,7 +29,7 @@ export function SettingsMenu(props: {
   };
 
   const logOut = (): void => {
-    apiPost(logoutEndpoint, undefined, {}, props.token)
+    apiDelete(logoutEndpoint, {}, props.token)
       .then(props.onLogOut)
       .catch(error => {
         console.error('failed to log out of server');

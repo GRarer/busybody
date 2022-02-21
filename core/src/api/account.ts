@@ -1,5 +1,5 @@
 import { DomainOf, Schemas } from '@nprindle/augustus';
-import { DeleteEndpoint, GetEndpoint, PutEndpoint } from '..';
+import { DeleteEndpointSimple, GetEndpointSimple, PutEndpointSimple } from '../apis.js';
 
 export const registrationRequestSchema = Schemas.recordOf({
   username: Schemas.aString,
@@ -11,13 +11,10 @@ export const registrationRequestSchema = Schemas.recordOf({
 
 export type RegistrationRequest = DomainOf<typeof registrationRequestSchema>;
 
-export const registrationEndpoint: PutEndpoint<RegistrationRequest, {}, string> = {
-  method: 'put',
-  relativePath: '/register',
-  requestValidator: registrationRequestSchema.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aString.validate
-};
+export const registrationEndpoint = new PutEndpointSimple('/register', {
+  requestSchema: registrationRequestSchema,
+  responseSchema: Schemas.aString
+});
 
 export type SelfInfoResponse = {
   username: string;
@@ -26,48 +23,33 @@ export type SelfInfoResponse = {
   email: string;
 };
 
-export const selfInfoEndpoint: GetEndpoint<{}, SelfInfoResponse> = {
-  method: 'get',
-  relativePath: '/self',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.recordOf({
+export const selfInfoEndpoint = new GetEndpointSimple('/self',
+  Schemas.recordOf({
     username: Schemas.aString,
     fullName: Schemas.aString,
     nickname: Schemas.aString,
     email: Schemas.aString,
-  }).validate
-};
+  })
+);
 
-export const updatePersonalInfoEndpoint: PutEndpoint<{
-  username: string; fullName: string; nickname: string;
-}, {}, null> = {
-  method: 'put',
-  relativePath: '/update_personal_info',
-  requestValidator: Schemas.recordOf({
+export const updatePersonalInfoEndpoint = new PutEndpointSimple('/update_personal_info', {
+  requestSchema: Schemas.recordOf({
     username: Schemas.aString,
     fullName: Schemas.aString,
     nickname: Schemas.aString
-  }).validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aNull.validate
-};
+  }),
+  responseSchema: Schemas.aNull
+});
 
-export const updateEmailEndpoint: PutEndpoint<string, {}, null> = {
-  method: 'put',
-  relativePath: '/update_email_address',
-  requestValidator: Schemas.aString.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aNull.validate
-};
+export const updateEmailEndpoint = new PutEndpointSimple('/update_email_address', {
+  requestSchema: Schemas.aString,
+  responseSchema: Schemas.aNull
+});
 
-export const updatePasswordEndpoint: PutEndpoint<string, {}, null> = {
-  method: 'put',
-  relativePath: '/update_password',
-  requestValidator: Schemas.aString.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aNull.validate
-};
+export const updatePasswordEndpoint = new PutEndpointSimple('/update_password', {
+  requestSchema: Schemas.aString,
+  responseSchema: Schemas.aNull
+});
 
 const exportedPersonalDataSchema = Schemas.recordOf({
   description: Schemas.aString,
@@ -86,18 +68,6 @@ const exportedPersonalDataSchema = Schemas.recordOf({
 
 export type ExportedPersonalData = DomainOf<typeof exportedPersonalDataSchema>;
 
-export const exportPersonalDataEndpoint: GetEndpoint<{}, ExportedPersonalData> = {
-  method: 'get',
-  relativePath: '/export_data',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: exportedPersonalDataSchema.validate,
-};
+export const exportPersonalDataEndpoint = new GetEndpointSimple('/export_data', exportedPersonalDataSchema);
 
-export const deleteAccountEndpoint: DeleteEndpoint<{}, null> = {
-  method: 'delete',
-  relativePath: '/delete_account',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: Schemas.aNull.validate,
-};
+export const deleteAccountEndpoint = new DeleteEndpointSimple('/delete_account', Schemas.aNull);

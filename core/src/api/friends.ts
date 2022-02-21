@@ -1,5 +1,5 @@
 import { Schema, Schemas } from '@nprindle/augustus';
-import { GetEndpoint, PutEndpoint } from '..';
+import { GetEndpointSimple, PutEndpointSimple } from '../apis.js';
 
 export type FriendInfo = {
   uuid: string;
@@ -25,49 +25,35 @@ const friendsListResponseSchema: Schema<FriendsListResponse, FriendsListResponse
   outgoingRequests: Schemas.arrayOf(friendInfoSchema),
 });
 
-export const getFriendsListEndpoint: GetEndpoint<{}, FriendsListResponse> = {
-  relativePath: '/friends_list',
-  method: 'get',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: friendsListResponseSchema.validate,
-};
+export const getFriendsListEndpoint = new GetEndpointSimple('/friends_list', friendsListResponseSchema);
 
-export const sendFriendRequestEndpoint: PutEndpoint<{username: string;}, {}, FriendsListResponse> = {
-  relativePath: '/send_friend_request',
-  method: 'put',
-  requestValidator: Schemas.recordOf({ username: Schemas.aString }).validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: friendsListResponseSchema.validate
-};
 
-export const answerRequestEndpoint: PutEndpoint<{uuid: string; accept: boolean;}, {}, FriendsListResponse> = {
-  relativePath: '/answer_friend_request',
-  method: 'put',
-  requestValidator: Schemas.recordOf({
+
+export const sendFriendRequestEndpoint = new PutEndpointSimple('/send_friend_request', {
+  requestSchema: Schemas.recordOf({ username: Schemas.aString }),
+  responseSchema: friendsListResponseSchema
+});
+
+
+
+export const answerRequestEndpoint = new PutEndpointSimple('/answer_friend_request', {
+  requestSchema: Schemas.recordOf({
     uuid: Schemas.aString,
     accept: Schemas.aBoolean
-  }).validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: friendsListResponseSchema.validate
-};
+  }),
+  responseSchema: friendsListResponseSchema
+});
 
-export const cancelFriendRequestEndpoint: PutEndpoint<{uuid: string;}, {}, FriendsListResponse> = {
-  relativePath: '/cancel_friend_request',
-  method: 'put',
-  requestValidator: Schemas.recordOf({
+export const cancelFriendRequestEndpoint = new PutEndpointSimple('/cancel_friend_request', {
+  requestSchema: Schemas.recordOf({
     uuid: Schemas.aString,
-  }).validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: friendsListResponseSchema.validate
-};
+  }),
+  responseSchema: friendsListResponseSchema
+});
 
-export const unfriendEndpoint: PutEndpoint<{uuid: string;}, {}, FriendsListResponse> = {
-  relativePath: '/unfriend',
-  method: 'put',
-  requestValidator: Schemas.recordOf({
+export const unfriendEndpoint = new PutEndpointSimple('/unfriend', {
+  requestSchema: Schemas.recordOf({
     uuid: Schemas.aString,
-  }).validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: friendsListResponseSchema.validate
-};
+  }),
+  responseSchema: friendsListResponseSchema
+});

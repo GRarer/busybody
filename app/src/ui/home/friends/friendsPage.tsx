@@ -126,7 +126,7 @@ export function FriendsPage(props: {
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {/* TODO use correct gender pronouns? */}
+          {/* // TODO use correct gender pronouns? */}
           Do you want to remove {unfriendDialogSelection?.fullName} ({unfriendDialogSelection?.username}) from
           your friends list? You will be unable to watch their tasks and they will be unable to watch your tasks.
         </DialogContentText>

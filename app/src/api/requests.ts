@@ -1,13 +1,16 @@
-import { Json } from '@nprindle/augustus';
+import { Json, Schema } from '@nprindle/augustus';
 import axios from 'axios';
 import { BUSYBODY_TOKEN_HEADER_NAME, DeleteEndpoint, GetEndpoint, PostEndpoint, PutEndpoint } from 'busybody-core';
+type JsonValue = Json.JsonValue;
 
 const API_BASE_URL = 'http://localhost:3001';
 
-function validateResult<T, S>(data: S, validate: (x: unknown) => x is T): T {
-  if (validate(data)) {
-    return data;
+function decodeResult<D, R>(data: unknown, schema: Schema<D, R>): D {
+  if (schema.validate(data)) {
+    return schema.decode(data);
   } else {
+    console.error('data does not match schema');
+    console.log(data);
     throw new Error('Server response did not match expected format');
   }
 }
@@ -23,8 +26,8 @@ function getHeader(token: string | null): { [BUSYBODY_TOKEN_HEADER_NAME]: string
   }
 }
 
-export async function apiGet<Query extends Record<string, string>, Response extends Json.JsonValue>(
-  endpoint: GetEndpoint<Query, Response>,
+export async function apiGet<Query, Response, QRepr extends Record<string, string>, ResRepr extends JsonValue>(
+  endpoint: GetEndpoint<Query, Response, QRepr, ResRepr>,
   queryParams: Query,
   token: string | null
 ): Promise<Response> {
@@ -32,15 +35,15 @@ export async function apiGet<Query extends Record<string, string>, Response exte
   const result = await axios.get(
     API_BASE_URL + endpoint.relativePath,
     {
-      params: queryParams,
+      params: endpoint.querySchema.encode(queryParams),
       headers: getHeader(token)
     }
   );
-  return validateResult(result.data, endpoint.responseValidator);
+  return decodeResult(result.data, endpoint.responseSchema);
 }
 
-export async function apiDelete<Query extends Record<string, string>, Response extends Json.JsonValue>(
-  endpoint: DeleteEndpoint<Query, Response>,
+export async function apiDelete<Query, Response, QRepr extends Record<string, string>, ResRepr extends JsonValue>(
+  endpoint: DeleteEndpoint<Query, Response, QRepr, ResRepr>,
   queryParams: Query,
   token: string | null
 ): Promise<Response> {
@@ -48,19 +51,18 @@ export async function apiDelete<Query extends Record<string, string>, Response e
   const result = await axios.delete(
     API_BASE_URL + endpoint.relativePath,
     {
-      params: queryParams,
+      params: endpoint.querySchema.encode(queryParams),
       headers: getHeader(token)
     }
   );
-  return validateResult(result.data, endpoint.responseValidator);
+  return decodeResult(result.data, endpoint.responseSchema);
 }
 
 export async function apiPost<
-  Request extends Json.JsonValue | undefined,
-  Query extends Record<string, string>,
-  Response extends Json.JsonValue
+  Request, Query, Response,
+  ReqRepr extends JsonValue | undefined, QRepr extends Record<string, string>, ResRepr extends JsonValue
 >(
-  endpoint: PostEndpoint<Request, Query, Response>,
+  endpoint: PostEndpoint<Request, Query, Response, ReqRepr, QRepr, ResRepr>,
   request: Request,
   queryParams: Query,
   token: string | null
@@ -68,21 +70,20 @@ export async function apiPost<
   // TODO safer url append
   const result = await axios.post(
     API_BASE_URL + endpoint.relativePath,
-    request,
+    endpoint.requestSchema.encode(request),
     {
-      params: queryParams,
+      params: endpoint.querySchema.encode(queryParams),
       headers: getHeader(token)
     }
   );
-  return validateResult(result.data, endpoint.responseValidator);
+  return decodeResult(result.data, endpoint.responseSchema);
 }
 
 export async function apiPut<
-  Request extends Json.JsonValue | undefined,
-  Query extends Record<string, string>,
-  Response extends Json.JsonValue
+  Request, Query, Response,
+  ReqRepr extends JsonValue | undefined, QRepr extends Record<string, string>, ResRepr extends JsonValue
 >(
-  endpoint: PutEndpoint<Request, Query, Response>,
+  endpoint: PutEndpoint<Request, Query, Response, ReqRepr, QRepr, ResRepr>,
   request: Request,
   queryParams: Query,
   token: string | null
@@ -90,11 +91,12 @@ export async function apiPut<
   // TODO safer url append
   const result = await axios.put(
     API_BASE_URL + endpoint.relativePath,
-    request,
+    endpoint.requestSchema.encode(request),
     {
-      params: queryParams,
+      params: endpoint.querySchema.encode(queryParams),
       headers: getHeader(token)
     }
   );
-  return validateResult(result.data, endpoint.responseValidator);
+  return decodeResult(result.data, endpoint.responseSchema);
 }
+

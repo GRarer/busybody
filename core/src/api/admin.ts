@@ -1,5 +1,5 @@
 import { DomainOf, Schemas } from '@nprindle/augustus';
-import { GetEndpoint } from '../apis';
+import { GetEndpointSimple } from '../apis.js';
 
 const ServerStatusResponseSchema = Schemas.recordOf({
   status: Schemas.aString,
@@ -9,11 +9,4 @@ const ServerStatusResponseSchema = Schemas.recordOf({
 
 export type ServerStatusResponse = DomainOf<typeof ServerStatusResponseSchema>;
 
-export const serverStatusEndpoint: GetEndpoint<{}, ServerStatusResponse> = {
-  relativePath: '/status',
-  method: 'get',
-  requestValidator: Schemas.anUndefined.validate,
-  queryValidator: Schemas.recordOf({}).validate,
-  responseValidator: ServerStatusResponseSchema.validate,
-};
-
+export const serverStatusEndpoint = new GetEndpointSimple('/status', ServerStatusResponseSchema);
