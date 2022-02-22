@@ -2,6 +2,8 @@ import pg from 'pg';
 import { serverConfiguration } from './config.js';
 import { UserException } from './errors.js';
 
+pg.types.setTypeParser(pg.types.builtins.INT8, (x: string) => parseInt(x, 10));
+
 const pool = new pg.Pool(serverConfiguration.postgresConfig);
 
 // runs a sequence of queries on a database client, validating the response of each query result

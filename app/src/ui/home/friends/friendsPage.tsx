@@ -71,8 +71,8 @@ export function FriendsPage(props: {
 
   const incomingColumn = <>
     <Typography variant="h6" sx={{ textAlign: 'center' }}>Pending Friend Requests</Typography>
-    {friendsList.incomingRequests.map((friend, index) => (
-      <FriendCard info={friend} key={index}>
+    {friendsList.incomingRequests.map(friend => (
+      <FriendCard info={friend} key={friend.uuid}>
         <Button size="small" onClick={() => answerFriendRequest(friend, true)}>Accept</Button>
         <Button size="small" onClick={() => answerFriendRequest(friend, false)}>Reject</Button>
       </FriendCard>
@@ -81,8 +81,8 @@ export function FriendsPage(props: {
 
   const outgoingColumn = <>
     <Typography variant="h6" sx={{ textAlign: 'center' }}>Sent Friend Requests</Typography>
-    {friendsList.outgoingRequests.map((friend, index) => (
-      <FriendCard info={friend} key={index}>
+    {friendsList.outgoingRequests.map(friend => (
+      <FriendCard info={friend} key={friend.uuid}>
         <Button size="small" onClick={() => cancelFriendRequest(friend)}>Cancel</Button>
       </FriendCard>
     ))}
@@ -90,8 +90,8 @@ export function FriendsPage(props: {
 
   const friendsColumn = <>
     <Typography variant="h6" sx={{ textAlign: 'center' }}>Your Friends</Typography>
-    {friendsList.friends.map((friend, index) => (
-      <FriendCard info={friend} key={index}>
+    {friendsList.friends.map(friend => (
+      <FriendCard info={friend} key={friend.uuid}>
         <Button size="small" onClick={() => setUnfriendDialogSelection(friend)}>Unfriend</Button>
       </FriendCard>
     ))}

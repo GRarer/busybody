@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import TaskIcon from '@mui/icons-material/Task';
 import GroupsIcon from '@mui/icons-material/Groups';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import { TasksList } from './tasksList';
-import { WatchList } from './watchList';
+import { TasksList } from './tasks/tasksList';
+import { WatchList } from './tasks/watchList';
 import { FriendsPage } from './friends/friendsPage';
 
 export function HomeRoot(props: {
@@ -12,7 +12,7 @@ export function HomeRoot(props: {
 }): JSX.Element {
 
   // TODO disable navigating while editor dialogs are open in child pages since this would lose state
-  const [pageIndex, setPageIndex] = useState<number>(1);
+  const [pageIndex, setPageIndex] = useState<number>(0); // TODO change back to 1
 
   const page = {
     0: <WatchList token={props.token}/>,

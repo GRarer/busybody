@@ -15,7 +15,7 @@ function currentTimeSeconds(): number {
 }
 
 export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
-  const userUUID = lookupSessionUser(token);
+  const userUUID = await lookupSessionUser(token);
   const { friendRows, taskRows } = await dbTransaction(async query => {
     const friendRows = await query(
       currentFriendsQuery, [userUUID], databaseFriendInfoValidator
@@ -157,6 +157,6 @@ export async function createTask(request: CreateTaskRequest, token: string): Pro
 }
 
 export async function unfollowTask(taskId: string, token: string): Promise<void> {
-  const userUUID = lookupSessionUser(token);
+  const userUUID = await lookupSessionUser(token);
   await dbQuery('delete from watch_assignments where task = $1 and watcher = $2;', [taskId, userUUID], dontValidate);
 }

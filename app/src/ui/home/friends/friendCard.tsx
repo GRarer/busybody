@@ -39,7 +39,7 @@ export function FriendAvatar(props: {info: FriendInfo;}): JSX.Element {
   </Avatar>;
 }
 
-export function FriendCard(props: React.PropsWithChildren<{ info: FriendInfo; key: number;}>): JSX.Element {
+export function FriendCard(props: React.PropsWithChildren<{ info: FriendInfo;}>): JSX.Element {
   return <Card elevation={4} sx={{ marginBottom: '10px' }}>
     <CardHeader sx={{ paddingBottom: '0' }}
       avatar={<FriendAvatar info={props.info}/>}
