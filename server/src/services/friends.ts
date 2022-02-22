@@ -5,31 +5,28 @@ import { UserException } from '../util/errors.js';
 import { absurd, dontValidate } from '../util/typeGuards.js';
 import { lookupSessionUser } from './authentication.js';
 
+// also used to look up watcher information for tasks
+export const currentFriendsQuery = `select user_uuid, username, full_name from users join friends_symmetric
+on friends_symmetric.friend = users.user_uuid where friends_symmetric.this_user = $1;`;
+export const databaseFriendInfoValidator = Schemas.recordOf({
+  user_uuid: Schemas.aString,
+  username: Schemas.aString,
+  full_name: Schemas.aString
+}).validate;
+
 export async function getUserFriendsList(token: string): Promise<FriendsListResponse> {
   const uuid = await lookupSessionUser(token);
   const result = await dbTransaction(async query => {
-
-    const friendInfoValidator = Schemas.recordOf({
-      user_uuid: Schemas.aString,
-      username: Schemas.aString,
-      full_name: Schemas.aString
-    }).validate;
-
-    const friends = await query(
-      `select user_uuid, username, full_name
-      from users join friends_symmetric on friends_symmetric.friend = users.user_uuid
-      where friends_symmetric.this_user = $1;`, [uuid], friendInfoValidator
-
-    );
+    const friends = await query(currentFriendsQuery, [uuid], databaseFriendInfoValidator);
     const incoming = await query(
       `select user_uuid, username, full_name
       from users join friend_requests on friend_requests.from_user = users.user_uuid
-      where friend_requests.to_user = $1;`, [uuid], friendInfoValidator
+      where friend_requests.to_user = $1;`, [uuid], databaseFriendInfoValidator
     );
     const outgoing = await query(
       `select user_uuid, username, full_name
       from users join friend_requests on friend_requests.to_user = users.user_uuid
-      where friend_requests.from_user = $1;`, [uuid], friendInfoValidator
+      where friend_requests.from_user = $1;`, [uuid], databaseFriendInfoValidator
     );
 
     const convertResult = (row: { user_uuid: string; username: string; full_name: string; }): FriendInfo => ({

@@ -2,7 +2,8 @@ import { Json } from '@nprindle/augustus';
 import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalDataEndpoint, getFriendsListEndpoint,
   loginEndpoint, logoutEndpoint, registrationEndpoint, selfInfoEndpoint, sendFriendRequestEndpoint,
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
-  updatePersonalInfoEndpoint, cancelFriendRequestEndpoint } from 'busybody-core';
+  updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
+  updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
   updatePassword } from './services/accountInfo.js';
@@ -10,6 +11,7 @@ import { getServerStatus } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { answerFriendRequest, cancelFriendRequest, getUserFriendsList, sendFriendRequest,
   unfriend } from './services/friends.js';
+import { createTask, getOwnTodoList, getWatchedTasks, unfollowTask, updateTask } from './services/tasks.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 
 type JsonValue = Json.JsonValue;
@@ -82,5 +84,25 @@ export function attachHandlers(server: FastifyInstance): void {
   addHandler(cancelFriendRequestEndpoint, async (body, params, token) => {
     await cancelFriendRequest(token, body.uuid);
     return await getUserFriendsList(token);
+  });
+
+  // tasks
+  addHandler(getTodoListEndpoint, async (body, params, token) => {
+    return await getOwnTodoList(token);
+  });
+  addHandler(getWatchedTasksEndpoint, async (body, params, token) => {
+    return await getWatchedTasks(token);
+  });
+  addHandler(updateTaskEndpoint, async (body, params, token) => {
+    await updateTask(body, token);
+    return await getOwnTodoList(token);
+  });
+  addHandler(createTaskEndpoint, async (body, params, token) => {
+    await createTask(body, token);
+    return await getOwnTodoList(token);
+  });
+  addHandler(unfollowTaskEndpoint, async (body, params, token) => {
+    await unfollowTask(params.task_id, token);
+    return await getWatchedTasks(token);
   });
 }

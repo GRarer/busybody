@@ -1,4 +1,4 @@
-import { Schemas } from '@nprindle/augustus';
+import { DomainOf, Schemas } from '@nprindle/augustus';
 import { DeleteEndpoint, GetEndpointSimple, PutEndpointSimple } from '../apis.js';
 import { FriendInfo, friendInfoSchema } from './friends.js';
 
@@ -37,6 +37,17 @@ export const getTodoListEndpoint = new GetEndpointSimple('/todo', Schemas.record
   friends: Schemas.arrayOf(friendInfoSchema)
 }));
 
+export const watchedTasksResponseSchema = Schemas.arrayOf(Schemas.recordOf({
+  taskId: Schemas.aString,
+  title: Schemas.aString,
+  description: Schemas.aString,
+  dueDate: Schemas.aNumber,
+  overdue: Schemas.aBoolean,
+  owner: friendInfoSchema
+}));
+
+export type WatchedTasksResponse = DomainOf<typeof watchedTasksResponseSchema>;
+
 export const getWatchedTasksEndpoint = new GetEndpointSimple('/watched', Schemas.arrayOf(Schemas.recordOf({
   taskId: Schemas.aString,
   title: Schemas.aString,
@@ -66,7 +77,7 @@ export const updateTaskEndpoint = new PutEndpointSimple('/update_task', {
     overdue: Schemas.aBoolean,
     watcherUUIDs: Schemas.arrayOf(Schemas.aString)
   }),
-  responseSchema: getWatchedTasksEndpoint.responseSchema
+  responseSchema: getTodoListEndpoint.responseSchema
 });
 
 export const createTaskEndpoint = new PutEndpointSimple('/new_task', {
@@ -77,7 +88,7 @@ export const createTaskEndpoint = new PutEndpointSimple('/new_task', {
     overdue: Schemas.aBoolean,
     watcherUUIDs: Schemas.arrayOf(Schemas.aString)
   }),
-  responseSchema: getWatchedTasksEndpoint.responseSchema
+  responseSchema: getTodoListEndpoint.responseSchema
 });
 
 export const unfollowTaskEndpoint = new DeleteEndpoint('/unfollow_task', {

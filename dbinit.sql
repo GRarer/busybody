@@ -39,13 +39,33 @@ CREATE TABLE friend_requests(
     to_user UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE
 );
 
+CREATE TABLE tasks(
+    task_id UUID PRIMARY KEY,
+    task_owner UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE,
+    title TEXT not null,
+    description_text TEXT not null,
+    -- // TODO is seconds since epoch the right format to store times?
+    deadline_seconds BIGINT not null -- data/time represented as seconds since epoch
+);
+
+CREATE TABLE watch_assignments(
+    watcher UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE,
+    task UUID NOT NULL REFERENCES tasks (task_id) ON DELETE CASCADE
+);
+
+CREATE VIEW tasks_with_watcher_uuids as
+    with watching as (
+        select task, array_agg(watcher) as watcher_uuids
+        from watch_assignments join users on users.user_uuid = watcher group by task
+    ) select * from tasks left join watching on tasks.task_id = watching.task;
+
 -- set up example data
 do $$
 <<setup>>
 declare
   example_password_hash TEXT := '$2b$10$pXTLH5NwenRKsS33I83Mp.bAiDn1mVNh1yfDN/ogrKatvW.mlOIYS';
 
-  -- fake UUIDs
+  -- fake user UUIDs
   georgeUUID UUID  := '00000001-0000-0000-0000-000000000000';
   ramonaUUID UUID  := '00000002-0000-0000-0000-000000000000';
   johnUUID UUID    := '00000003-0000-0000-0000-000000000000';
@@ -53,10 +73,21 @@ declare
   claudeUUID UUID  := '00000005-0000-0000-0000-000000000000';
   josiaUUID UUID   := '00000006-0000-0000-0000-000000000000';
 
+  -- fake task UUIDs
+  taskIdTrisect  UUID     := '00000001-0000-0000-0000-A00000000000';
+  taskIdSquareCircle UUID := '00000002-0000-0000-0000-A00000000000';
+  taskIdStealT  UUID      := '00000003-0000-0000-0000-A00000000000';
+  taskIdRegister  UUID    := '00000004-0000-0000-0000-A00000000000';
+  taskIdEthicsHW  UUID    := '00000005-0000-0000-0000-A00000000000';
+
+  -- example dates (in seconds since epoch) for example tasks
+  dateApril1 bigint        := 1648828800; -- noon april 1st 2022 eastern daylight time
+  dateMarch15 bigint       := 1647333000; -- 4:40pm march 15th 2022 eastern daylight time
+  dateNewYearsEve22 bigint := 1672504200; -- 11:30pm new years eve eastern standard time
+  dateJanuary31 bigint     := 1643605200; -- beginning of jan 31 2022 eastern standard time
 
 begin
-    INSERT INTO users
-      ("user_uuid", "username", "full_name", "nickname", "password_hash", "email") VALUES
+    INSERT INTO users ("user_uuid", "username", "full_name", "nickname", "password_hash", "email") VALUES
     -- example users based on fictitious academics
     (georgeUUID, 'gpb', 'George P. Burdell', 'George', example_password_hash,'gburdell@gatech.example'),
     (ramonaUUID, 'ramona', 'Ramona Cartwright Burdell', 'Ramona', example_password_hash, 'ramonac@agnesscott.example'),
@@ -78,6 +109,20 @@ begin
     (nicolasUUID, ramonaUUID),
     (nicolasUUID, georgeUUID);
 
+    INSERT into tasks (task_id, task_owner, title, description_text, deadline_seconds) VALUES
+    (taskIdTrisect, johnUUID, 'Trisect Angle', 'Demonstrate trisecting an angle with a compass and straight-edge. This is definitely possible.', dateNewYearsEve22),
+    (taskIdSquareCircle, johnUUID, 'Square The Circle', 'Demonstrate making a square the same size as a given circle using a compass and straight edge.', dateJanuary31),
+    (taskIdEthicsHW, georgeUUID, 'Object Oriented Ethics Homework #1', 'The first homework for CS 3221 Object Oriented Ethics.', dateApril1),
+    (taskIdStealT, georgeUUID, 'Steal the T', 'Participate in this Georgia Tech tradition.', dateNewYearsEve22),
+    (taskIdRegister, georgeUUID, 'Register for classes', '', dateMarch15);
+
+    INSERT into watch_assignments (watcher, task) VALUES
+    (georgeUUID, taskIdTrisect),
+    (georgeUUID, taskIdSquareCircle),
+    (ramonaUUID, taskIdStealT),
+    (josiaUUID, taskIdStealT),
+    (johnUUID, taskIdEthicsHW);
+
    COMMIT;
-   RAISE NOTICE 'Finished creating example users';
+   RAISE NOTICE 'Finished populating example data';
 end setup $$;
