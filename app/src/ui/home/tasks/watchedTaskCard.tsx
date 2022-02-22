@@ -1,21 +1,23 @@
-import { Card, CardHeader, CardContent, Typography, CardActions, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
-import { WatchedTasksResponse } from "busybody-core";
-import { useState } from "react";
-import { renderDate, unixSecondsToDate } from "../../../util/dates";
-import { FriendAvatar } from "../friends/friendCard";
-import {red} from "@mui/material/colors"
+import { Card, CardHeader, CardContent, Typography, CardActions, Button, Dialog, DialogTitle, DialogContent,
+  DialogContentText, DialogActions } from '@mui/material';
+import { WatchedTasksResponse } from 'busybody-core';
+import { useState } from 'react';
+import { renderDate, unixSecondsToDate } from '../../../util/dates';
+import { FriendAvatar } from '../friends/friendCard';
+import { red } from '@mui/material/colors';
+import React from 'react';
 
-export function DueDate(props: {unixSeconds: number, overdue: boolean}): JSX.Element {
+export function DueDate(props: {unixSeconds: number; overdue: boolean;}): JSX.Element {
   const time = renderDate(unixSecondsToDate(props.unixSeconds));
   // TODO integrate with theme colors
   const color = props.overdue ? red[500] : undefined;
 
-  return <Typography variant="subtitle2" color={color}>Due {time}</Typography>
+  return <Typography variant="subtitle2" color={color}>Due {time}</Typography>;
 }
 
 export function WatchedTaskCard(props: {
   info: WatchedTasksResponse[0];
-  unfollow: () => void
+  unfollow: () => void;
 }): JSX.Element {
 
   const [showUnfollowConfirmation, setShowUnfollowConfirmation] = useState(false);
@@ -27,7 +29,7 @@ export function WatchedTaskCard(props: {
         title={props.info.title}
         subheader={props.info.owner.fullName}
       />
-      <CardContent sx={{paddingBottom: "0"}}>
+      <CardContent sx={{ paddingBottom: '0' }}>
         <Typography variant="body1">{props.info.description}</Typography>
         <DueDate unixSeconds={props.info.dueDate} overdue={props.info.overdue}/>
       </CardContent>
@@ -40,14 +42,14 @@ export function WatchedTaskCard(props: {
       onClose={() => setShowUnfollowConfirmation(false)}
     >
       <DialogTitle>
-        {`Stop watching this task?`}
+        {'Stop watching this task?'}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {/* // TODO would be more natural to use friendly name here, would need to add to response*/}
-          Do you want to stop watching the task <em>"{props.info.title}"</em> from {props.info.owner.fullName}? It
-          will no longer  appear in your "watching" list and you will not be notified
-          if {props.info.owner.fullName} misses the deadline.
+          {/* // TODO would be more natural to use friendly name here, would need to add to response */}
+          Do you want to stop watching the task <strong>&quot;{props.info.title}&quot;</strong> from <strong>{
+          props.info.owner.fullName}</strong>? It will no longer  appear in your &quot;watching&quot; list and you will not
+          be notified if {props.info.owner.fullName} misses the deadline.
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -59,5 +61,5 @@ export function WatchedTaskCard(props: {
         </Button>
       </DialogActions>
     </Dialog>
-  </>
+  </>;
 }

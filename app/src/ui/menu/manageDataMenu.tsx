@@ -44,7 +44,7 @@ export function ManageDataDialog(
       .catch(error => {
         enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
       });
-  };
+  }
 
   function deleteAccount(): void {
     apiDelete(deleteAccountEndpoint, {}, props.token).then(() => {
@@ -54,7 +54,7 @@ export function ManageDataDialog(
       .catch(error => {
         enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
       });
-  };
+  }
 
 
   return (

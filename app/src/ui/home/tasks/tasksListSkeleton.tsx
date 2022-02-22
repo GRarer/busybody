@@ -1,4 +1,5 @@
-import { Box, Skeleton } from "@mui/material";
+import { Box, Skeleton } from '@mui/material';
+import React from 'react';
 
 function TaskSkeleton(): JSX.Element {
   return (<Box sx={{ marginBottom: '5px' }}>

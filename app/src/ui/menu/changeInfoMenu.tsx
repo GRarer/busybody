@@ -57,7 +57,7 @@ export function ChangePersonalInfoDialog(
       .catch(error => {
         enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
       });
-  };
+  }
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>

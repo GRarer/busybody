@@ -51,7 +51,7 @@ export function RegisterForm(props: {
         const variant = problem.code === 500 ? 'error' : 'warning';
         enqueueSnackbar(problem.message, { variant });
       });
-  };
+  }
 
   const handleKeypress: React.KeyboardEventHandler<HTMLDivElement> = (ev): void => {
     if (ev.key === 'Enter' && canRegister) {

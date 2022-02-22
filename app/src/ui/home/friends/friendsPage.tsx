@@ -43,7 +43,7 @@ export function FriendsPage(props: {
         const severity = message.code === 500 ? 'error' : 'warning';
         enqueueSnackbar(message.message, { variant: severity });
       });
-  };
+  }
 
   function answerFriendRequest(target: FriendInfo, accept: boolean): void {
     apiPut(answerRequestEndpoint, { uuid: target.uuid, accept: accept }, {}, props.token)
@@ -53,7 +53,7 @@ export function FriendsPage(props: {
         const severity = message.code === 500 ? 'error' : 'warning';
         enqueueSnackbar(message.message, { variant: severity });
       });
-  };
+  }
 
   function cancelFriendRequest(target: FriendInfo): void {
     apiPut(cancelFriendRequestEndpoint, { uuid: target.uuid }, {}, props.token)
@@ -63,7 +63,7 @@ export function FriendsPage(props: {
         const severity = message.code === 500 ? 'error' : 'warning';
         enqueueSnackbar(message.message, { variant: severity });
       });
-  };
+  }
 
   if (friendsList === null) {
     return <FriendsPageSkeleton />;

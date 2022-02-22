@@ -23,7 +23,7 @@ export function FriendRequestFormCard(props: {
         const message = errorToMessage(error);
         enqueueSnackbar(message.message, { variant: 'error' });
       });
-  };
+  }
 
   const handleKeypress: React.KeyboardEventHandler<HTMLDivElement> = (ev): void => {
     if (ev.key === 'Enter' && Boolean(username)) {

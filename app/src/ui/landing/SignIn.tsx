@@ -24,7 +24,7 @@ export function SignInForm(props: {
       .catch(error => {
         enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
       });
-  };
+  }
 
   const handleKeypress: React.KeyboardEventHandler<HTMLDivElement> = (ev): void => {
     if (ev.key === 'Enter' && canSignIn) {

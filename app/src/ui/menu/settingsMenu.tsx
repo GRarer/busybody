@@ -23,10 +23,10 @@ export function SettingsMenu(props: {
 
   function open(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
     setAnchorEl(event.currentTarget);
-  };
-  function close(): void{
+  }
+  function close(): void {
     setAnchorEl(null);
-  };
+  }
 
   function logOut(): void {
     apiDelete(logoutEndpoint, {}, props.token)
@@ -36,7 +36,7 @@ export function SettingsMenu(props: {
         console.log(error);
       })
       .finally(props.onLogOut);
-  };
+  }
 
   return (
     <>
