@@ -79,6 +79,7 @@ declare
   taskIdStealT  UUID      := '00000003-0000-0000-0000-A00000000000';
   taskIdRegister  UUID    := '00000004-0000-0000-0000-A00000000000';
   taskIdEthicsHW  UUID    := '00000005-0000-0000-0000-A00000000000';
+  taskIdAlumniEvent UUID  := '00000006-0000-0000-0000-A00000000000';
 
   -- example dates (in seconds since epoch) for example tasks
   dateApril1 bigint        := 1648828800; -- noon april 1st 2022 eastern daylight time
@@ -114,11 +115,13 @@ begin
     (taskIdSquareCircle, johnUUID, 'Square The Circle', 'Demonstrate making a square the same size as a given circle using a compass and straight edge.', dateJanuary31),
     (taskIdEthicsHW, georgeUUID, 'Object Oriented Ethics Homework #1', 'The first homework for CS 3221 Object Oriented Ethics.', dateApril1),
     (taskIdStealT, georgeUUID, 'Steal the T', 'Participate in this Georgia Tech tradition.', dateNewYearsEve22),
-    (taskIdRegister, georgeUUID, 'Register for classes', '', dateMarch15);
+    (taskIdRegister, georgeUUID, 'Register for classes', '', dateMarch15),
+    (taskIdAlumniEvent, ramonaUUID, 'Organize alumni event', 'Coordinate preparation for Agnes Scott Alumni Event', dateApril1);
 
     INSERT into watch_assignments (watcher, task) VALUES
     (georgeUUID, taskIdTrisect),
     (georgeUUID, taskIdSquareCircle),
+    (georgeUUID, taskIdAlumniEvent),
     (ramonaUUID, taskIdStealT),
     (josiaUUID, taskIdStealT),
     (johnUUID, taskIdEthicsHW);
