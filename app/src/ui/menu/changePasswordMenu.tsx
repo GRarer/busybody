@@ -31,7 +31,7 @@ export function ChangePasswordDialog(
 
   const canUpdate = Boolean(password && (password === passwordConfirm) && !passwordProblem);
 
-  const update = (): void => {
+  function update(): void {
     apiPut(updatePasswordEndpoint, password, {}, props.token)
       .then(() => {
         enqueueSnackbar('Your password has been updated', { variant: 'success' });

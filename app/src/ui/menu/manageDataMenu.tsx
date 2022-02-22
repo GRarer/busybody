@@ -32,7 +32,7 @@ export function ManageDataDialog(
 
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
-  const downloadData = (): void => {
+  function downloadData(): void {
     apiGet(exportPersonalDataEndpoint, {}, props.token)
       .then((data => {
         console.log(data);
@@ -46,7 +46,7 @@ export function ManageDataDialog(
       });
   };
 
-  const deleteAccount = (): void => {
+  function deleteAccount(): void {
     apiDelete(deleteAccountEndpoint, {}, props.token).then(() => {
       enqueueSnackbar('Your account has been deleted', { variant: 'info' });
       props.onDeleteAccount();

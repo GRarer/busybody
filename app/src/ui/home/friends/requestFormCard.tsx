@@ -13,7 +13,7 @@ export function FriendRequestFormCard(props: {
 
   const [username, setUsername] = useState('');
 
-  const send = (): void => {
+  function send(): void {
     apiPut(sendFriendRequestEndpoint, { username }, {}, props.token)
       .then(newState => {
         setUsername('');

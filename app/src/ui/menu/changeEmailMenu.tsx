@@ -41,7 +41,7 @@ export function ChangeEmailDialog(
 
   const canUpdate = Boolean(email);
 
-  const update = (): void => {
+  function update(): void {
     apiPut(updateEmailEndpoint, email, {}, props.token)
       .then(() => {
         enqueueSnackbar(`Your email address has been updated to ${email}`, { variant: 'success' });

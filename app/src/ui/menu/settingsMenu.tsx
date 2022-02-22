@@ -21,14 +21,14 @@ export function SettingsMenu(props: {
   const [showManageDataDialog, setShowManageDataDialog] = useState(false);
 
 
-  const open = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+  function open(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
     setAnchorEl(event.currentTarget);
   };
-  const close = (): void => {
+  function close(): void{
     setAnchorEl(null);
   };
 
-  const logOut = (): void => {
+  function logOut(): void {
     apiDelete(logoutEndpoint, {}, props.token)
       .then(props.onLogOut)
       .catch(error => {

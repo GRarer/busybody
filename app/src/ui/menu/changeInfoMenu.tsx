@@ -48,7 +48,7 @@ export function ChangePersonalInfoDialog(
   const usernameProblem = username && usernameRequirementProblem(username);
   const canUpdate = username && fullName && nickname && Boolean(!usernameProblem);
 
-  const update = (): void => {
+  function update(): void {
     apiPut(updatePersonalInfoEndpoint, { username, fullName, nickname }, {}, props.token)
       .then(() => {
         enqueueSnackbar('Your info has been updated', { variant: 'success' });

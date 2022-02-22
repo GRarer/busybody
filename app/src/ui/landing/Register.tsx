@@ -42,7 +42,7 @@ export function RegisterForm(props: {
     && !usernameProblem
     && !passwordProblem;
 
-  const register = (): void => {
+  function register(): void {
     const request: RegistrationRequest = { username, password, fullName, nickname, email };
     apiPut(registrationEndpoint, request, {}, null)
       .then(props.onSignIn)

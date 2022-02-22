@@ -34,8 +34,7 @@ export function WatchList(props: {
   const [watchedTasks, setWatchedTasks] = useState<WatchedTasksResponse | null>(null);
   const [sortState, setSortState] = useState<WatchedTaskSortState>({property: 'date', ascending: true})
 
-  const changeSort = (property: WatchedTaskSortState['property']): void => {
-
+  function changeSort(property: WatchedTaskSortState['property']): void {
     const next = property === sortState.property
       ? {property, ascending: !sortState.ascending}
       : {property, ascending: true};
@@ -58,7 +57,7 @@ export function WatchList(props: {
     }
   }, [watchedTasks, props.token]);
 
-  const unfollowTask = (taskId: string): void => {
+  function unfollowTask(taskId: string): void {
     apiDelete(unfollowTaskEndpoint, {task_id: taskId}, props.token)
       .then(data => setWatchedTasks(data))
       .catch(error => {
@@ -66,7 +65,7 @@ export function WatchList(props: {
       });
   }
 
-  const getSortIcon = (label: WatchedTaskSortState['property']): JSX.Element | undefined => {
+  function getSortIcon(label: WatchedTaskSortState['property']): JSX.Element | undefined {
     if (label != sortState.property) {
       return undefined;
     }

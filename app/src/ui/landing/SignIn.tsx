@@ -18,7 +18,7 @@ export function SignInForm(props: {
 
   const canSignIn = !!(username && password);
 
-  const signIn = (): void => {
+  function signIn(): void {
     apiPost(loginEndpoint, { username, password }, {}, null)
       .then(props.onSignIn)
       .catch(error => {

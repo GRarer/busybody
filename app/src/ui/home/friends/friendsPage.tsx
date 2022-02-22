@@ -35,7 +35,7 @@ export function FriendsPage(props: {
     }
   }, [friendsList, props.token]);
 
-  const unfriendUser = (target: FriendInfo): void => {
+  function unfriendUser(target: FriendInfo): void {
     apiPut(unfriendEndpoint, { uuid: target.uuid }, {}, props.token)
       .then(newState => { setFriendsList(newState); })
       .catch(error => {
@@ -45,7 +45,7 @@ export function FriendsPage(props: {
       });
   };
 
-  const answerFriendRequest = (target: FriendInfo, accept: boolean): void => {
+  function answerFriendRequest(target: FriendInfo, accept: boolean): void {
     apiPut(answerRequestEndpoint, { uuid: target.uuid, accept: accept }, {}, props.token)
       .then(newState => { setFriendsList(newState); })
       .catch(error => {
@@ -55,7 +55,7 @@ export function FriendsPage(props: {
       });
   };
 
-  const cancelFriendRequest = (target: FriendInfo): void => {
+  function cancelFriendRequest(target: FriendInfo): void {
     apiPut(cancelFriendRequestEndpoint, { uuid: target.uuid }, {}, props.token)
       .then(newState => { setFriendsList(newState); })
       .catch(error => {
