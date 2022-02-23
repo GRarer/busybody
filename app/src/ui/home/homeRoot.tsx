@@ -12,7 +12,7 @@ export function HomeRoot(props: {
 }): JSX.Element {
 
   // TODO disable navigating while editor dialogs are open in child pages since this would lose state
-  const [pageIndex, setPageIndex] = useState<number>(0); // TODO change back to 1
+  const [pageIndex, setPageIndex] = useState<number>(1);
 
   const page = {
     0: <WatchList token={props.token}/>,

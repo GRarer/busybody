@@ -27,7 +27,6 @@ export function FriendsPage(props: {
       apiGet(getFriendsListEndpoint, {}, props.token)
         .then(data => {
           setFriendsList(data);
-          console.log(data); // TODO Remove
         })
         .catch(error => {
           enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });

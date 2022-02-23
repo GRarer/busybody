@@ -48,8 +48,8 @@ export function WatchedTaskCard(props: {
         <DialogContentText>
           {/* // TODO would be more natural to use friendly name here, would need to add to response */}
           Do you want to stop watching the task <strong>&quot;{props.info.title}&quot;</strong> from <strong>{
-          props.info.owner.fullName}</strong>? It will no longer  appear in your &quot;watching&quot; list and you will not
-          be notified if {props.info.owner.fullName} misses the deadline.
+            props.info.owner.fullName}</strong>? It will no longer  appear in your &quot;watching&quot; list
+          and you will not be notified if {props.info.owner.fullName} misses the deadline.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

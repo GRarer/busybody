@@ -1,29 +1,30 @@
-import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
-import { ButtonGroup, Button, Box } from '@mui/material';
 import { getWatchedTasksEndpoint, unfollowTaskEndpoint, WatchedTasksResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { apiDelete, apiGet } from '../../../api/requests';
 import { errorToMessage } from '../../../util/util';
+import { SortControls, SortControlState } from './sortControls';
 import { TaskListSkeleton } from './tasksListSkeleton';
 import { WatchedTaskCard } from './watchedTaskCard';
 
-type WatchedTaskSortState = {property: 'title' | 'date' | 'owner'; ascending: boolean;};
+type WatchedTaskSortKeys = 'date' | 'title' | 'owner';
 
-function sortTasks(tasks: WatchedTasksResponse, mode: WatchedTaskSortState): WatchedTasksResponse {
+function sortWatchedTasks(
+  tasks: WatchedTasksResponse, mode: WatchedTaskSortKeys, ascending: boolean
+): WatchedTasksResponse {
   const copy = tasks.map(t => t);
 
   const methods: Record<
-  WatchedTaskSortState['property'],
+  WatchedTaskSortKeys,
   (a: WatchedTasksResponse[0], b: WatchedTasksResponse[0]) => number
   > = {
     'date': (a, b) => a.dueDate - b.dueDate,
     'owner': (a, b) => a.owner.fullName.localeCompare(b.owner.fullName),
     'title': (a, b) => a.title.localeCompare(b.title),
   };
-  const method = methods[mode.property];
+  const method = methods[mode];
 
-  copy.sort(mode.ascending ? (a, b) => method(a, b) : (a, b) => (-1 * method(a, b)));
+  copy.sort(ascending ? (a, b) => method(a, b) : (a, b) => (-1 * method(a, b)));
   return copy;
 }
 
@@ -34,24 +35,13 @@ export function WatchList(props: {
   const { enqueueSnackbar } = useSnackbar();
 
   const [watchedTasks, setWatchedTasks] = useState<WatchedTasksResponse | null>(null);
-  const [sortState, setSortState] = useState<WatchedTaskSortState>({ property: 'date', ascending: true });
-
-  function changeSort(property: WatchedTaskSortState['property']): void {
-    const next = property === sortState.property
-      ? { property, ascending: !sortState.ascending }
-      : { property, ascending: true };
-    setSortState(next);
-    if (watchedTasks !== null) {
-      setWatchedTasks(sortTasks(watchedTasks, next));
-    }
-  }
+  const [sortState, setSortState] = useState<SortControlState<WatchedTaskSortKeys>>({ field: 'date', ascending: true });
 
   useEffect(() => {
     if (watchedTasks === null) {
       apiGet(getWatchedTasksEndpoint, {}, props.token)
         .then(data => {
-          setWatchedTasks(sortTasks(data, sortState));
-          console.log(data); // TODO Remove
+          setWatchedTasks(sortWatchedTasks(data, sortState.field, sortState.ascending));
         })
         .catch(error => {
           enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
@@ -67,25 +57,25 @@ export function WatchList(props: {
       });
   }
 
-  function getSortIcon(label: WatchedTaskSortState['property']): JSX.Element | undefined {
-    if (label !== sortState.property) {
-      return undefined;
+  function updateSortMode(mode: SortControlState<WatchedTaskSortKeys>): void {
+    setSortState(mode);
+    if (watchedTasks !== null) {
+      setWatchedTasks(sortWatchedTasks(watchedTasks, mode.field, mode.ascending));
     }
-    return sortState.ascending ? <ArrowDownward/> : <ArrowUpward/>;
   }
+
+  console.log('watch list sort state', sortState);
 
   if (watchedTasks === null) {
     return <TaskListSkeleton />;
   }
 
   return (<>
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '5px' }}>
-      <ButtonGroup size="large">
-        <Button endIcon={getSortIcon('date')} onClick={() => changeSort('date')}>Due Date</Button>
-        <Button endIcon={getSortIcon('title')} onClick={() => changeSort('title')}>Task Name</Button>
-        <Button endIcon={getSortIcon('owner')} onClick={() => changeSort('owner')}>User</Button>
-      </ButtonGroup>
-    </Box>
+    <SortControls options={[
+      { key: 'date', label: 'Due Date' },
+      { key: 'title', label: 'Task Name' },
+      { key: 'owner', label: 'User' }
+    ]} mode={sortState} onChange={(state: SortControlState<WatchedTaskSortKeys>) => updateSortMode(state)}/>
     {watchedTasks.map(task =>
       <WatchedTaskCard info={task} key={task.taskId} unfollow={() => unfollowTask(task.taskId)}/>
     )}
