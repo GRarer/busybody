@@ -1,4 +1,4 @@
-import { FriendInfo, getTodoListEndpoint, OwnTaskInfo } from 'busybody-core';
+import { FriendInfo, getTodoListEndpoint, OwnTaskInfo, TodoListResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { apiGet } from '../../../api/requests';
@@ -37,15 +37,18 @@ export function TasksList(props: {
   const [listData, setListData] = useState<{friends: FriendInfo[]; tasks: OwnTaskInfo[];} | null>(null);
   const [sortState, setSortState] = useState<SortControlState<TaskSortKeys>>({ field: 'date', ascending: true });
 
+  function updateList(data: TodoListResponse): void {
+    setListData({
+      friends: data.friends,
+      tasks: sortWatchedTasks(data.tasks, sortState.field, sortState.ascending)
+    });
+  }
+
   useEffect(() => {
     if (listData === null) {
       apiGet(getTodoListEndpoint, {}, props.token)
         .then(data => {
-          console.log(data); // TODO remove
-          setListData({
-            friends: data.friends,
-            tasks: sortWatchedTasks(data.tasks, sortState.field, sortState.ascending)
-          });
+          updateList(data);
         })
         .catch(error => {
           enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
@@ -71,7 +74,10 @@ export function TasksList(props: {
       { key: 'title', label: 'Task Name' },
       { key: 'watchers', label: 'Watchers' }
     ]} mode={sortState} onChange={(state: SortControlState<TaskSortKeys>) => updateSortMode(state)}/>
-    {listData.tasks.map(t => <TodoTaskCard info={t} key={t.taskId}/>)}
+    {listData.tasks.map(t => <TodoTaskCard
+      info={t} key={t.taskId} token={props.token}
+      updateList={(data) => updateList(data)}
+    />)}
   </>);
 }
 

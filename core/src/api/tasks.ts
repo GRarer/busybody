@@ -96,3 +96,8 @@ export const unfollowTaskEndpoint = new DeleteEndpoint('/unfollow_task', {
   responseSchema: getWatchedTasksEndpoint.responseSchema
 });
 
+export const deleteTaskEndpoint = new DeleteEndpoint('/delete_task', {
+  querySchema: Schemas.recordOf({ task_id: Schemas.aString }),
+  responseSchema: getTodoListEndpoint.responseSchema
+});
+

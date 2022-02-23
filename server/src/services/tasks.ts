@@ -160,3 +160,8 @@ export async function unfollowTask(taskId: string, token: string): Promise<void>
   const userUUID = await lookupSessionUser(token);
   await dbQuery('delete from watch_assignments where task = $1 and watcher = $2;', [taskId, userUUID], dontValidate);
 }
+
+export async function deleteTask(taskId: string, token: string): Promise<void> {
+  const userUUID = await lookupSessionUser(token);
+  await dbQuery('delete from tasks where task_id = $1 and task_owner = $2;', [taskId, userUUID], dontValidate);
+}

@@ -3,7 +3,7 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   loginEndpoint, logoutEndpoint, registrationEndpoint, selfInfoEndpoint, sendFriendRequestEndpoint,
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
   updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
-  updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint } from 'busybody-core';
+  updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
   updatePassword } from './services/accountInfo.js';
@@ -11,7 +11,7 @@ import { getServerStatus } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { answerFriendRequest, cancelFriendRequest, getUserFriendsList, sendFriendRequest,
   unfriend } from './services/friends.js';
-import { createTask, getOwnTodoList, getWatchedTasks, unfollowTask, updateTask } from './services/tasks.js';
+import { createTask, deleteTask, getOwnTodoList, getWatchedTasks, unfollowTask, updateTask } from './services/tasks.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 
 type JsonValue = Json.JsonValue;
@@ -104,5 +104,9 @@ export function attachHandlers(server: FastifyInstance): void {
   addHandler(unfollowTaskEndpoint, async (body, params, token) => {
     await unfollowTask(params.task_id, token);
     return await getWatchedTasks(token);
+  });
+  addHandler(deleteTaskEndpoint, async (body, params, token) => {
+    await deleteTask(params.task_id, token);
+    return await getOwnTodoList(token);
   });
 }
