@@ -8,6 +8,7 @@ export function SortControls<K extends string>(props: {
   options: {key: K; label: string;}[];
   mode: SortControlState<K>;
   onChange: (state: SortControlState<K>) => void;
+  disabled?: boolean
 }): JSX.Element {
 
   console.log('sort controller props mode', props.mode);
@@ -33,7 +34,7 @@ export function SortControls<K extends string>(props: {
   return <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '10px' }}>
     <ButtonGroup size="large">
       {
-        props.options.map(opt => <Button key={opt.key}
+        props.options.map(opt => <Button key={opt.key} disabled={props.disabled ?? false}
           endIcon={getSortIcon(opt.key)} onClick={() => changeSort(opt.key)}>{opt.label}
         </Button>)
       }

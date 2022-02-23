@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { apiDelete, apiGet } from '../../../api/requests';
 import { errorToMessage } from '../../../util/util';
 import { SortControls, SortControlState } from './sortControls';
-import { TaskListSkeleton } from './tasksListSkeleton';
+import { WatchedTaskListSkeleton } from './tasksListSkeleton';
 import { WatchedTaskCard } from './watchedTaskCard';
 
 type WatchedTaskSortKeys = 'date' | 'title' | 'owner';
@@ -67,7 +67,7 @@ export function WatchList(props: {
   console.log('watch list sort state', sortState);
 
   if (watchedTasks === null) {
-    return <TaskListSkeleton />;
+    return <WatchedTaskListSkeleton />;
   }
 
   return (<>
