@@ -71,7 +71,7 @@ export function WatchList(props: {
     if (label !== sortState.property) {
       return undefined;
     }
-    return sortState.ascending ? <ArrowUpward/> : <ArrowDownward/>;
+    return sortState.ascending ? <ArrowDownward/> : <ArrowUpward/>;
   }
 
   if (watchedTasks === null) {
@@ -79,12 +79,11 @@ export function WatchList(props: {
   }
 
   return (<>
-    {/* // TODO sort controls */}
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '5px' }}>
       <ButtonGroup size="large">
-        <Button endIcon={getSortIcon('title')} onClick={() => changeSort('title')}>Task Name</Button>
         <Button endIcon={getSortIcon('date')} onClick={() => changeSort('date')}>Due Date</Button>
-        <Button endIcon={getSortIcon('owner')}onClick={() => changeSort('owner')}>User</Button>
+        <Button endIcon={getSortIcon('title')} onClick={() => changeSort('title')}>Task Name</Button>
+        <Button endIcon={getSortIcon('owner')} onClick={() => changeSort('owner')}>User</Button>
       </ButtonGroup>
     </Box>
     {watchedTasks.map(task =>
