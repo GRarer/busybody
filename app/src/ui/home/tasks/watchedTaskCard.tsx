@@ -1,10 +1,10 @@
-import { Card, CardHeader, CardContent, Typography, CardActions, Button, Dialog, DialogTitle, DialogContent,
-  DialogContentText, DialogActions } from '@mui/material';
+import { Card, CardHeader, CardContent, Typography, CardActions, Button } from '@mui/material';
 import { WatchedTasksResponse } from 'busybody-core';
 import { useState } from 'react';
 import { FriendAvatar } from '../friends/friendCard';
 import React from 'react';
 import { DueDate } from './dueDate';
+import { ConfirmDialog } from '../../common/confirmDialog';
 
 export function WatchedTaskCard(props: {
   info: WatchedTasksResponse[0];
@@ -28,29 +28,17 @@ export function WatchedTaskCard(props: {
         <Button size="small" onClick={() => setShowUnfollowConfirmation(true)}>Stop Watching</Button>
       </CardActions>
     </Card>
-    <Dialog
-      open={showUnfollowConfirmation}
-      onClose={() => setShowUnfollowConfirmation(false)}
-    >
-      <DialogTitle>
-        {'Stop watching this task?'}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          {/* // TODO would be more natural to use friendly name here, would need to add to response */}
-          Do you want to stop watching the task <strong>&quot;{props.info.title}&quot;</strong> from <strong>{
-            props.info.owner.fullName}</strong>? It will no longer  appear in your &quot;watching&quot; list
-          and you will not be notified if {props.info.owner.fullName} misses the deadline.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setShowUnfollowConfirmation(false)}>Cancel</Button>
-        <Button onClick={() => {
-          props.unfollow();
-        }}>
+    <ConfirmDialog open={showUnfollowConfirmation} onClose={() => setShowUnfollowConfirmation(false)}
+      title={'Stop watching this task?'}
+      body={/* // TODO would be more natural to use friendly name here, would need to add to response */
+    `Do you want to stop watching the task <strong>"${props.info.title}";</strong> from <strong>
+    ${props.info.owner.fullName}</strong>? It will no longer appear in your "watching" list
+    and you will not be notified if ${props.info.owner.fullName} misses the deadline.`}>
+      <Button onClick={() => {
+        props.unfollow();
+      }}>
           Stop Watching
-        </Button>
-      </DialogActions>
-    </Dialog>
+      </Button>
+    </ConfirmDialog>
   </>;
 }

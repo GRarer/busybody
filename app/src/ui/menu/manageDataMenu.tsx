@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { apiDelete, apiGet } from '../../api/requests';
 import { errorToMessage } from '../../util/util';
 import { CloudDownload, DeleteForever } from '@mui/icons-material';
+import { ConfirmDialog } from '../common/confirmDialog';
 
 // unfortunately this direct dom manipulation is the accepted way to download a dynamically-created file
 function downloadFile(contents: string, filename: string): void {
@@ -83,27 +84,20 @@ export function ManageDataDialog(
           <Button onClick={props.onClose}>Close</Button>
         </DialogActions>
       </Dialog>
-      <Dialog
+      <ConfirmDialog
         open={showConfirmDelete}
         onClose={() => setShowConfirmDelete(false)}
         maxWidth='xs'
+        title='Permanently delete your account?'
+        body={
+          <>This will delete your account, including your friends list and all of your
+          to-do tasks. <span style={{ fontWeight: 'bold' }}>This action cannot be undone.</span></>
+        }
       >
-        <DialogTitle>
-          {'Permanently delete your account?'}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            This will delete your account, including your friends list and all of your
-            to-do tasks. <span style={{ fontWeight: 'bold' }}>This action cannot be undone.</span>
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowConfirmDelete(false)} autoFocus>Cancel</Button>
-          <Button onClick={deleteAccount} color="warning">
+        <Button onClick={deleteAccount} color="warning">
             Delete My Account
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Button>
+      </ConfirmDialog>
     </>
   );
 

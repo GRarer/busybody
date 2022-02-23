@@ -1,12 +1,15 @@
 
-import { Button, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-  Typography } from '@mui/material';
-import { answerRequestEndpoint, cancelFriendRequestEndpoint, FriendInfo, FriendsListResponse, getFriendsListEndpoint,
-  unfriendEndpoint } from 'busybody-core';
+import {
+  Button, Container, Typography } from '@mui/material';
+import {
+  answerRequestEndpoint, cancelFriendRequestEndpoint, FriendInfo, FriendsListResponse, getFriendsListEndpoint,
+  unfriendEndpoint
+} from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { apiGet, apiPut } from '../../../api/requests';
 import { errorToMessage } from '../../../util/util';
+import { ConfirmDialog } from '../../common/confirmDialog';
 import { FriendCard } from './friendCard';
 import { FriendsPageSkeleton } from './friendsPageSkeleton';
 import { FriendRequestFormCard } from './requestFormCard';
@@ -99,7 +102,7 @@ export function FriendsPage(props: {
   return <>
     <Container maxWidth="xs">
       <Typography variant="h6" sx={{ textAlign: 'center' }}>Add Friends</Typography>
-      <FriendRequestFormCard token={props.token} onRequestSent={(data) => setFriendsList(data)}/>
+      <FriendRequestFormCard token={props.token} onRequestSent={(data) => setFriendsList(data)} />
       {friendsList.incomingRequests.length > 0
         ? incomingColumn
         : <></>
@@ -116,34 +119,18 @@ export function FriendsPage(props: {
         </Typography>
       }
     </Container>
-    <Dialog
+    <ConfirmDialog
       open={unfriendDialogSelection !== null}
       onClose={() => setUnfriendDialogSelection(null)}
+      title={`Unfriend ${unfriendDialogSelection?.fullName}?`}
+      body={/* // TODO use correct gender pronouns? */`Do you want to remove ${unfriendDialogSelection?.fullName}
+      (${unfriendDialogSelection?.username}) from your friends list? You will be unable to watch their tasks and
+      they will be unable to watch your tasks.`}
     >
-      <DialogTitle>
-        {`Unfriend ${unfriendDialogSelection?.fullName}?`}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {/* // TODO use correct gender pronouns? */}
-          Do you want to remove {unfriendDialogSelection?.fullName} ({unfriendDialogSelection?.username}) from
-          your friends list? You will be unable to watch their tasks and they will be unable to watch your tasks.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setUnfriendDialogSelection(null)}>Cancel</Button>
-        <Button onClick={() => {
-          unfriendUser(unfriendDialogSelection!);
-          setUnfriendDialogSelection(null);
-        }} color="warning">
-          Unfriend
-        </Button>
-      </DialogActions>
-    </Dialog>
+      <Button onClick={() => {
+        unfriendUser(unfriendDialogSelection!);
+        setUnfriendDialogSelection(null);
+      }} color="warning">Unfriend</Button>
+    </ConfirmDialog>
   </>;
-
-
-
-
-
 }
