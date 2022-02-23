@@ -64,8 +64,6 @@ export function WatchList(props: {
     }
   }
 
-  console.log('watch list sort state', sortState);
-
   if (watchedTasks === null) {
     return <WatchedTaskListSkeleton />;
   }
