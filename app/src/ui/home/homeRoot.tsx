@@ -11,7 +11,7 @@ export function HomeRoot(props: {
   token: string;
 }): JSX.Element {
 
-  const [pageIndex, setPageIndex] = useState<number>(0);
+  const [pageIndex, setPageIndex] = useState<number>(1);
 
   const page = {
     0: <WatchList token={props.token}/>,

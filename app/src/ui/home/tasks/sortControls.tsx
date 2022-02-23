@@ -8,7 +8,7 @@ export function SortControls<K extends string>(props: {
   options: {key: K; label: string;}[];
   mode: SortControlState<K>;
   onChange: (state: SortControlState<K>) => void;
-  disabled?: boolean
+  disabled?: boolean;
 }): JSX.Element {
 
   const smallWidth = useMediaQuery('(max-width: 800px)');

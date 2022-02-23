@@ -2,18 +2,9 @@ import { Card, CardHeader, CardContent, Typography, CardActions, Button, Dialog,
   DialogContentText, DialogActions } from '@mui/material';
 import { WatchedTasksResponse } from 'busybody-core';
 import { useState } from 'react';
-import { renderDate, unixSecondsToDate } from '../../../util/dates';
 import { FriendAvatar } from '../friends/friendCard';
-import { red } from '@mui/material/colors';
 import React from 'react';
-
-export function DueDate(props: {unixSeconds: number; overdue: boolean;}): JSX.Element {
-  const time = renderDate(unixSecondsToDate(props.unixSeconds));
-  // TODO integrate with theme colors
-  const color = props.overdue ? red[500] : undefined;
-
-  return <Typography variant="subtitle2" color={color}>Due {time}</Typography>;
-}
+import { DueDate } from './dueDate';
 
 export function WatchedTaskCard(props: {
   info: WatchedTasksResponse[0];

@@ -1,5 +1,6 @@
 import { Box, Card, CardActions, CardContent, CardHeader, Skeleton, Typography } from '@mui/material';
 import { SortControls } from './sortControls';
+import React from 'react';
 
 function WatchedTaskSkeleton(): JSX.Element {
   return (<Card elevation={4} sx={{ marginBottom: '10px' }}>
@@ -13,7 +14,7 @@ function WatchedTaskSkeleton(): JSX.Element {
         <Skeleton variant='text' animation='wave'/>
         <Skeleton variant='text' animation='wave'/>
         <Skeleton variant='text' animation='wave' width={300}/>
-        </Typography>
+      </Typography>
     </CardContent>
     <CardActions>
       <Skeleton variant='text' animation='wave' width={180}/>
