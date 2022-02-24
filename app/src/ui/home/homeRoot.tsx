@@ -21,7 +21,7 @@ export function HomeRoot(props: {
 
   return <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
     <Box sx={{ flexGrow: 1 }}>
-      <Container maxWidth="sm" sx={{ marginBottom: 7, overflowY: 'auto', paddingTop: '10px' }}>
+      <Container maxWidth="sm" sx={{ marginBottom: 7, overflowY: 'auto', paddingTop: '10px'}}>
         {page}
       </Container>
     </Box>

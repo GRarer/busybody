@@ -1,4 +1,5 @@
-import { FriendInfo, getTodoListEndpoint, OwnTaskInfo, TodoListResponse } from 'busybody-core';
+import { Box, Fab, useMediaQuery, useTheme, Button } from '@mui/material';
+import { FriendInfo, getTodoListEndpoint, OwnTaskInfo, TodoListResponse, UpdateTaskRequest } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { apiGet } from '../../../api/requests';
@@ -6,6 +7,10 @@ import { errorToMessage } from '../../../util/util';
 import { SortControls, SortControlState } from './sortControls';
 import { WatchedTaskListSkeleton } from './tasksListSkeleton';
 import { TodoTaskCard } from './todoTaskCard';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+import { addWeeks } from 'date-fns';
+import { dateToUnixSeconds } from '../../../util/dates';
+import { EditTaskDialog } from './editTaskDialog';
 
 type TaskSortKeys = 'date' | 'title' | 'watchers';
 
@@ -15,8 +20,8 @@ function sortWatchedTasks(
   const copy = tasks.map(t => t);
 
   const methods: Record<
-  TaskSortKeys,
-  (a: OwnTaskInfo, b: OwnTaskInfo) => number
+    TaskSortKeys,
+    (a: OwnTaskInfo, b: OwnTaskInfo) => number
   > = {
     'date': (a, b) => a.dueDate - b.dueDate,
     'title': (a, b) => a.title.localeCompare(b.title),
@@ -34,8 +39,9 @@ export function TasksList(props: {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [listData, setListData] = useState<{friends: FriendInfo[]; tasks: OwnTaskInfo[];} | null>(null);
+  const [listData, setListData] = useState<{ friends: FriendInfo[]; tasks: OwnTaskInfo[]; } | null>(null);
   const [sortState, setSortState] = useState<SortControlState<TaskSortKeys>>({ field: 'date', ascending: true });
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   function updateList(data: TodoListResponse): void {
     setListData({
@@ -65,7 +71,7 @@ export function TasksList(props: {
   }
 
   if (listData === null) {
-    return <WatchedTaskListSkeleton/>; // TODO use different skeleton page for todo list
+    return <WatchedTaskListSkeleton />; // TODO use different skeleton page for todo list
   }
 
   return (<>
@@ -73,11 +79,15 @@ export function TasksList(props: {
       { key: 'date', label: 'Due Date' },
       { key: 'title', label: 'Task Name' },
       { key: 'watchers', label: 'Watchers' }
-    ]} mode={sortState} onChange={(state: SortControlState<TaskSortKeys>) => updateSortMode(state)}/>
+    ]} mode={sortState} onChange={(state: SortControlState<TaskSortKeys>) => updateSortMode(state)} />
+    <Button startIcon={<AddTaskIcon/>} fullWidth size="large"
+      onClick={() => setShowCreateDialog(true)}>Add Task</Button>
     {listData.tasks.map(t => <TodoTaskCard
       info={t} key={t.taskId} token={props.token} friendsList={listData.friends}
       updateList={(data) => updateList(data)}
     />)}
+    <EditTaskDialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)}
+      onUpdate={data => updateList(data)} token={props.token} task={null} friendsList={listData.friends}/>
   </>);
 }
 

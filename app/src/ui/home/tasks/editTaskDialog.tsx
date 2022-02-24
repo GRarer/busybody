@@ -1,11 +1,13 @@
 import { LocalizationProvider, MobileDateTimePicker } from '@mui/lab';
-import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
-  ListItemIcon, ListItemText, Menu, MenuItem, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint, UpdateTaskRequest } from 'busybody-core';
+import {
+  Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
+  ListItemIcon, ListItemText, Menu, MenuItem, TextField, Typography, useMediaQuery, useTheme
+} from '@mui/material';
+import { createTaskEndpoint, CreateTaskRequest, FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint, UpdateTaskRequest } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
-import { apiPut } from '../../../api/requests';
-import { dateFormatString, dateToUnixSeconds, unixSecondsToDate } from '../../../util/dates';
+import { apiPost, apiPut } from '../../../api/requests';
+import { dateFormatString, dateToUnixSeconds, getNextWeek, unixSecondsToDate } from '../../../util/dates';
 import { errorToMessage } from '../../../util/util';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { FriendAvatar } from '../friends/friendCard';
@@ -17,7 +19,7 @@ export function EditTaskDialog(props: {
   onClose: () => void;
   onUpdate: (data: TodoListResponse) => void;
   token: string;
-  task: OwnTaskInfo;
+  task: OwnTaskInfo | null; // set to null for creating a new task
   friendsList: FriendInfo[];
 }
 ): JSX.Element {
@@ -25,10 +27,18 @@ export function EditTaskDialog(props: {
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const { enqueueSnackbar } = useSnackbar();
-  const [title, setTitle] = useState(props.task.title);
-  const [description, setDescription] = useState(props.task.description);
-  const [dueDate, setDueDate] = useState<Date | null>(unixSecondsToDate(props.task.dueDate));
-  const [watchers, setWatchers] = useState(props.task.watchers);
+
+  const defaults = props.task ?? {
+    title: '',
+    description: '',
+    dueDate: dateToUnixSeconds(getNextWeek()),
+    watchers: []
+  };
+
+  const [title, setTitle] = useState(defaults.title);
+  const [description, setDescription] = useState(defaults.description);
+  const [dueDate, setDueDate] = useState<Date | null>(unixSecondsToDate(defaults.dueDate));
+  const [watchers, setWatchers] = useState(defaults.watchers);
 
   const [addWatcherMenuAnchorEl, setAddWatcherMenuAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -41,29 +51,45 @@ export function EditTaskDialog(props: {
   // closes dialog and resets state
   function resetAndClose(): void {
     props.onClose();
-    setTitle(props.task.title);
-    setDescription(props.task.description);
-    setDueDate(unixSecondsToDate(props.task.dueDate));
-    setWatchers(props.task.watchers);
+    setTitle(defaults.title);
+    setDescription(defaults.description);
+    setDueDate(unixSecondsToDate(defaults.dueDate));
+    setWatchers(defaults.watchers);
   }
 
   function save(): void {
-    const updated: UpdateTaskRequest = {
-      taskId: props.task.taskId,
-      title: title,
-      description: description,
-      dueDate: dateToUnixSeconds(dueDate!),
-      watcherUUIDs: watchers.map(w => w.uuid)
-    };
+    if (props.task === null) {
+      const request: CreateTaskRequest = {
+        title,
+        description,
+        dueDate: dateToUnixSeconds(dueDate!),
+        watcherUUIDs: watchers.map(w => w.uuid)
+      };
+      apiPost(createTaskEndpoint, request, {}, props.token)
+        .then(newData => {
+          props.onUpdate(newData);
+          resetAndClose();
+        }).catch(error => {
+          enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
+        });
+    } else {
+      // update existing task
+      const updated: UpdateTaskRequest = {
+        taskId: props.task.taskId,
+        title: title,
+        description: description,
+        dueDate: dateToUnixSeconds(dueDate!),
+        watcherUUIDs: watchers.map(w => w.uuid)
+      };
 
-    apiPut(updateTaskEndpoint, updated, {}, props.token)
-      .then(newData => {
-        props.onUpdate(newData);
-        resetAndClose();
-      }
-      ).catch(error => {
-        enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
-      });
+      apiPut(updateTaskEndpoint, updated, {}, props.token)
+        .then(newData => {
+          props.onUpdate(newData);
+          resetAndClose();
+        }).catch(error => {
+          enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
+        });
+    }
   }
 
   function removeWatcher(watcher: FriendInfo): void {
@@ -74,9 +100,11 @@ export function EditTaskDialog(props: {
     setWatchers([...watchers, watcher]);
   }
 
+  const dialogTitle = props.task === null ? 'Add Task' : 'Edit task';
+
   return <>
     <Dialog open={props.open} onClose={resetAndClose} fullScreen={fullScreen} maxWidth='lg'>
-      <DialogTitle>Edit Task</DialogTitle>
+      <DialogTitle>{dialogTitle}</DialogTitle>
       <DialogContent>
         <FormControl variant="filled" fullWidth>
           <InputLabel htmlFor="title-input">Title</InputLabel>
@@ -125,7 +153,7 @@ export function EditTaskDialog(props: {
       onClick={() => setAddWatcherMenuAnchorEl(null)}
     >
       {unassignedFriends.map(f => <MenuItem key={f.uuid} onClick={() => addWatcher(f)}>
-        <ListItemIcon><FriendAvatar info={f} size={30}/></ListItemIcon>
+        <ListItemIcon><FriendAvatar info={f} size={30} /></ListItemIcon>
         <ListItemText>{f.fullName}</ListItemText>
       </MenuItem>)}
     </Menu>

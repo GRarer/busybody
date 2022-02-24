@@ -1,5 +1,5 @@
 import { DomainOf, Schemas } from '@nprindle/augustus';
-import { DeleteEndpoint, GetEndpointSimple, PutEndpointSimple } from '../apis.js';
+import { DeleteEndpoint, GetEndpointSimple, PostEndpointSimple, PutEndpointSimple } from '../apis.js';
 import { FriendInfo, friendInfoSchema } from './friends.js';
 
 type BasicTaskInfo = {
@@ -75,7 +75,7 @@ export const updateTaskEndpoint = new PutEndpointSimple('/update_task', {
   responseSchema: getTodoListEndpoint.responseSchema
 });
 
-export const createTaskEndpoint = new PutEndpointSimple('/new_task', {
+export const createTaskEndpoint = new PostEndpointSimple('/new_task', {
   requestSchema: Schemas.recordOf({
     title: Schemas.aString,
     description: Schemas.aString,
