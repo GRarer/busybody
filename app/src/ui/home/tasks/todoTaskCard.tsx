@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardContent, Typography, CardActions, Button, Chip, AvatarGroup } from '@mui/material';
+import { Card, CardHeader, CardContent, Typography, CardActions, Button, AvatarGroup } from '@mui/material';
 import { deleteTaskEndpoint, FriendInfo, OwnTaskInfo, TodoListResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
@@ -8,11 +8,10 @@ import { ConfirmDialog } from '../../common/confirmDialog';
 import { FriendAvatar } from '../friends/friendCard';
 import { DueDate } from './dueDate';
 import { EditTaskDialog } from './editTaskDialog';
-import FaceIcon from '@mui/icons-material/Face';
 
 export function TodoTaskCard(props: {
   info: OwnTaskInfo;
-  friendsList: FriendInfo[]
+  friendsList: FriendInfo[];
   token: string;
   updateList: (data: TodoListResponse) => void;
 }): JSX.Element {

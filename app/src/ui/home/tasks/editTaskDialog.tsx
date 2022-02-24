@@ -1,24 +1,24 @@
-import { DateTimePicker, LocalizationProvider, MobileDateTimePicker } from "@mui/lab";
-import { Avatar, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FilledInput, FormControl, InputLabel, LinearProgress, ListItemIcon, ListItemText, Menu, MenuItem, OutlinedInput, Stack, TextField, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint, UpdateTaskRequest } from "busybody-core";
-import { useSnackbar } from "notistack";
-import { ppid } from "process";
-import { useState } from "react";
-import { apiPut } from "../../../api/requests";
-import { dateFormatString, dateToUnixSeconds, unixSecondsToDate } from "../../../util/dates";
-import { errorToMessage } from "../../../util/util";
+import { LocalizationProvider, MobileDateTimePicker } from '@mui/lab';
+import { Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
+  ListItemIcon, ListItemText, Menu, MenuItem, TextField, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint, UpdateTaskRequest } from 'busybody-core';
+import { useSnackbar } from 'notistack';
+import { useState } from 'react';
+import { apiPut } from '../../../api/requests';
+import { dateFormatString, dateToUnixSeconds, unixSecondsToDate } from '../../../util/dates';
+import { errorToMessage } from '../../../util/util';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { FriendAvatar } from "../friends/friendCard";
+import { FriendAvatar } from '../friends/friendCard';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import { AccountBox, AlternateEmail, VpnKey, DataArray, Logout } from "@mui/icons-material";
+import React from 'react';
 
 export function EditTaskDialog(props: {
-  open: boolean,
-  onClose: () => void,
-  onUpdate: (data: TodoListResponse) => void,
-  token: string,
-  task: OwnTaskInfo,
-  friendsList: FriendInfo[]
+  open: boolean;
+  onClose: () => void;
+  onUpdate: (data: TodoListResponse) => void;
+  token: string;
+  task: OwnTaskInfo;
+  friendsList: FriendInfo[];
 }
 ): JSX.Element {
   const theme = useTheme();
@@ -54,7 +54,7 @@ export function EditTaskDialog(props: {
       description: description,
       dueDate: dateToUnixSeconds(dueDate!),
       watcherUUIDs: watchers.map(w => w.uuid)
-    }
+    };
 
     apiPut(updateTaskEndpoint, updated, {}, props.token)
       .then(newData => {
@@ -99,7 +99,7 @@ export function EditTaskDialog(props: {
           </Box>
           {watchers.length === 0 ? <></> : <>
             <Typography>Watchers:</Typography>
-            {watchers.map(w => <Box sx={{ paddingTop: '2px', paddingBottom: '3px' }}>
+            {watchers.map(w => <Box key={w.uuid} sx={{ paddingTop: '2px', paddingBottom: '3px' }}>
               <Chip variant="outlined" avatar={FriendAvatar({ info: w })} label={w.fullName}
                 onDelete={() => removeWatcher(w)} />
             </Box>)}
@@ -119,15 +119,15 @@ export function EditTaskDialog(props: {
       </DialogActions>
     </Dialog>
     <Menu
-        anchorEl={addWatcherMenuAnchorEl}
-        open={addWatcherMenuAnchorEl !== null}
-        onClose={() => setAddWatcherMenuAnchorEl(null)}
-        onClick={() => setAddWatcherMenuAnchorEl(null)}
-      >
-        {unassignedFriends.map(f => <MenuItem onClick={() => addWatcher(f)}>
-          <ListItemIcon><FriendAvatar info={f} size={30}/></ListItemIcon>
-          <ListItemText>{f.fullName}</ListItemText>
-        </MenuItem>)}
-      </Menu>
+      anchorEl={addWatcherMenuAnchorEl}
+      open={addWatcherMenuAnchorEl !== null}
+      onClose={() => setAddWatcherMenuAnchorEl(null)}
+      onClick={() => setAddWatcherMenuAnchorEl(null)}
+    >
+      {unassignedFriends.map(f => <MenuItem key={f.uuid} onClick={() => addWatcher(f)}>
+        <ListItemIcon><FriendAvatar info={f} size={30}/></ListItemIcon>
+        <ListItemText>{f.fullName}</ListItemText>
+      </MenuItem>)}
+    </Menu>
   </>;
 }
