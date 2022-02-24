@@ -44,8 +44,6 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
     friendInfoMap.set(info.uuid, info);
   }
 
-  const nowSeconds = currentTimeSeconds();
-
   const tasksList: OwnTaskInfo[] = [];
   for (const taskRow of taskRows) {
     const watcherUUIDs = taskRow.watcher_uuids ?? [];
@@ -56,7 +54,6 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
       title: taskRow.title,
       description: taskRow.description_text,
       dueDate: taskRow.deadline_seconds,
-      overdue: taskRow.deadline_seconds < nowSeconds,
       watchers
     });
   }
@@ -84,13 +81,11 @@ export async function getWatchedTasks(token: string): Promise<WatchedTasksRespon
       username: Schemas.aString,
       full_name: Schemas.aString
     }).validate);
-  const nowSeconds = currentTimeSeconds();
   return rows.map(row => ({
     taskId: row.task_id,
     title: row.title,
     description: row.description_text,
     dueDate: row.deadline_seconds,
-    overdue: row.deadline_seconds < nowSeconds,
     owner: {
       uuid: row.task_owner,
       username: row.username,

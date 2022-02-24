@@ -75,7 +75,7 @@ export function TasksList(props: {
       { key: 'watchers', label: 'Watchers' }
     ]} mode={sortState} onChange={(state: SortControlState<TaskSortKeys>) => updateSortMode(state)}/>
     {listData.tasks.map(t => <TodoTaskCard
-      info={t} key={t.taskId} token={props.token}
+      info={t} key={t.taskId} token={props.token} friendsList={listData.friends}
       updateList={(data) => updateList(data)}
     />)}
   </>);

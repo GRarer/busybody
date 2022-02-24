@@ -142,6 +142,7 @@ export async function cancelFriendRequest(sessionToken: string, recipientUUID: s
 
 export async function unfriend(sessionToken: string, friendUUID: string): Promise<void> {
   const userUUID = await lookupSessionUser(sessionToken);
+  // TODO probably need to also remove watching any tasks where these two users are friends
   await dbQuery(
     'delete from friendships where (((user_a = $1) and (user_b = $2)) or ((user_a = $2) and (user_b = $1)))',
     [userUUID, friendUUID], dontValidate

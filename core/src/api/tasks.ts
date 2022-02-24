@@ -8,7 +8,6 @@ type BasicTaskInfo = {
   description: string;
   // TODO choose best timezone-agnostic serialization format for date-time; unix time seconds may not be best
   dueDate: number; // represented in seconds since epoch
-  overdue: boolean;
 };
 
 export type OwnTaskInfo = BasicTaskInfo & {
@@ -31,7 +30,6 @@ export const getTodoListEndpoint = new GetEndpointSimple('/todo', Schemas.record
     title: Schemas.aString,
     description: Schemas.aString,
     dueDate: Schemas.aNumber,
-    overdue: Schemas.aBoolean,
     watchers: Schemas.arrayOf(friendInfoSchema)
   })),
   friends: Schemas.arrayOf(friendInfoSchema)
@@ -42,7 +40,6 @@ export const watchedTasksResponseSchema = Schemas.arrayOf(Schemas.recordOf({
   title: Schemas.aString,
   description: Schemas.aString,
   dueDate: Schemas.aNumber,
-  overdue: Schemas.aBoolean,
   owner: friendInfoSchema
 }));
 
@@ -53,7 +50,6 @@ export const getWatchedTasksEndpoint = new GetEndpointSimple('/watched', Schemas
   title: Schemas.aString,
   description: Schemas.aString,
   dueDate: Schemas.aNumber,
-  overdue: Schemas.aBoolean,
   owner: friendInfoSchema
 })));
 
@@ -74,7 +70,6 @@ export const updateTaskEndpoint = new PutEndpointSimple('/update_task', {
     title: Schemas.aString,
     description: Schemas.aString,
     dueDate: Schemas.aNumber,
-    overdue: Schemas.aBoolean,
     watcherUUIDs: Schemas.arrayOf(Schemas.aString)
   }),
   responseSchema: getTodoListEndpoint.responseSchema
@@ -85,7 +80,6 @@ export const createTaskEndpoint = new PutEndpointSimple('/new_task', {
     title: Schemas.aString,
     description: Schemas.aString,
     dueDate: Schemas.aNumber,
-    overdue: Schemas.aBoolean,
     watcherUUIDs: Schemas.arrayOf(Schemas.aString)
   }),
   responseSchema: getTodoListEndpoint.responseSchema

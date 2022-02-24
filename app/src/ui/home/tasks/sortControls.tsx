@@ -12,7 +12,6 @@ export function SortControls<K extends string>(props: {
 }): JSX.Element {
 
   const smallWidth = useMediaQuery('(max-width: 800px)');
-  console.log('very small: ', smallWidth);
   const buttonSize = smallWidth ? 'small' : undefined;
 
 
@@ -24,12 +23,9 @@ export function SortControls<K extends string>(props: {
   }
 
   function changeSort(field: K): void {
-    console.log(`clicked ${field}`);
     if (field === props.mode.field) {
-      console.log('flip');
       props.onChange({ field, ascending: !props.mode.ascending });
     } else {
-      console.log('switch');
       props.onChange({ field, ascending: true });
     }
   }

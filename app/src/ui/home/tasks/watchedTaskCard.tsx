@@ -22,7 +22,7 @@ export function WatchedTaskCard(props: {
       />
       <CardContent sx={{ paddingBottom: '0' }}>
         <Typography variant="body1">{props.info.description}</Typography>
-        <DueDate unixSeconds={props.info.dueDate} overdue={props.info.overdue}/>
+        <DueDate unixSeconds={props.info.dueDate}/>
       </CardContent>
       <CardActions>
         <Button size="small" onClick={() => setShowUnfollowConfirmation(true)}>Stop Watching</Button>
