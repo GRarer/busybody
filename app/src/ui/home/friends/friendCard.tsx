@@ -33,8 +33,8 @@ function nameToColor(name: string): string {
   return color;
 }
 
-export function FriendAvatar(props: {info: FriendInfo;}): JSX.Element {
-  return <Avatar sx={{ bgcolor: nameToColor(props.info.username) }}>
+export function FriendAvatar(props: {info: FriendInfo; size?: number | string}): JSX.Element {
+  return <Avatar sx={{ bgcolor: nameToColor(props.info.username), width: props.size, height: props.size}}>
     {nameToInitials(props.info.fullName)}
   </Avatar>;
 }

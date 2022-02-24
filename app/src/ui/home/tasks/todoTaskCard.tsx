@@ -1,12 +1,14 @@
-import { Card, CardHeader, CardContent, Typography, CardActions, Button } from '@mui/material';
+import { Card, CardHeader, CardContent, Typography, CardActions, Button, Chip, AvatarGroup } from '@mui/material';
 import { deleteTaskEndpoint, FriendInfo, OwnTaskInfo, TodoListResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { apiDelete } from '../../../api/requests';
 import { errorToMessage } from '../../../util/util';
 import { ConfirmDialog } from '../../common/confirmDialog';
+import { FriendAvatar } from '../friends/friendCard';
 import { DueDate } from './dueDate';
 import { EditTaskDialog } from './editTaskDialog';
+import FaceIcon from '@mui/icons-material/Face';
 
 export function TodoTaskCard(props: {
   info: OwnTaskInfo;
@@ -18,6 +20,8 @@ export function TodoTaskCard(props: {
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+
+  const watchers = props.info.watchers;
 
   function deleteTask(): void {
     setShowRemoveDialog(false);
@@ -37,6 +41,11 @@ export function TodoTaskCard(props: {
       />
       <CardContent sx={{ paddingBottom: '0' }}>
         <Typography variant="body1">{props.info.description}</Typography>
+        {watchers.length === 0 ? <></> : <>
+          <AvatarGroup max={8}>
+            {watchers.map(w => <FriendAvatar info={w} key={w.uuid} size={30}/>)}
+          </AvatarGroup>
+        </>}
       </CardContent>
       <CardActions>
         <Button size="small" onClick={() => setShowRemoveDialog(true)}>Complete</Button>
