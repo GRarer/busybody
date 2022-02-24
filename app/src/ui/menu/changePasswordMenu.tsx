@@ -9,6 +9,7 @@ import { apiPut } from '../../api/requests';
 import { errorToMessage } from '../../util/util';
 import { OptionalInputWarning } from '../common';
 
+// TODO reset state when closed
 export function ChangePasswordDialog(
   props: {
     token: string;

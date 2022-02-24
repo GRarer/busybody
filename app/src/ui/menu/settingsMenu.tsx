@@ -48,7 +48,6 @@ export function SettingsMenu(props: {
         <SettingsIcon />
       </IconButton>
       <Menu
-        id="basic-menu"
         anchorEl={anchorEl}
         open={anchorEl !== null}
         onClose={close}
