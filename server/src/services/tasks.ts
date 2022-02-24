@@ -122,8 +122,10 @@ export async function updateTask(request: UpdateTaskRequest, token: string): Pro
     // update watchers
     await query('delete from watch_assignments where task = $1', [request.taskId], dontValidate);
     const watch_assignments = request.watcherUUIDs.map(watcherUUID => [request.taskId, watcherUUID]);
-    const insertion = pgFormat('insert into watch_assignments (task, watcher) VALUES  %L;', watch_assignments);
-    await query(insertion, [], dontValidate);
+    if (watch_assignments.length > 0) {
+      const insertion = pgFormat('insert into watch_assignments (task, watcher) VALUES  %L;', watch_assignments);
+      await query(insertion, [], dontValidate);
+    }
   });
 }
 
@@ -146,8 +148,10 @@ export async function createTask(request: CreateTaskRequest, token: string): Pro
 
     // insert watchers
     const watch_assignments = request.watcherUUIDs.map(watcherUUID => [taskId, watcherUUID]);
-    const insertion = pgFormat('insert into watch_assignments (task, watcher) VALUES  %L;', watch_assignments);
-    await query(insertion, [], dontValidate);
+    if (watch_assignments.length > 0) {
+      const insertion = pgFormat('insert into watch_assignments (task, watcher) VALUES  %L;', watch_assignments);
+      await query(insertion, [], dontValidate);
+    }
   });
 }
 
