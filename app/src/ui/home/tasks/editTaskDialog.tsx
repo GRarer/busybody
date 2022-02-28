@@ -68,7 +68,7 @@ export function EditTaskDialog(props: {
       apiPost(createTaskEndpoint, request, {}, props.token)
         .then(newData => {
           props.onUpdate(newData);
-          resetAndClose();
+          props.onClose();
         }).catch(error => {
           enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
         });
@@ -85,7 +85,7 @@ export function EditTaskDialog(props: {
       apiPut(updateTaskEndpoint, updated, {}, props.token)
         .then(newData => {
           props.onUpdate(newData);
-          resetAndClose();
+          props.onClose();
         }).catch(error => {
           enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
         });
