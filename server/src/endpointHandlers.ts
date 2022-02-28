@@ -3,15 +3,16 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   loginEndpoint, logoutEndpoint, registrationEndpoint, selfInfoEndpoint, sendFriendRequestEndpoint,
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
   updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
-  updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint } from 'busybody-core';
+  updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint, testEmailEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
   updatePassword } from './services/accountInfo.js';
-import { getServerStatus } from './services/admin.js';
+import { getServerStatus, sendTestEmail } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { answerFriendRequest, cancelFriendRequest, getUserFriendsList, sendFriendRequest,
   unfriend } from './services/friends.js';
 import { createTask, deleteTask, getOwnTodoList, getWatchedTasks, unfollowTask, updateTask } from './services/tasks.js';
+import { serverConfiguration } from './util/config.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
 
 type JsonValue = Json.JsonValue;
@@ -30,7 +31,13 @@ export function attachHandlers(server: FastifyInstance): void {
   // all API endpoint handlers are attached here
 
   // server admin and testing
-  addHandler(serverStatusEndpoint, getServerStatus);
+  if(serverConfiguration.testingCommandsEnabled) {
+    addHandler(serverStatusEndpoint, getServerStatus);
+    addHandler(testEmailEndpoint, async (request, query, token) => {
+      await sendTestEmail(request);
+      return null;
+    })
+  }
 
   // authentication
   addHandler(loginEndpoint, logIn);
