@@ -116,10 +116,20 @@ export async function updateTask(request: UpdateTaskRequest, token: string): Pro
     // TODO reset notifications_sent if new deadline is in the future
 
     // update task data
-    await query(
-      'update tasks set title = $1, description_text = $2, deadline_seconds = $3 where task_id = $4',
-      [request.title, request.description, request.dueDate, request.taskId], dontValidate
-    );
+    if (request.dueDate > currentTimeSeconds()) {
+      await query(
+        `update tasks set title = $1, description_text = $2, deadline_seconds = $3, notification_sent = FALSE
+        where task_id = $4`,
+        [request.title, request.description, request.dueDate, request.taskId], dontValidate
+      );
+    } else {
+      await query(
+        'update tasks set title = $1, description_text = $2, deadline_seconds = $3 where task_id = $4',
+        [request.title, request.description, request.dueDate, request.taskId], dontValidate
+      );
+    }
+
+
 
     // update watchers
     await query('delete from watch_assignments where task = $1', [request.taskId], dontValidate);
