@@ -14,7 +14,7 @@ export async function dbTransaction<Result>(
     queryFunction: <T extends unknown, R extends unknown>(
       queryString: string,
       params: unknown[],
-      schema: Schema<T,R>
+      schema: Schema<T, R>
     ) => Promise<T[]>
   ) => Promise<Result>
 ): Promise<Result> {
@@ -45,10 +45,10 @@ export async function dbTransaction<Result>(
 
 // performs a single query and validates the return value of the rows
 // for multiple dependent queries, use dbTransaction instead
-export async function dbQuery<T,R>(
+export async function dbQuery<T, R>(
   queryString: string,
   params: unknown[],
-  schema: Schema<T,R>
+  schema: Schema<T, R>
 ): Promise<T[]> {
   const rows: unknown[] = (await pool.query(queryString, params)).rows;
   if (rows.every(schema.validate)) {

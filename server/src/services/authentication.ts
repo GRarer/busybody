@@ -25,7 +25,7 @@ export async function logIn(loginRequest: LoginRequest): Promise<string> {
     const matching = await query(
       'SELECT "user_uuid", "password_hash" from users where username = $1;',
       [loginRequest.username],
-     Schemas.recordOf({
+      Schemas.recordOf({
         'user_uuid': Schemas.aString,
         'password_hash': Schemas.aString
       })

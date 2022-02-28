@@ -7,8 +7,8 @@ import { dontValidate } from '../util/typeGuards.js';
 import { sendHelloWorldEmail } from './mail.js';
 
 function requireTestingMode(): void {
-  if(!serverConfiguration.testingCommandsEnabled) {
-    throw new UserException(403, "Testing commands are not enabled");
+  if (!serverConfiguration.testingCommandsEnabled) {
+    throw new UserException(403, 'Testing commands are not enabled');
   }
 }
 
@@ -24,7 +24,7 @@ export async function getServerStatus(): Promise<ServerStatusResponse> {
 }
 
 export async function sendTestEmail(request: DomainOf<typeof testEmailEndpoint.requestSchema>): Promise<void> {
-  console.log("test email request");
+  console.log('test email request');
   console.log(request);
 
   await sendHelloWorldEmail(request.to);

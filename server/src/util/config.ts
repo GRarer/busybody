@@ -10,13 +10,13 @@ dotenv.config(); // if .env file is present, it will be used to populate environ
 export const serverConfiguration: {
   apiPort: number;
   postgresConfig: pg.PoolConfig;
-  testingCommandsEnabled: boolean,
-  emailTransport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>,
-  emailFromField: string,
-  secondsBetweenChecks: number
+  testingCommandsEnabled: boolean;
+  emailTransport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+  emailFromField: string;
+  secondsBetweenChecks: number;
 } = {
   apiPort: getIntEV('BB_PORT'),
-  testingCommandsEnabled: getBoolEV("BB_LOCAL_TEST_MODE", false),
+  testingCommandsEnabled: getBoolEV('BB_LOCAL_TEST_MODE', false),
   postgresConfig: {
     host: getStringEV('BB_DB_HOST'),
     port: getIntEV('BB_DB_PORT'),
@@ -40,6 +40,6 @@ export const serverConfiguration: {
         pass: getStringEV('BB_MAIL_LIVE_PASSWORD')
       }
     }),
-  emailFromField: getStringEV("BB_EMAIL_FROM"),
-  secondsBetweenChecks: getIntEV("BB_LOOP_SECONDS")
+  emailFromField: getStringEV('BB_EMAIL_FROM'),
+  secondsBetweenChecks: getIntEV('BB_LOOP_SECONDS')
 };

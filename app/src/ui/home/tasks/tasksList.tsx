@@ -1,5 +1,5 @@
-import { Box, Fab, useMediaQuery, useTheme, Button } from '@mui/material';
-import { FriendInfo, getTodoListEndpoint, OwnTaskInfo, TodoListResponse, UpdateTaskRequest } from 'busybody-core';
+import { Button } from '@mui/material';
+import { FriendInfo, getTodoListEndpoint, OwnTaskInfo, TodoListResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { apiGet } from '../../../api/requests';
@@ -8,8 +8,6 @@ import { SortControls, SortControlState } from './sortControls';
 import { WatchedTaskListSkeleton } from './tasksListSkeleton';
 import { TodoTaskCard } from './todoTaskCard';
 import AddTaskIcon from '@mui/icons-material/AddTask';
-import { addWeeks } from 'date-fns';
-import { dateToUnixSeconds } from '../../../util/dates';
 import { EditTaskDialog } from './editTaskDialog';
 
 type TaskSortKeys = 'date' | 'title' | 'watchers';
@@ -20,8 +18,8 @@ function sortWatchedTasks(
   const copy = tasks.map(t => t);
 
   const methods: Record<
-    TaskSortKeys,
-    (a: OwnTaskInfo, b: OwnTaskInfo) => number
+  TaskSortKeys,
+  (a: OwnTaskInfo, b: OwnTaskInfo) => number
   > = {
     'date': (a, b) => a.dueDate - b.dueDate,
     'title': (a, b) => a.title.localeCompare(b.title),

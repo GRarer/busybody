@@ -1,12 +1,13 @@
-import { Schemas } from "@nprindle/augustus";
-import { serverConfiguration } from "../util/config.js";
-import { dbTransaction } from "../util/db.js";
-import { currentTimeSeconds, sleepSeconds } from "../util/time.js";
-import { dontValidate, optionallyNullArrayOfSchema } from "../util/typeGuards.js";
-import { sendWatcherEmail } from "./mail.js";
+import { Schemas } from '@nprindle/augustus';
+import { serverConfiguration } from '../util/config.js';
+import { dbTransaction } from '../util/db.js';
+import { currentTimeSeconds, sleepSeconds } from '../util/time.js';
+import { dontValidate, optionallyNullArrayOfSchema } from '../util/typeGuards.js';
+import { sendWatcherEmail } from './mail.js';
 
 
 export async function overdueCheckLoop(): Promise<void> {
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
       const now = currentTimeSeconds();
@@ -35,7 +36,7 @@ export async function overdueCheckLoop(): Promise<void> {
             owner_nickname: Schemas.aString,
           })
         );
-        await query(`update tasks set notification_sent = TRUE where deadline_seconds < $1`, [now], dontValidate);
+        await query('update tasks set notification_sent = TRUE where deadline_seconds < $1', [now], dontValidate);
         return queryResult;
       });
       for (const task of tasksToNotify) {

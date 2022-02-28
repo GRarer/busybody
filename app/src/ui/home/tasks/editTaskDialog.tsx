@@ -3,7 +3,8 @@ import {
   Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
   ListItemIcon, ListItemText, Menu, MenuItem, TextField, Typography, useMediaQuery, useTheme
 } from '@mui/material';
-import { createTaskEndpoint, CreateTaskRequest, FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint, UpdateTaskRequest } from 'busybody-core';
+import { createTaskEndpoint, CreateTaskRequest, FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint,
+  UpdateTaskRequest } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { apiPost, apiPut } from '../../../api/requests';

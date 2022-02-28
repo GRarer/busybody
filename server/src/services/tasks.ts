@@ -46,8 +46,7 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
 
   const tasksList: OwnTaskInfo[] = [];
   for (const taskRow of taskRows) {
-    const watcherUUIDs = taskRow.watcher_uuids ?? [];
-    const watchers = watcherUUIDs.map(watcherUUID => friendInfoMap.get(watcherUUID))
+    const watchers = taskRow.watcher_uuids.map(watcherUUID => friendInfoMap.get(watcherUUID))
       .filter((x: FriendInfo | undefined): x is FriendInfo => x !== undefined);
     tasksList.push({
       taskId: taskRow.task_id,

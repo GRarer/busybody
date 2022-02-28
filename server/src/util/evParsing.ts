@@ -16,7 +16,7 @@ export function getIntEV(key: string): number {
   return v;
 }
 
-export function getBoolEV(key: string, defaultValue?: boolean) {
+export function getBoolEV(key: string, defaultValue?: boolean): boolean {
   const v = process.env[key];
   if (v === undefined && defaultValue !== undefined) {
     return defaultValue;

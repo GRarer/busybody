@@ -3,7 +3,8 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   loginEndpoint, logoutEndpoint, registrationEndpoint, selfInfoEndpoint, sendFriendRequestEndpoint,
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
   updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
-  updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint, testEmailEndpoint } from 'busybody-core';
+  updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint,
+  testEmailEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
   updatePassword } from './services/accountInfo.js';
@@ -31,12 +32,12 @@ export function attachHandlers(server: FastifyInstance): void {
   // all API endpoint handlers are attached here
 
   // server admin and testing
-  if(serverConfiguration.testingCommandsEnabled) {
+  if (serverConfiguration.testingCommandsEnabled) {
     addHandler(serverStatusEndpoint, getServerStatus);
     addHandler(testEmailEndpoint, async (request, query, token) => {
       await sendTestEmail(request);
       return null;
-    })
+    });
   }
 
   // authentication

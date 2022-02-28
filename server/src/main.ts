@@ -12,16 +12,37 @@ console.log('Starting busybody server...');
 
 const server: FastifyInstance = Fastify({});
 
+// set up handlers for server shutdown
+async function cleanShutdown(): Promise<void> {
+  await server.close();
+  await disconnectDatabase();
+}
+function triggerCleanShutdown(): void {
+  console.log('shutting down...');
+  cleanShutdown().then(() => {
+    console.log('shutdown complete');
+  }).catch(reason => {
+    console.error('failed to shut down cleanly');
+    console.log(reason);
+  }).finally(() => {
+    process.exit();
+  });
+}
+// attach signal/event handlers to run before exiting
+['SIGINT', 'SIGTERM', 'SIGHUP'].forEach(signal => {
+  process.on(signal, () => triggerCleanShutdown());
+});
+
 async function start(): Promise<void> {
   // verify database is connected
   await dbQuery('select 1;', [], dontValidate);
   console.log('Database connected');
   // start loop to check for overdue tasks and send notifications
   void overdueCheckLoop().catch(err => {
-    console.error("unhandled error in overdue task loop");
+    console.error('unhandled error in overdue task loop');
     console.error(err);
     triggerCleanShutdown();
-  })
+  });
   console.log('Starting http server...');
   await server.register(fastifyCors, { origin: true });
   attachHandlers(server);
@@ -30,28 +51,6 @@ async function start(): Promise<void> {
   const port = typeof address === 'string' ? address : address?.port;
   console.log(`Started server on ${port}`);
 }
-
-// set up handlers for server shutdown
-async function cleanShutdown(): Promise<void> {
-  await server.close();
-  await disconnectDatabase();
-}
-function triggerCleanShutdown(): void {
-  console.log('shutting down...');
-    cleanShutdown().then(() => {
-      console.log('shutdown complete');
-    }).catch(reason => {
-      console.error('failed to shut down cleanly');
-      console.log(reason);
-    }).finally(() => {
-      process.exit();
-    });
-}
-
-// attach signal/event handlers to run before exiting
-['SIGINT', 'SIGTERM', 'SIGHUP'].forEach(signal => {
-  process.on(signal, () => triggerCleanShutdown());
-});
 
 start().catch(err => {
   server.log.error(err);
