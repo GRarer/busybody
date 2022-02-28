@@ -3,13 +3,14 @@ import { serverConfiguration } from "../util/config.js";
 import { dbTransaction } from "../util/db.js";
 import { currentTimeSeconds, sleepSeconds } from "../util/time.js";
 import { dontValidate, optionallyNullArrayOfSchema } from "../util/typeGuards.js";
+import { sendWatcherEmail } from "./mail.js";
 
 
 export async function overdueCheckLoop(): Promise<void> {
   while (true) {
     try {
       const now = currentTimeSeconds();
-      const info = await dbTransaction(async query => {
+      const tasksToNotify = await dbTransaction(async query => {
         const queryResult = await query(
           `with task_watcher_addresses as (
             select task, array_agg(email) as watcher_emails
@@ -37,9 +38,14 @@ export async function overdueCheckLoop(): Promise<void> {
         await query(`update tasks set notification_sent = TRUE where deadline_seconds < $1`, [now], dontValidate);
         return queryResult;
       });
-      // TODO construct and send emails
-      console.log("task notification info:");
-      console.log(info);
+      for (const task of tasksToNotify) {
+        sendWatcherEmail({
+          taskId: task.task_id,
+          taskTitle: task.title,
+          ownerNickname: task.owner_nickname,
+          watcherAddresses: task.watcher_emails
+        });
+      }
     } catch (err) {
       console.error(err);
     }
