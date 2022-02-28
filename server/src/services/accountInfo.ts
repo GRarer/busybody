@@ -17,7 +17,7 @@ export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
       full_name: Schemas.aString,
       nickname: Schemas.aString,
       email: Schemas.aString
-    }).validate
+    })
   );
   if (results.length === 0) {
     throw new UserException(401, 'Invalid session token');
@@ -117,7 +117,7 @@ export async function exportAccountData(token: string): Promise<ExportedPersonal
       full_name: Schemas.aString,
       nickname: Schemas.aString,
       email: Schemas.aString
-    }).validate
+    })
   );
 
   const userIdentity

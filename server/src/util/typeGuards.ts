@@ -1,13 +1,23 @@
 // common type guards, useful for validating database query responses
-import { Schema } from '@nprindle/augustus';
+import { Schema, Schemas } from '@nprindle/augustus';
 
-export function matchesSchema<S, D=S>(schema: Schema<D, S>): (x: unknown) => x is S {
-  return (x): x is S => schema.validate(x);
+// no-op schema for database queries where the result will not be used
+export const dontValidate: Schema<unknown, unknown> = {
+  encode: x => x,
+  decode: x => x,
+  validate: (x): x is unknown => true
 }
 
-export function dontValidate(x: unknown): x is unknown {
-  return true;
+// useful for postgres array columns, which can be null if the array is empty
+export function optionallyNullArrayOfSchema<D, R>(s: Schema<D,R>): Schema<D[], R[] | null> {
+  const inner = Schemas.arrayOf(s);
+  return {
+    encode: val => inner.encode(val),
+    validate: (data): data is null | R[] => (data === null) || inner.validate(data),
+    decode: data => data === null ? [] : inner.decode(data)
+  }
 }
+
 
 // allows compile-time totality checking to guarantee this function is never called
 export function absurd(x: never): never {

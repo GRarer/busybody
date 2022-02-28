@@ -8,3 +8,4 @@ app/node_modules
 core/node_modules
 # server environment config includes secrets
 server/.env
+resetdb.sh

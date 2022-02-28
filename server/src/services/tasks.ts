@@ -3,9 +3,9 @@ import { CreateTaskRequest, FriendInfo, OwnTaskInfo, TodoListResponse, UpdateTas
   WatchedTasksResponse } from 'busybody-core';
 import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
-import { dontValidate } from '../util/typeGuards.js';
+import { dontValidate, optionallyNullArrayOfSchema } from '../util/typeGuards.js';
 import { lookupSessionUser } from './authentication.js';
-import { currentFriendsQuery, databaseFriendInfoValidator } from './friends.js';
+import { currentFriendsQuery, databaseFriendInfoSchema } from './friends.js';
 import pgFormat from 'pg-format';
 import { v4 as uuidV4 } from 'uuid';
 // TODO reduce duplication in this file
@@ -18,7 +18,7 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
   const userUUID = await lookupSessionUser(token);
   const { friendRows, taskRows } = await dbTransaction(async query => {
     const friendRows = await query(
-      currentFriendsQuery, [userUUID], databaseFriendInfoValidator
+      currentFriendsQuery, [userUUID], databaseFriendInfoSchema
     );
     const taskRows = await query('select * from tasks_with_watcher_uuids where task_owner = $1', [userUUID],
       Schemas.recordOf({
@@ -26,8 +26,8 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
         title: Schemas.aString,
         description_text: Schemas.aString,
         deadline_seconds: Schemas.aNumber,
-        watcher_uuids: Schemas.union(Schemas.aNull, Schemas.arrayOf(Schemas.aString))
-      }).validate
+        watcher_uuids: optionallyNullArrayOfSchema(Schemas.aString),
+      })
     );
     return { friendRows, taskRows };
   });
@@ -80,7 +80,7 @@ export async function getWatchedTasks(token: string): Promise<WatchedTasksRespon
       deadline_seconds: Schemas.aNumber,
       username: Schemas.aString,
       full_name: Schemas.aString
-    }).validate);
+    }));
   return rows.map(row => ({
     taskId: row.task_id,
     title: row.title,
@@ -109,9 +109,11 @@ export async function updateTask(request: UpdateTaskRequest, token: string): Pro
     // exclude watchers who aren't this user's friend
     // (this situation could occur nonmaliciously if a user is unfriended while editing a task)
     const allFriendUUIDs = new Set((
-      await dbQuery(currentFriendsQuery, [userUUID], databaseFriendInfoValidator)
+      await dbQuery(currentFriendsQuery, [userUUID], databaseFriendInfoSchema)
     ).map(row => row.user_uuid));
     request.watcherUUIDs = request.watcherUUIDs.filter(w => allFriendUUIDs.has(w));
+
+    // TODO reset notifications_sent if new deadline is in the future
 
     // update task data
     await query(
@@ -142,7 +144,7 @@ export async function createTask(request: CreateTaskRequest, token: string): Pro
 
     // exclude watchers are not user's friends
     const allFriendUUIDs = new Set((
-      await dbQuery(currentFriendsQuery, [userUUID], databaseFriendInfoValidator)
+      await dbQuery(currentFriendsQuery, [userUUID], databaseFriendInfoSchema)
     ).map(row => row.user_uuid));
     request.watcherUUIDs = request.watcherUUIDs.filter(w => allFriendUUIDs.has(w));
 

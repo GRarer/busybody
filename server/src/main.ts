@@ -1,6 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { attachHandlers } from './endpointHandlers.js';
+import { overdueCheckLoop } from './services/overdue.js';
 import { serverConfiguration } from './util/config.js';
 import { dbQuery, disconnectDatabase } from './util/db.js';
 import { dontValidate } from './util/typeGuards.js';
@@ -15,6 +16,12 @@ async function start(): Promise<void> {
   // verify database is connected
   await dbQuery('select 1;', [], dontValidate);
   console.log('Database connected');
+  // start loop to check for overdue tasks and send notifications
+  void overdueCheckLoop().catch(err => {
+    console.error("unhandled error in overdue task loop");
+    console.error(err);
+    triggerCleanShutdown();
+  })
   console.log('Starting http server...');
   await server.register(fastifyCors, { origin: true });
   attachHandlers(server);
@@ -29,10 +36,8 @@ async function cleanShutdown(): Promise<void> {
   await server.close();
   await disconnectDatabase();
 }
-// attach signal/event handlers to run before exiting
-['SIGINT', 'SIGTERM', 'SIGHUP'].forEach(signal => {
-  process.on(signal, function() {
-    console.log('shutting down...');
+function triggerCleanShutdown(): void {
+  console.log('shutting down...');
     cleanShutdown().then(() => {
       console.log('shutdown complete');
     }).catch(reason => {
@@ -41,7 +46,11 @@ async function cleanShutdown(): Promise<void> {
     }).finally(() => {
       process.exit();
     });
-  });
+}
+
+// attach signal/event handlers to run before exiting
+['SIGINT', 'SIGTERM', 'SIGHUP'].forEach(signal => {
+  process.on(signal, () => triggerCleanShutdown());
 });
 
 start().catch(err => {

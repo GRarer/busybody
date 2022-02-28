@@ -8,25 +8,25 @@ import { lookupSessionUser } from './authentication.js';
 // also used to look up watcher information for tasks
 export const currentFriendsQuery = `select user_uuid, username, full_name from users join friends_symmetric
 on friends_symmetric.friend = users.user_uuid where friends_symmetric.this_user = $1;`;
-export const databaseFriendInfoValidator = Schemas.recordOf({
+export const databaseFriendInfoSchema = Schemas.recordOf({
   user_uuid: Schemas.aString,
   username: Schemas.aString,
   full_name: Schemas.aString
-}).validate;
+});
 
 export async function getUserFriendsList(token: string): Promise<FriendsListResponse> {
   const uuid = await lookupSessionUser(token);
   const result = await dbTransaction(async query => {
-    const friends = await query(currentFriendsQuery, [uuid], databaseFriendInfoValidator);
+    const friends = await query(currentFriendsQuery, [uuid], databaseFriendInfoSchema);
     const incoming = await query(
       `select user_uuid, username, full_name
       from users join friend_requests on friend_requests.from_user = users.user_uuid
-      where friend_requests.to_user = $1;`, [uuid], databaseFriendInfoValidator
+      where friend_requests.to_user = $1;`, [uuid], databaseFriendInfoSchema
     );
     const outgoing = await query(
       `select user_uuid, username, full_name
       from users join friend_requests on friend_requests.to_user = users.user_uuid
-      where friend_requests.from_user = $1;`, [uuid], databaseFriendInfoValidator
+      where friend_requests.from_user = $1;`, [uuid], databaseFriendInfoSchema
     );
 
     const convertResult = (row: { user_uuid: string; username: string; full_name: string; }): FriendInfo => ({
@@ -51,7 +51,7 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
     // look up UUID for the given username
     const recipientInfo = await query(
       'select user_uuid from users where username=$1;', [recipient.username],
-      Schemas.recordOf({ user_uuid: Schemas.aString }).validate
+      Schemas.recordOf({ user_uuid: Schemas.aString })
     );
     if (recipientInfo.length === 0) {
       throw new UserException(404, 'No user with that username exists');
@@ -81,7 +81,7 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
         select * from existing union select * from outgoing union select * from incoming
       ) select * from totals where count > 0;`,
       [senderUUID, recipientUUID],
-      countsRowSchema.validate
+      countsRowSchema
     );
     for (const nonzeroCountCategory of counts.filter(count => count.count !== 0).map(count => count.category)) {
       if (nonzeroCountCategory === 'existing') {

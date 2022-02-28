@@ -45,7 +45,8 @@ CREATE TABLE tasks(
     title TEXT not null,
     description_text TEXT not null,
     -- // TODO is seconds since epoch the right format to store times?
-    deadline_seconds BIGINT not null -- data/time represented as seconds since epoch,
+    deadline_seconds BIGINT not null, -- data/time represented as seconds since epoch,
+    notification_sent BOOLEAN not null default FALSE
 );
 
 CREATE TABLE watch_assignments(
@@ -102,6 +103,7 @@ begin
 
     INSERT INTO friendships (user_a, user_b) VALUES
     (georgeUUID, ramonaUUID),
+    (ramonaUUID, johnUUID),
     (georgeUUID, johnUUID),
     (josiaUUID, georgeUUID);
 
@@ -121,6 +123,7 @@ begin
     INSERT into watch_assignments (watcher, task) VALUES
     (georgeUUID, taskIdTrisect),
     (georgeUUID, taskIdSquareCircle),
+    (ramonaUUID, taskIdSquareCircle),
     (georgeUUID, taskIdAlumniEvent),
     (ramonaUUID, taskIdStealT),
     (josiaUUID, taskIdStealT),

@@ -5,7 +5,7 @@ import { UserException } from '../util/errors.js';
 import bcrypt from 'bcrypt';
 import { v4 as uuidV4 } from 'uuid';
 import { LoginRequest } from 'busybody-core';
-import { dontValidate, matchesSchema } from '../util/typeGuards.js';
+import { dontValidate } from '../util/typeGuards.js';
 
 // maps recently-used session tokens to user uuids
 // extra type assertion is necessary here because DefinitelyTyped hasn't updated its lru-cache type definitions
@@ -25,10 +25,10 @@ export async function logIn(loginRequest: LoginRequest): Promise<string> {
     const matching = await query(
       'SELECT "user_uuid", "password_hash" from users where username = $1;',
       [loginRequest.username],
-      matchesSchema(Schemas.recordOf({
+     Schemas.recordOf({
         'user_uuid': Schemas.aString,
         'password_hash': Schemas.aString
-      }))
+      })
     );
     if (matching.length < 1) {
       throw new UserException(403, 'Incorrect username or password');
@@ -73,7 +73,7 @@ export async function lookupSessionUser(token: string): Promise<string> {
   }
   const rows = await dbQuery(
     'select user_uuid from sessions where token = $1;', [token],
-    Schemas.recordOf({ user_uuid: Schemas.aString }).validate
+    Schemas.recordOf({ user_uuid: Schemas.aString })
   );
   if (rows.length < 0) {
     throw new UserException(401, 'Your session is not authenticated. Try signing out and signing back in.');

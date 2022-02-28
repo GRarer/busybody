@@ -2,48 +2,18 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { getIntEV, getBoolEV, getStringEV } from './evParsing.js';
 
 dotenv.config(); // if .env file is present, it will be used to populate environment variables
 
-
-function getStringEV(key: string): string {
-  const v = process.env[key];
-  if (v === undefined) {
-    throw new Error(`Fatal: missing required environment variable: ${key}`);
-  }
-  return v;
-}
-
-function getIntEV(key: string): number {
-  const v = Number.parseInt(getStringEV(key));
-  if (Number.isNaN(v)) {
-    throw new Error(`Fatal: environment variable ${key} must be an integer, was instead '${v}'`);
-  }
-  return v;
-}
-
-function getBoolEV(key: string, defaultValue?: boolean) {
-  const v = process.env[key];
-  if (v === undefined && defaultValue !== undefined) {
-    return defaultValue;
-  }
-  if (v !== undefined) {
-    const s = v.toLowerCase();
-    if (s === 'true') {
-      return true;
-    } else if (s === 'false') {
-      return false;
-    }
-  }
-  throw new Error(`Fatal: environment variable ${key} must be 'true' or 'false', was instead '${v}'`);
-}
 
 export const serverConfiguration: {
   apiPort: number;
   postgresConfig: pg.PoolConfig;
   testingCommandsEnabled: boolean,
   emailTransport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>,
-  emailFromField: string
+  emailFromField: string,
+  secondsBetweenChecks: number
 } = {
   apiPort: getIntEV('BB_PORT'),
   testingCommandsEnabled: getBoolEV("BB_LOCAL_TEST_MODE", false),
@@ -70,5 +40,6 @@ export const serverConfiguration: {
         pass: getStringEV('BB_MAIL_LIVE_PASSWORD')
       }
     }),
-  emailFromField: getStringEV("BB_EMAIL_FROM")
+  emailFromField: getStringEV("BB_EMAIL_FROM"),
+  secondsBetweenChecks: getIntEV("BB_LOOP_SECONDS")
 };
