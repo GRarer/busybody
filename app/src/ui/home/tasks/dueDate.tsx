@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 import { red } from '@mui/material/colors';
-import { renderDate, unixSecondsToDate } from '../../../util/dates';
+import { renderDate, unixSecondsToDate } from 'busybody-core';
 import React from 'react';
 
 export function DueDate(props: {unixSeconds: number;}): JSX.Element {

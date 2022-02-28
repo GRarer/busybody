@@ -4,4 +4,5 @@ export * from './api/account.js';
 export * from './api/auth.js';
 export * from './api/friends.js';
 export * from './api/tasks.js';
-export * from './sharedLogic/usernamePasswordValidation.js';
+export * from './util/usernamePasswordValidation.js';
+export * from './util/time.js';
