@@ -57,6 +57,9 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
       throw new UserException(404, 'No user with that username exists');
     }
     const recipientUUID = recipientInfo[0].user_uuid;
+    if (recipientUUID === senderUUID) {
+      throw new UserException(409, 'You cannot send a friend request to yourself');
+    }
 
     // check for existing friendship or friend request
     const countsRowSchema = Schemas.recordOf({
@@ -142,9 +145,22 @@ export async function cancelFriendRequest(sessionToken: string, recipientUUID: s
 
 export async function unfriend(sessionToken: string, friendUUID: string): Promise<void> {
   const userUUID = await lookupSessionUser(sessionToken);
-  // TODO probably need to also remove watching any tasks where these two users are friends
-  await dbQuery(
-    'delete from friendships where (((user_a = $1) and (user_b = $2)) or ((user_a = $2) and (user_b = $1)))',
-    [userUUID, friendUUID], dontValidate
-  );
+
+  await dbTransaction(async query => {
+    await query(
+      'delete from friendships where (((user_a = $1) and (user_b = $2)) or ((user_a = $2) and (user_b = $1)))',
+      [userUUID, friendUUID], dontValidate
+    );
+    // remove both users from watching each others' tasks
+    await query(
+      `with their_tasks as (
+       select task from watch_assignments join tasks on task=task_id
+        where task_owner = $1 or task_owner = $2
+        )
+        delete from watch_assignments using their_tasks
+        where their_tasks.task = watch_assignments.task
+        and (watcher = $1 or watcher = $2);`,
+      [userUUID, friendUUID], dontValidate
+    )
+  });
 }
