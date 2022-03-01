@@ -23,14 +23,16 @@ export type WatchedTaskInfo = BasicTaskInfo & {
   owner: FriendInfo;
 };
 
+export const ownTaskInfoSchema = Schemas.recordOf({
+  taskId: Schemas.aString,
+  title: Schemas.aString,
+  description: Schemas.aString,
+  dueDate: Schemas.aNumber,
+  watchers: Schemas.arrayOf(friendInfoSchema)
+});
+
 export const getTodoListEndpoint = new GetEndpointSimple('/todo', Schemas.recordOf({
-  tasks: Schemas.arrayOf(Schemas.recordOf({
-    taskId: Schemas.aString,
-    title: Schemas.aString,
-    description: Schemas.aString,
-    dueDate: Schemas.aNumber,
-    watchers: Schemas.arrayOf(friendInfoSchema)
-  })),
+  tasks: Schemas.arrayOf(ownTaskInfoSchema),
   friends: Schemas.arrayOf(friendInfoSchema)
 }));
 

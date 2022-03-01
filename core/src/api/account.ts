@@ -1,5 +1,7 @@
 import { DomainOf, Schemas } from '@nprindle/augustus';
 import { DeleteEndpointSimple, GetEndpointSimple, PutEndpointSimple } from '../apis.js';
+import { friendInfoSchema } from './friends.js';
+import { ownTaskInfoSchema, watchedTasksResponseSchema } from './tasks.js';
 
 export const registrationRequestSchema = Schemas.recordOf({
   username: Schemas.aString,
@@ -60,9 +62,9 @@ const exportedPersonalDataSchema = Schemas.recordOf({
     nickname: Schemas.aString,
     email: Schemas.aString,
   }),
-  // TODO include friends list
-  // TODO include tasks
-  // TODO include watched tasks
+  todoListTasks: Schemas.arrayOf(ownTaskInfoSchema),
+  friends: Schemas.arrayOf(friendInfoSchema),
+  watchedTasks: watchedTasksResponseSchema,
   // TODO include any other account settings
 });
 

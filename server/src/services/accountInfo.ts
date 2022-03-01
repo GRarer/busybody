@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 import { generateRandomToken, lookupSessionUser } from './authentication.js';
 import { dontValidate } from '../util/typeGuards.js';
 import { v4 as uuidV4 } from 'uuid';
+import { getOwnTodoList, getWatchedTasks } from './tasks.js';
 
 export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
   const results = await dbQuery(
@@ -120,8 +121,13 @@ export async function exportAccountData(token: string): Promise<ExportedPersonal
     })
   );
 
-  const userIdentity
-    = userIdentityRows[0] ?? new UserException(500, 'session appears valid but user account info could not be found');
+  const userIdentity = userIdentityRows?.[0];
+  if (userIdentity === undefined) {
+    throw new UserException(500, 'session appears valid but user account info could not be found');
+  }
+
+  const todoListResponse = await getOwnTodoList(token);
+  const watchedTasksResponse = await getWatchedTasks(token);
 
   return {
     description: 'data exported from Busybody app',
@@ -131,7 +137,10 @@ export async function exportAccountData(token: string): Promise<ExportedPersonal
       fullName: userIdentity.full_name,
       nickname: userIdentity.nickname,
       email: userIdentity.email
-    }
+    },
+    todoListTasks: todoListResponse.tasks,
+    friends: todoListResponse.friends,
+    watchedTasks: watchedTasksResponse,
   };
 }
 
