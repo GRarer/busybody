@@ -1,10 +1,9 @@
-import { addWeeks, format, setHours, setMinutes } from 'date-fns';
-
-// TODO we should be rounding everything to the nearest minute
+import { addWeeks, format, setHours, setMinutes, setSeconds } from 'date-fns';
 
 export function unixSecondsToDate(seconds: number): Date {
   // js date objects count *milliseconds* since epoch, but Busybody stores seconds
-  return new Date(seconds * 1000);
+  // we round all times to the nearest minute
+  return setSeconds(new Date(seconds * 1000), 0);
 }
 
 export function dateToUnixSeconds(date: Date): number {
@@ -22,7 +21,6 @@ export function renderDate(d: Date): string {
 }
 
 export function getNextWeek(): Date {
-  // TODO should this be a specific time in the day instead of an integer number of days in the future?
   const exactlyNextWeek = addWeeks((new Date()), 1);
   return setHours(setMinutes(exactlyNextWeek, 59), 23);
 }
