@@ -9,7 +9,6 @@ import { apiPut } from '../../util/requests';
 import { errorToMessage } from '../../util/util';
 import { OptionalInputWarning } from '../common';
 
-// TODO reset state when closed
 export function ChangePasswordDialog(
   props: {
     token: string;
@@ -32,11 +31,18 @@ export function ChangePasswordDialog(
 
   const canUpdate = Boolean(password && (password === passwordConfirm) && !passwordProblem);
 
+  function resetAndClose(): void {
+    props.onClose();
+    setPassword('');
+    setPasswordConfirm('');
+    setShowPassword(false);
+  }
+
   function update(): void {
     apiPut(updatePasswordEndpoint, password, {}, props.token)
       .then(() => {
         enqueueSnackbar('Your password has been updated', { variant: 'success' });
-        props.onClose();
+        resetAndClose();
       })
       .catch(error => {
         enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
@@ -44,7 +50,7 @@ export function ChangePasswordDialog(
   }
 
   return (
-    <Dialog open={props.open} onClose={props.onClose}>
+    <Dialog open={props.open} onClose={() => resetAndClose()}>
       <DialogTitle>Change Password</DialogTitle>
       <DialogContent>
         <FormControl variant="filled" style={{ width: '100%' }} error={Boolean(passwordProblem)}>
@@ -67,7 +73,7 @@ export function ChangePasswordDialog(
         </FormGroup>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose}>Cancel</Button>
+        <Button onClick={() => resetAndClose()}>Cancel</Button>
         <Button onClick={update} disabled={!canUpdate}>Change Password</Button>
       </DialogActions>
     </Dialog>
