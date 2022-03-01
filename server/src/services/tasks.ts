@@ -112,8 +112,6 @@ export async function updateTask(request: UpdateTaskRequest, token: string): Pro
     ).map(row => row.user_uuid));
     request.watcherUUIDs = request.watcherUUIDs.filter(w => allFriendUUIDs.has(w));
 
-    // TODO reset notifications_sent if new deadline is in the future
-
     // update task data
     if (request.dueDate > currentTimeSeconds()) {
       await query(

@@ -64,5 +64,4 @@ export function TodoTaskCard(props: {
       token={props.token} task={props.info} friendsList={props.friendsList}
       onUpdate={(newData) => props.updateList(newData)}/>
   </>;
-  // TODO show watchers' icons on card
 }

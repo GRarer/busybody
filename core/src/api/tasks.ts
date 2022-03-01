@@ -6,7 +6,6 @@ type BasicTaskInfo = {
   taskId: string;
   title: string;
   description: string;
-  // TODO choose best timezone-agnostic serialization format for date-time; unix time seconds may not be best
   dueDate: number; // represented in seconds since epoch
 };
 
