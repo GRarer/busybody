@@ -8,7 +8,6 @@ import { lookupSessionUser } from './authentication.js';
 import { currentFriendsQuery, databaseFriendInfoSchema } from './friends.js';
 import pgFormat from 'pg-format';
 import { v4 as uuidV4 } from 'uuid';
-// TODO reduce duplication in this file
 
 function currentTimeSeconds(): number {
   return Math.floor(Date.now() / 1000);
@@ -125,8 +124,6 @@ export async function updateTask(request: UpdateTaskRequest, token: string): Pro
         [request.title, request.description, request.dueDate, request.taskId], dontValidate
       );
     }
-
-
 
     // update watchers
     await query('delete from watch_assignments where task = $1', [request.taskId], dontValidate);

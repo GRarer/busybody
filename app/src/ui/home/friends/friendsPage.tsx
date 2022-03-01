@@ -123,9 +123,8 @@ export function FriendsPage(props: {
       open={unfriendDialogSelection !== null}
       onClose={() => setUnfriendDialogSelection(null)}
       title={`Unfriend ${unfriendDialogSelection?.fullName}?`}
-      body={/* // TODO use correct gender pronouns? */`Do you want to remove ${unfriendDialogSelection?.fullName}
-      (${unfriendDialogSelection?.username}) from your friends list? You will be unable to watch their tasks and
-      they will be unable to watch your tasks.`}
+      body={`Do you want to remove ${unfriendDialogSelection?.fullName} (${unfriendDialogSelection?.username}) from
+      your friends list? You will be unable to watch their tasks and they will be unable to watch your tasks.`}
     >
       <Button onClick={() => {
         unfriendUser(unfriendDialogSelection!);

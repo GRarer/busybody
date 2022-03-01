@@ -121,10 +121,10 @@ export async function exportAccountData(token: string): Promise<ExportedPersonal
     })
   );
 
-  const userIdentity = userIdentityRows?.[0];
-  if (userIdentity === undefined) {
+  if (userIdentityRows.length === 0) {
     throw new UserException(500, 'session appears valid but user account info could not be found');
   }
+  const userIdentity = userIdentityRows[0];
 
   const todoListResponse = await getOwnTodoList(token);
   const watchedTasksResponse = await getWatchedTasks(token);

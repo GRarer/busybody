@@ -1,9 +1,9 @@
 import React from 'react';
 
 export function WatcherEmailBody(props: {
-  taskTitle: string,
-  ownerFullName: string,
-  ownerNickname: string
+  taskTitle: string;
+  ownerFullName: string;
+  ownerNickname: string;
 }): JSX.Element {
   // TODO include link to open this task's details
   // TODO improve style
@@ -12,5 +12,5 @@ export function WatcherEmailBody(props: {
     overdue.</p>
     <p>You are receiving this message because {props.ownerNickname} attached you as a watcher for this task on
     Busybody.</p>
-  </>
+  </>;
 }
