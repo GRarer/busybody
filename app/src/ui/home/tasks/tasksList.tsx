@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { apiGet } from '../../../util/requests';
 import { errorToMessage } from '../../../util/util';
 import { SortControls, SortControlState } from './sortControls';
-import { WatchedTaskListSkeleton } from './tasksListSkeleton';
+import { TodoTaskListSkeleton } from './tasksListSkeleton';
 import { TodoTaskCard } from './todoTaskCard';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import { EditTaskDialog } from './editTaskDialog';
@@ -69,7 +69,7 @@ export function TasksList(props: {
   }
 
   if (listData === null) {
-    return <WatchedTaskListSkeleton />; // TODO use different skeleton page for todo list
+    return <TodoTaskListSkeleton />;
   }
 
   return (<>
