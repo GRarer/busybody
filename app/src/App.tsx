@@ -1,7 +1,7 @@
 import { AppBar, Box, LinearProgress, Toolbar, Typography } from '@mui/material';
 import { sessionActiveEndpoint } from 'busybody-core';
 import React, { useEffect, useState } from 'react';
-import { apiGet } from './api/requests';
+import { apiGet } from './util/requests';
 import { HomeRoot } from './ui/home/homeRoot';
 import { LandingPage } from './ui/landing/Landing';
 import { SettingsMenu } from './ui/menu/settingsMenu';

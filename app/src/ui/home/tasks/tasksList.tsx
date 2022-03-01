@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import { FriendInfo, getTodoListEndpoint, OwnTaskInfo, TodoListResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { apiGet } from '../../../api/requests';
+import { apiGet } from '../../../util/requests';
 import { errorToMessage } from '../../../util/util';
 import { SortControls, SortControlState } from './sortControls';
 import { WatchedTaskListSkeleton } from './tasksListSkeleton';

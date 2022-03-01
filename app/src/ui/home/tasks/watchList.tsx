@@ -1,7 +1,7 @@
 import { getWatchedTasksEndpoint, unfollowTaskEndpoint, WatchedTasksResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { apiDelete, apiGet } from '../../../api/requests';
+import { apiDelete, apiGet } from '../../../util/requests';
 import { errorToMessage } from '../../../util/util';
 import { SortControls, SortControlState } from './sortControls';
 import { WatchedTaskListSkeleton } from './tasksListSkeleton';

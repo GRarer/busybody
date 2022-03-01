@@ -2,7 +2,7 @@ import { Card, CardActions, Button, CardContent, FilledInput, FormControl, Input
 import { FriendsListResponse, sendFriendRequestEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { apiPut } from '../../../api/requests';
+import { apiPut } from '../../../util/requests';
 import { errorToMessage } from '../../../util/util';
 
 export function FriendRequestFormCard(props: {

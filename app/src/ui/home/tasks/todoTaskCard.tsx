@@ -2,7 +2,7 @@ import { Card, CardHeader, CardContent, Typography, CardActions, Button, AvatarG
 import { deleteTaskEndpoint, FriendInfo, OwnTaskInfo, TodoListResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { apiDelete } from '../../../api/requests';
+import { apiDelete } from '../../../util/requests';
 import { errorToMessage } from '../../../util/util';
 import { ConfirmDialog } from '../../common/confirmDialog';
 import { FriendAvatar } from '../friends/friendCard';

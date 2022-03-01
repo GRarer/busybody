@@ -5,7 +5,7 @@ import {
 import { selfInfoEndpoint, updateEmailEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { apiGet, apiPut } from '../../api/requests';
+import { apiGet, apiPut } from '../../util/requests';
 import { errorToMessage } from '../../util/util';
 
 export function ChangeEmailDialog(

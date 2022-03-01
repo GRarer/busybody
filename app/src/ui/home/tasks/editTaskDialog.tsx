@@ -7,7 +7,7 @@ import { createTaskEndpoint, CreateTaskRequest, FriendInfo, OwnTaskInfo, TodoLis
   UpdateTaskRequest, dateToUnixSeconds, getNextWeek, unixSecondsToDate, dateFormatString } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
-import { apiPost, apiPut } from '../../../api/requests';
+import { apiPost, apiPut } from '../../../util/requests';
 import { errorToMessage } from '../../../util/util';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { FriendAvatar } from '../friends/friendCard';

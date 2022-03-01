@@ -5,7 +5,7 @@ import {
 import { passwordRequirementProblem, updatePasswordEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { apiPut } from '../../api/requests';
+import { apiPut } from '../../util/requests';
 import { errorToMessage } from '../../util/util';
 import { OptionalInputWarning } from '../common';
 

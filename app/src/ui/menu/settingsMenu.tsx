@@ -2,7 +2,7 @@ import { Logout, AccountBox, AlternateEmail, VpnKey, DataArray } from '@mui/icon
 import { MenuItem, ListItemIcon, ListItemText, Divider, Menu, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { apiDelete } from '../../api/requests';
+import { apiDelete } from '../../util/requests';
 import { logoutEndpoint } from 'busybody-core';
 import { ChangePersonalInfoDialog } from './changeInfoMenu';
 import { ChangeEmailDialog } from './changeEmailMenu';

@@ -3,7 +3,7 @@ import {
 import { deleteAccountEndpoint, exportPersonalDataEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
-import { apiDelete, apiGet } from '../../api/requests';
+import { apiDelete, apiGet } from '../../util/requests';
 import { errorToMessage } from '../../util/util';
 import { CloudDownload, DeleteForever } from '@mui/icons-material';
 import { ConfirmDialog } from '../common/confirmDialog';
