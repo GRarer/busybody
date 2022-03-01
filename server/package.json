@@ -20,6 +20,8 @@
     "@types/nodemailer": "^6.4.4",
     "@types/pg": "^8.6.4",
     "@types/pg-format": "^1.0.2",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.11",
     "@types/uuid": "^8.3.4",
     "bcrypt": "^5.0.1",
     "busybody-core": "file:../core",
@@ -30,6 +32,8 @@
     "nodemailer": "^6.7.2",
     "pg": "^8.7.3",
     "pg-format": "^1.0.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "typescript": "^4.5.5",
     "uuid": "^8.3.2"
   },

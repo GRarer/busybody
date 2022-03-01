@@ -44,6 +44,7 @@ export async function overdueCheckLoop(): Promise<void> {
           taskId: task.task_id,
           taskTitle: task.title,
           ownerNickname: task.owner_nickname,
+          ownerFullName: task.owner_full_name,
           watcherAddresses: task.watcher_emails
         });
       }

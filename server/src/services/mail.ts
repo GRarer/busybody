@@ -1,46 +1,35 @@
 import { serverConfiguration } from '../util/config.js';
+import { WatcherEmailBody } from './mailTemplates.js';
+import ReactDOMServer from 'react-dom/server.js';
 
-function addressesIntoToField(addresses: string[]): string {
-  return addresses.join(', ');
+function send(addresses: string[], subject: string, body: JSX.Element | string) {
+  serverConfiguration.emailTransport.sendMail({
+    from: serverConfiguration.emailFromField,
+    to: addresses.join(', '),
+    subject,
+    html: typeof body === "string" ? undefined : ReactDOMServer.renderToStaticMarkup(body),
+    text: typeof body === "string" ? body : undefined
+  }).catch(err => {
+    console.error('failed to send email');
+    console.error(err);
+  });;
 }
 
 export async function sendHelloWorldEmail(addresses: string[]): Promise<void> {
-  const to = addressesIntoToField(addresses);
-  const transport = serverConfiguration.emailTransport;
-  const result = await transport.sendMail({
-    from: serverConfiguration.emailFromField,
-    to,
-    subject: 'Hello',
-    text: 'Hello world in plain text!', // plain text body
-    html: '<b>Hello world but bold!</b>', // html body
-  });
-  console.log('sent hello world.');
-  console.log(result);
+  send(addresses, 'Hello', 'Hello world in plain text!')
 }
 
-// sends watcher emails (and does not wait for transaction to be finished)
+// send watcher emails (and do not wait for transaction to be finished)
 export function sendWatcherEmail(task: {
   watcherAddresses: string[];
   taskId: string;
   taskTitle: string;
   ownerNickname: string;
+  ownerFullName: string;
 }): void {
-  const to = addressesIntoToField(task.watcherAddresses);
-  const transport = serverConfiguration.emailTransport;
-
-  // TODO render fancy HTML
-  // TODO link to view task
-  const body = `Busybody overdue task notification\ntitle: ${task.taskTitle}\nid: ${task.taskId}`;
-
-  transport.sendMail({
-    from: serverConfiguration.emailFromField,
-    to,
-    subject: `${task.ownerNickname} missed their deadline for the task ${task.taskTitle}`,
-    text: body
-  }).catch(err => {
-    console.error('failed to send task reminder emails');
-    console.log(`affected recipients: ${to}`);
-    console.log(`affected task: ${task.taskId} (${task.taskTitle})`);
-    console.error(err);
-  });
+  send(
+    task.watcherAddresses,
+    `${task.ownerNickname} missed their deadline for the task ${task.taskTitle}`,
+    WatcherEmailBody(task)
+  );
 }
