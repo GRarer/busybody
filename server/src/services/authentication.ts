@@ -75,7 +75,7 @@ export async function lookupSessionUser(token: string): Promise<string> {
     'select user_uuid from sessions where token = $1;', [token],
     Schemas.recordOf({ user_uuid: Schemas.aString })
   );
-  if (rows.length < 0) {
+  if (rows.length === 0) {
     throw new UserException(401, 'Your session is not authenticated. Try signing out and signing back in.');
   }
   return rows[0].user_uuid;
