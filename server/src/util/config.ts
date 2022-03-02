@@ -13,6 +13,7 @@ export const serverConfiguration: {
   testingCommandsEnabled: boolean;
   emailTransport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
   emailFromField: string;
+  appUrl: string;
   secondsBetweenChecks: number;
 } = {
   apiPort: getIntEV('BB_PORT'),
@@ -41,5 +42,6 @@ export const serverConfiguration: {
       }
     }),
   emailFromField: getStringEV('BB_EMAIL_FROM'),
+  appUrl: getStringEV('BB_APP_URL'),
   secondsBetweenChecks: getIntEV('BB_LOOP_SECONDS')
 };

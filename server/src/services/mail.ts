@@ -22,8 +22,8 @@ export async function sendHelloWorldEmail(addresses: string[]): Promise<void> {
 // send watcher emails (and do not wait for transaction to be finished)
 export function sendWatcherEmail(task: {
   watcherAddresses: string[];
-  taskId: string;
   taskTitle: string;
+  taskDescription: string,
   ownerNickname: string;
   ownerFullName: string;
 }): void {

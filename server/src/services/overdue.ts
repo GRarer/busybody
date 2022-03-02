@@ -17,11 +17,11 @@ export async function overdueCheckLoop(): Promise<void> {
             select task, array_agg(email) as watcher_emails
             from watch_assignments join users on watcher = user_uuid group by task
           ), overdue_tasks as (
-            select task, watcher_emails, title, deadline_seconds, task_owner
+            select task, watcher_emails, title, description_text, deadline_seconds, task_owner
             from task_watcher_addresses join tasks on task = task_id
             where deadline_seconds < $1 and notification_sent = FALSE
           )
-          select task as task_id, watcher_emails, title, deadline_seconds,
+          select task as task_id, watcher_emails, title, description_text, deadline_seconds,
           task_owner, username as owner_username, full_name as owner_full_name, nickname as owner_nickname
           from overdue_tasks join users on task_owner = user_uuid;`,
           [now],
@@ -29,6 +29,7 @@ export async function overdueCheckLoop(): Promise<void> {
             task_id: Schemas.aString,
             watcher_emails: optionallyNullArrayOfSchema(Schemas.aString),
             title: Schemas.aString,
+            description_text: Schemas.aString,
             deadline_seconds: Schemas.aNumber,
             task_owner: Schemas.aString,
             owner_username: Schemas.aString,
@@ -41,7 +42,7 @@ export async function overdueCheckLoop(): Promise<void> {
       });
       for (const task of tasksToNotify) {
         sendWatcherEmail({
-          taskId: task.task_id,
+          taskDescription: task.description_text,
           taskTitle: task.title,
           ownerNickname: task.owner_nickname,
           ownerFullName: task.owner_full_name,

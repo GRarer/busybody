@@ -57,6 +57,8 @@ BB_MAIL_ETHEREAL_PASSWORD = "randomly_generated_password"
 BB_MAIL_LIVE_SERVICE = "service_name" # see https://nodemailer.com/smtp/well-known/
 BB_MAIL_LIVE_USERNAME = "your_email_username"
 BB_MAIL_LIVE_PASSWORD = "your_email_password"
+# link to app used in emails
+BB_APP_URL = "http://localhost:3000/" # or your production web-app URL
 ```
 ### Running locally
 
