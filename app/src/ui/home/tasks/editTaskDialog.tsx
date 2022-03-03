@@ -6,7 +6,7 @@ import {
 import { createTaskEndpoint, CreateTaskRequest, FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint,
   UpdateTaskRequest, dateToUnixSeconds, getNextWeek, unixSecondsToDate, dateFormatString } from 'busybody-core';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { apiPost, apiPut } from '../../../util/requests';
 import { errorToMessage } from '../../../util/util';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -28,7 +28,12 @@ export function EditTaskDialog(props: {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const defaults = props.task ?? {
+  const defaults: {
+    title: string,
+    description: string,
+    dueDate: number,
+    watchers: FriendInfo[]
+  } = props.task ?? {
     title: '',
     description: '',
     dueDate: dateToUnixSeconds(getNextWeek()),
@@ -41,6 +46,19 @@ export function EditTaskDialog(props: {
   const [watchers, setWatchers] = useState(defaults.watchers);
 
   const [addWatcherMenuAnchorEl, setAddWatcherMenuAnchorEl] = useState<HTMLElement | null>(null);
+  const [prevDefaults, setPrevDefaults] = useState(defaults);
+
+  function resetToDefaults() {
+    setTitle(defaults.title);
+    setDescription(defaults.description);
+    setDueDate(unixSecondsToDate(defaults.dueDate));
+    setWatchers(defaults.watchers);
+  }
+
+  // ensures that fields are always reset whenever props are changed
+  useEffect(() => {
+    resetToDefaults();
+  }, [props.task])
 
   const assignedWatchersUUIDs = new Set(watchers.map(w => w.uuid));
   const unassignedFriends = props.friendsList.filter(f => !assignedWatchersUUIDs.has(f.uuid));
@@ -51,10 +69,7 @@ export function EditTaskDialog(props: {
   // closes dialog and resets state
   function resetAndClose(): void {
     props.onClose();
-    setTitle(defaults.title);
-    setDescription(defaults.description);
-    setDueDate(unixSecondsToDate(defaults.dueDate));
-    setWatchers(defaults.watchers);
+    resetToDefaults();
   }
 
   function save(): void {
