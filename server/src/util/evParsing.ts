@@ -1,4 +1,8 @@
+import dotenv from 'dotenv';
+
 // functions for reading environment variables
+
+dotenv.config(); // if .env file is present, it will be used to populate environment variables
 
 export function getStringEV(key: string): string {
   const v = process.env[key];
@@ -6,6 +10,10 @@ export function getStringEV(key: string): string {
     throw new Error(`Fatal: missing required environment variable: ${key}`);
   }
   return v;
+}
+
+export function getOptionalStringEV(key: string): string | undefined {
+  return process.env[key];
 }
 
 export function getIntEV(key: string): number {

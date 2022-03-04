@@ -15,8 +15,10 @@ function send(addresses: string[], subject: string, body: JSX.Element | string):
   });
 }
 
-export async function sendHelloWorldEmail(addresses: string[]): Promise<void> {
-  send(addresses, 'Hello', 'Hello world in plain text!');
+export async function sendPlaintextEmail(
+  addresses: string[], subject: string = "Hello", body: string = "Hello world"
+): Promise<void> {
+  send(addresses, subject, body);
 }
 
 // send watcher emails (and do not wait for transaction to be finished)

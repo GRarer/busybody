@@ -4,7 +4,7 @@ import { serverConfiguration } from '../util/config.js';
 import { dbQuery } from '../util/db.js';
 import { UserException } from '../util/errors.js';
 import { dontValidate } from '../util/typeGuards.js';
-import { sendHelloWorldEmail } from './mail.js';
+import { sendPlaintextEmail } from './mail.js';
 
 function requireTestingMode(): void {
   if (!serverConfiguration.testingCommandsEnabled) {
@@ -28,7 +28,7 @@ export async function sendTestEmail(request: DomainOf<typeof testEmailEndpoint.r
   console.log('test email request');
   console.log(request);
 
-  await sendHelloWorldEmail(request.to);
+  await sendPlaintextEmail(request.to);
 }
 
 

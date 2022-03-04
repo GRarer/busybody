@@ -1,10 +1,8 @@
-import dotenv from 'dotenv';
+
 import pg from 'pg';
 import nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { getIntEV, getBoolEV, getStringEV } from './evParsing.js';
-
-dotenv.config(); // if .env file is present, it will be used to populate environment variables
+import { getIntEV, getBoolEV, getStringEV, getOptionalStringEV } from './evParsing.js';
 
 
 export const serverConfiguration: {
@@ -15,6 +13,7 @@ export const serverConfiguration: {
   emailFromField: string;
   appUrl: string;
   secondsBetweenChecks: number;
+  wakeUpEmailDestination: string | undefined
 } = {
   apiPort: getIntEV('BB_PORT'),
   testingCommandsEnabled: getBoolEV('BB_LOCAL_TEST_MODE', false),
@@ -30,8 +29,8 @@ export const serverConfiguration: {
       host: 'smtp.ethereal.email',
       port: 587,
       auth: {
-        user: 'cdexyaksc3skynmc@ethereal.email',
-        pass: 'pWmHSPDAh8mgPZxJJc'
+        user: getStringEV('BB_MAIL_ETHEREAL_ADDRESS'),
+        pass: getStringEV('BB_MAIL_ETHEREAL_PASSWORD')
       }
     })
     : nodemailer.createTransport({
@@ -43,5 +42,6 @@ export const serverConfiguration: {
     }),
   emailFromField: getStringEV('BB_EMAIL_FROM'),
   appUrl: getStringEV('BB_APP_URL'),
-  secondsBetweenChecks: getIntEV('BB_LOOP_SECONDS')
+  secondsBetweenChecks: getIntEV('BB_LOOP_SECONDS'),
+  wakeUpEmailDestination: getOptionalStringEV('BB_WAKEUP_EMAIL_ADDRESS')
 };
