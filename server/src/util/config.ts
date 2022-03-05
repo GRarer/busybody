@@ -13,7 +13,7 @@ export const serverConfiguration: {
   emailFromField: string;
   appUrl: string;
   secondsBetweenChecks: number;
-  wakeUpEmailDestination: string | undefined
+  wakeUpEmailDestination: string | undefined;
 } = {
   apiPort: getIntEV('BB_PORT'),
   testingCommandsEnabled: getBoolEV('BB_LOCAL_TEST_MODE', false),

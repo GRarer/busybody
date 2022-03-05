@@ -29,10 +29,10 @@ export function EditTaskDialog(props: {
   const { enqueueSnackbar } = useSnackbar();
 
   const defaults: {
-    title: string,
-    description: string,
-    dueDate: number,
-    watchers: FriendInfo[]
+    title: string;
+    description: string;
+    dueDate: number;
+    watchers: FriendInfo[];
   } = props.task ?? {
     title: '',
     description: '',
@@ -46,9 +46,8 @@ export function EditTaskDialog(props: {
   const [watchers, setWatchers] = useState(defaults.watchers);
 
   const [addWatcherMenuAnchorEl, setAddWatcherMenuAnchorEl] = useState<HTMLElement | null>(null);
-  const [prevDefaults, setPrevDefaults] = useState(defaults);
 
-  function resetToDefaults() {
+  function resetToDefaults(): void {
     setTitle(defaults.title);
     setDescription(defaults.description);
     setDueDate(unixSecondsToDate(defaults.dueDate));
@@ -58,7 +57,7 @@ export function EditTaskDialog(props: {
   // ensures that fields are always reset whenever props are changed
   useEffect(() => {
     resetToDefaults();
-  }, [props.task])
+  }, [props.task]);
 
   const assignedWatchersUUIDs = new Set(watchers.map(w => w.uuid));
   const unassignedFriends = props.friendsList.filter(f => !assignedWatchersUUIDs.has(f.uuid));

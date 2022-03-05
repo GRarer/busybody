@@ -1,4 +1,4 @@
-import { DomainOf, Schema, Schemas } from '@nprindle/augustus';
+import { DomainOf, Schemas } from '@nprindle/augustus';
 import { DeleteEndpointSimple, GetEndpointSimple, PutEndpointSimple } from '../apis.js';
 import { friendInfoSchema } from './friends.js';
 import { ownTaskInfoSchema, watchedTasksResponseSchema } from './tasks.js';
@@ -24,7 +24,7 @@ export type SelfInfoResponse = {
   fullName: string;
   nickname: string;
   email: string;
-  useGravatar: boolean
+  useGravatar: boolean;
 };
 
 export const selfInfoEndpoint = new GetEndpointSimple('/self',

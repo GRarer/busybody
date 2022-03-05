@@ -12,11 +12,12 @@ export function WatcherEmailBody(props: {
   return <>
     <p>Your friend, <strong>{props.ownerFullName}</strong>, is overdue on one of their tasks.</p>
     <p>Task: {props.taskTitle}</p>
-    {props.taskDescription === ""
+    {props.taskDescription === ''
       ? <></>
       : <p>Description: {props.taskDescription}</p>
     }
-    <p style={{marginTop: "20px", "opacity": 0.5}}>You are receiving this message because {props.ownerNickname} attached
-    you as a watcher for this task on <a href={serverConfiguration.appUrl}>Busybody</a>.</p>
+    <p style={{ marginTop: '20px', 'opacity': 0.5 }}>You are receiving this message
+    because {props.ownerNickname} attached you as a watcher for this task
+    on <a href={serverConfiguration.appUrl}>Busybody</a>.</p>
   </>;
 }

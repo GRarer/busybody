@@ -1,5 +1,5 @@
 import { Schemas } from '@nprindle/augustus';
-import { ExportedPersonalData, FriendInfo, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
+import { ExportedPersonalData, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
   usernameRequirementProblem } from 'busybody-core';
 import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
@@ -8,7 +8,6 @@ import { generateRandomToken, lookupSessionUser } from './authentication.js';
 import { dontValidate } from '../util/typeGuards.js';
 import { v4 as uuidV4 } from 'uuid';
 import { getOwnTodoList, getWatchedTasks } from './tasks.js';
-import { formatFriendInfo } from './friends.js';
 
 export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
   const results = await dbQuery(

@@ -1,4 +1,3 @@
-import { config } from 'dotenv';
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { attachHandlers } from './endpointHandlers.js';
@@ -56,12 +55,12 @@ async function start(): Promise<void> {
     try {
       await sendPlaintextEmail(
         [serverConfiguration.wakeUpEmailDestination],
-        `busybody server started up`,
+        'busybody server started up',
         `time: ${new Date()}, port: ${serverConfiguration.apiPort}`
-        );
-      console.log("sent test email");
+      );
+      console.log('sent test email');
     } catch (err) {
-      console.error("unable to send email");
+      console.error('unable to send email');
       console.error(err);
     }
   }

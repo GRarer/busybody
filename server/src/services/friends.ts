@@ -7,23 +7,18 @@ import { lookupSessionUser } from './authentication.js';
 
 // convert from database results to friend info for response
 export function formatFriendInfo(params: {
-  user_uuid: string,
-  username: string,
-  full_name: string,
-  email: string,
-  use_gravatar: boolean
+  user_uuid: string;
+  username: string;
+  full_name: string;
+  email: string;
+  use_gravatar: boolean;
 }): FriendInfo {
-
-  const avatarUrl = params.use_gravatar
-    ? emailToGravatarURL(params.email)
-    : undefined;
-
   return {
     uuid: params.user_uuid,
     username: params.username,
     fullName: params.full_name,
     avatarUrl: params.use_gravatar ? emailToGravatarURL(params.email) : undefined
-  }
+  };
 }
 
 // also used to look up watcher information for tasks
@@ -180,6 +175,6 @@ export async function unfriend(sessionToken: string, friendUUID: string): Promis
         where their_tasks.task = watch_assignments.task
         and (watcher = $1 or watcher = $2);`,
       [userUUID, friendUUID], dontValidate
-    )
+    );
   });
 }

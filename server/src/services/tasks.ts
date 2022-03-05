@@ -34,7 +34,7 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
   const friendsList: FriendInfo[] = [];
   const friendInfoMap = new Map<string, FriendInfo>();
   for (const friendRow of friendRows) {
-    const info: FriendInfo = formatFriendInfo(friendRow)
+    const info: FriendInfo = formatFriendInfo(friendRow);
     friendsList.push(info);
     friendInfoMap.set(info.uuid, info);
   }

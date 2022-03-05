@@ -1,10 +1,6 @@
 import {
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, FormControlLabel, FormLabel, InputLabel,
-  LinearProgress,
-  Radio,
-  RadioGroup,
-  Typography
-} from '@mui/material';
+  Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel,
+  LinearProgress, Radio, RadioGroup, Typography } from '@mui/material';
 import { emailToGravatarURL, FriendInfo, selfInfoEndpoint, toggleGravatarEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -22,11 +18,11 @@ export function AvatarSettingsMenu(
   const { enqueueSnackbar } = useSnackbar();
 
   const [infos, setInfos] = useState<{
-    withGravatar: FriendInfo,
-    withoutGravatar: FriendInfo
+    withGravatar: FriendInfo;
+    withoutGravatar: FriendInfo;
   } | undefined>(undefined);
   const [useGravatar, setUseGravatar] = useState<boolean>(true);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     // get info
@@ -66,7 +62,7 @@ export function AvatarSettingsMenu(
   function update(): void {
     apiPut(toggleGravatarEndpoint, useGravatar, {}, props.token)
       .then(() => {
-        enqueueSnackbar(`Your avatar preference has been saved`, { variant: 'success' });
+        enqueueSnackbar('Your avatar preference has been saved', { variant: 'success' });
         props.onClose();
       })
       .catch(error => {
@@ -86,27 +82,27 @@ export function AvatarSettingsMenu(
             <FormControl>
               <FormLabel>Avatar Style</FormLabel>
               <RadioGroup
-                value={useGravatar ? "gravatar" : "name"}
-                onChange={event => setUseGravatar(event.target.value === "gravatar")}
+                value={useGravatar ? 'gravatar' : 'name'}
+                onChange={event => setUseGravatar(event.target.value === 'gravatar')}
               >
-                <FormControlLabel style={{marginBottom: "10px"}} value={"name"} control={<Radio />} label={
-                  <div style={{display: "flex", flexDirection: "row", alignItems: "center", textAlign: "center"}}>
+                <FormControlLabel style={{ marginBottom: '10px' }} value={'name'} control={<Radio />} label={
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', textAlign: 'center' }}>
                     <FriendAvatar info={infos.withoutGravatar} />
-                    <p style={{marginLeft: "5px", marginTop: 0, marginBottom: 0}}>Initials</p>
+                    <p style={{ marginLeft: '5px', marginTop: 0, marginBottom: 0 }}>Initials</p>
                   </div>
                 } />
-                <FormControlLabel value={"gravatar"} control={<Radio />} label={
-                  <div style={{display: "flex", flexDirection: "row", alignItems: "center", textAlign: "center"}}>
-                  <FriendAvatar info={infos.withGravatar} />
-                  <p style={{marginLeft: "5px", marginTop: 0, marginBottom: 0}}>Gravatar</p>
-                </div>
+                <FormControlLabel value={'gravatar'} control={<Radio />} label={
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', textAlign: 'center' }}>
+                    <FriendAvatar info={infos.withGravatar} />
+                    <p style={{ marginLeft: '5px', marginTop: 0, marginBottom: 0 }}>Gravatar</p>
+                  </div>
                 } />
               </RadioGroup>
             </FormControl>
             <Typography variant="body2">
-              To change your Gravatar image, go to <a href="https://gravatar.com/connect" target="_blank">gravatar.com</a> and
-              sign in or create an account using the same email address that you use for Busybody ({email}). Gravatar
-              is a service provided by Automattic, the company behind Wordpress.
+              To change your Gravatar image, go to <a href="https://gravatar.com/connect" target="_blank"
+                rel="noreferrer">gravatar.com</a> and sign in or create an account using the same email address that you
+              use for Busybody ({email}). Gravatar is a service provided by Automattic, the company behind Wordpress.
             </Typography>
           </DialogContent>
           <DialogActions>

@@ -16,7 +16,7 @@ function send(addresses: string[], subject: string, body: JSX.Element | string):
 }
 
 export async function sendPlaintextEmail(
-  addresses: string[], subject: string = "Hello", body: string = "Hello world"
+  addresses: string[], subject: string = 'Hello', body: string = 'Hello world'
 ): Promise<void> {
   send(addresses, subject, body);
 }
@@ -25,7 +25,7 @@ export async function sendPlaintextEmail(
 export function sendWatcherEmail(task: {
   watcherAddresses: string[];
   taskTitle: string;
-  taskDescription: string,
+  taskDescription: string;
   ownerNickname: string;
   ownerFullName: string;
 }): void {
