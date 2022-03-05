@@ -1,4 +1,5 @@
-import { Logout, AccountBox, AlternateEmail, VpnKey, DataArray, FaceRetouchingNatural } from '@mui/icons-material';
+import { Logout, AccountBox, AlternateEmail, VpnKey, DataArray, FaceRetouchingNatural, DarkMode,
+  LightMode } from '@mui/icons-material';
 import { MenuItem, ListItemIcon, ListItemText, Divider, Menu, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -13,6 +14,8 @@ import { AvatarSettingsMenu } from './avatarSettingsMenu';
 export function SettingsMenu(props: {
   token: string;
   onLogOut: () => void;
+  changeTheme: (mode: 'light' | 'dark') => void;
+  currentThemeMode: 'light' | 'dark';
 }): JSX.Element {
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -21,7 +24,6 @@ export function SettingsMenu(props: {
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showManageDataDialog, setShowManageDataDialog] = useState(false);
-
 
   function open(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
     setAnchorEl(event.currentTarget);
@@ -55,6 +57,17 @@ export function SettingsMenu(props: {
         onClose={close}
         onClick={close}
       >
+        {
+          props.currentThemeMode === 'light'
+            ? <MenuItem onClick={() => props.changeTheme('dark')}>
+              <ListItemIcon><DarkMode fontSize="small" /></ListItemIcon>
+              <ListItemText>Toggle Dark Mode</ListItemText>
+            </MenuItem>
+            : <MenuItem onClick={() => props.changeTheme('light')}>
+              <ListItemIcon><LightMode fontSize="small" /></ListItemIcon>
+              <ListItemText>Toggle Light Mode</ListItemText>
+            </MenuItem>
+        }
         <MenuItem onClick={() => setShowNameDialog(true)}>
           <ListItemIcon><AccountBox fontSize="small" /></ListItemIcon>
           <ListItemText>Change Personal Info</ListItemText>

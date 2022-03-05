@@ -1,4 +1,4 @@
-import { AppBar, Box, LinearProgress, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, LinearProgress, Paper, Toolbar, Typography } from '@mui/material';
 import { sessionActiveEndpoint } from 'busybody-core';
 import React, { useEffect, useState } from 'react';
 import { apiGet } from './util/requests';
@@ -10,6 +10,8 @@ import { saveToken } from './util/persistence';
 function App(
   props: {
     initialSavedToken: string | null;
+    changeTheme: (mode: 'light' | 'dark') => void;
+    currentThemeMode: 'light' | 'dark';
   }
 ): JSX.Element {
   // uncheckedSavedToken is true if we are using a token read from local storage
@@ -51,14 +53,15 @@ function App(
     return (<LinearProgress />);
   }
 
-  return (<Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+  return (<Paper sx={{ height: '100vh', display: 'flex', flexDirection: 'column', borderRadius: 0 }}>
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Busybody
         </Typography>
         {state.token
-          ? <SettingsMenu token={state.token} onLogOut={() => changeSession(null)} />
+          ? <SettingsMenu token={state.token} onLogOut={() => changeSession(null)}
+            changeTheme={props.changeTheme} currentThemeMode={props.currentThemeMode} />
           : <></>
         }
       </Toolbar>
@@ -68,7 +71,7 @@ function App(
         ? <HomeRoot token={state.token}/>
         : <LandingPage setSessionToken={changeSession} />}
     </Box>
-  </Box>);
+  </Paper>);
 
 
 }
