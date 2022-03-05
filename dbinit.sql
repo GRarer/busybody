@@ -90,15 +90,15 @@ declare
 begin
     INSERT INTO users ("user_uuid", "username", "full_name", "nickname", "password_hash", "email") VALUES
     -- example users based on fictitious academics
-    (georgeUUID, 'gpb', 'George P. Burdell', 'George', example_password_hash,'gburdell@gatech.example'),
-    (ramonaUUID, 'ramona', 'Ramona Cartwright Burdell', 'Ramona', example_password_hash, 'ramonac@agnesscott.example'),
-    (johnUUID, 'jrainwater', 'John Rainwater', 'John', example_password_hash, 'rainwaterj@uw.example'),
-    (nicolasUUID, 'newmath', 'Nicolas Bourbaki', 'Nicolas', example_password_hash, 'bourbakigroup@example.example'),
+    (georgeUUID, 'gpb', 'George P. Burdell', 'George', example_password_hash,'gracerarer+georgepburdell@gmail.com'),
+    (ramonaUUID, 'ramona', 'Ramona Cartwright Burdell', 'Ramona', example_password_hash, 'gracerarer+ramonacartwrightburdell@gmail.com'),
+    (johnUUID, 'jrainwater', 'John Rainwater', 'John', example_password_hash, 'gracerarer+jrainwater@gmail.com'),
+    (nicolasUUID, 'newmath', 'Nicolas Bourbaki', 'Nicolas', example_password_hash, 'gracerarer+bourbaki@gmail.com'),
     -- this user's name should be Claude Émile Jean-Baptiste Litre
     -- creating or updating data with non-ascii characters works correctly in the server and is only broken for pqsl
     -- and probably only on windows
-    (claudeUUID, 'Litre', 'Claude Emile Jean-Baptiste Litre', 'Claude', example_password_hash, 'litre@UWaterloo.example'),
-    (josiaUUID, 'crackpot', 'Josiah S. Carberry', 'Jed', example_password_hash, 'carberry@brown.example');
+    (claudeUUID, 'Litre', 'Claude Emile Jean-Baptiste Litre', 'Claude', example_password_hash, 'gracerarer+claude_litre@gmail.com'),
+    (josiaUUID, 'crackpot', 'Josiah S. Carberry', 'Jed', example_password_hash, 'gracerarer+carberry@gmail.com');
 
     INSERT INTO friendships (user_a, user_b) VALUES
     (georgeUUID, ramonaUUID),
