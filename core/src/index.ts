@@ -6,3 +6,4 @@ export * from './api/friends.js';
 export * from './api/tasks.js';
 export * from './util/usernamePasswordValidation.js';
 export * from './util/time.js';
+export * from './util/gravatar.js';

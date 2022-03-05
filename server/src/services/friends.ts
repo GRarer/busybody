@@ -1,10 +1,9 @@
 import { Schemas } from '@nprindle/augustus';
-import { FriendInfo, FriendsListResponse } from 'busybody-core';
+import { FriendInfo, FriendsListResponse, emailToGravatarURL } from 'busybody-core';
 import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
 import { absurd, dontValidate } from '../util/typeGuards.js';
 import { lookupSessionUser } from './authentication.js';
-import gravatar from 'gravatar';
 
 // convert from database results to friend info for response
 export function formatFriendInfo(params: {
@@ -16,18 +15,14 @@ export function formatFriendInfo(params: {
 }): FriendInfo {
 
   const avatarUrl = params.use_gravatar
-    ? gravatar.url(params.email, {
-      s: "256", // scale images to 256x256 pixels
-      d: "identicon", // hash-based placeholder image if gravatar is not set
-      rating: "pg" // block images marked as containing nudity, violence, etc
-    })
+    ? emailToGravatarURL(params.email)
     : undefined;
 
   return {
     uuid: params.user_uuid,
     username: params.username,
     fullName: params.full_name,
-    avatarUrl
+    avatarUrl: params.use_gravatar ? emailToGravatarURL(params.email) : undefined
   }
 }
 
