@@ -5,7 +5,7 @@ import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
 import { dontValidate, optionallyNullArrayOfSchema } from '../util/typeGuards.js';
 import { lookupSessionUser } from './authentication.js';
-import { currentFriendsQuery, databaseFriendInfoSchema } from './friends.js';
+import { currentFriendsQuery, databaseFriendInfoSchema, formatFriendInfo } from './friends.js';
 import pgFormat from 'pg-format';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -34,11 +34,7 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
   const friendsList: FriendInfo[] = [];
   const friendInfoMap = new Map<string, FriendInfo>();
   for (const friendRow of friendRows) {
-    const info: FriendInfo = {
-      uuid: friendRow.user_uuid,
-      fullName: friendRow.full_name,
-      username: friendRow.username
-    };
+    const info: FriendInfo = formatFriendInfo(friendRow)
     friendsList.push(info);
     friendInfoMap.set(info.uuid, info);
   }
@@ -68,7 +64,7 @@ export async function getWatchedTasks(token: string): Promise<WatchedTasksRespon
   const rows = await dbQuery(
     `with watched_tasks as (
       select * from watch_assignments join tasks on watch_assignments.task = tasks.task_id where watcher = $1
-    ) select task_id, task_owner, title, description_text, deadline_seconds, username, full_name
+    ) select task_id, task_owner, title, description_text, deadline_seconds, username, full_name, email, use_gravatar
     from watched_tasks join users on watched_tasks.task_owner = users.user_uuid;`, [watcherUUID],
     Schemas.recordOf({
       task_id: Schemas.aString,
@@ -77,18 +73,23 @@ export async function getWatchedTasks(token: string): Promise<WatchedTasksRespon
       description_text: Schemas.aString,
       deadline_seconds: Schemas.aNumber,
       username: Schemas.aString,
-      full_name: Schemas.aString
+      full_name: Schemas.aString,
+      email: Schemas.aString,
+      use_gravatar: Schemas.aBoolean
     }));
   return rows.map(row => ({
     taskId: row.task_id,
     title: row.title,
     description: row.description_text,
     dueDate: row.deadline_seconds,
-    owner: {
-      uuid: row.task_owner,
+    owner: formatFriendInfo({
+      user_uuid: row.task_owner,
       username: row.username,
-      fullName: row.full_name
-    }
+      email: row.email,
+      full_name: row.full_name,
+      use_gravatar: row.use_gravatar
+
+    })
   }));
 }
 

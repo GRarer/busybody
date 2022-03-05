@@ -36,10 +36,14 @@ function nameToColor(name: string): string {
 // warning: the edit task dialog calls this directly as a function instead of using JSX
 // therefore it probably needs to stay a pure function because I do not know how that interacts with hooks
 export function FriendAvatar(props: {info: FriendInfo; size?: number | string;}): JSX.Element {
-  return <Avatar sx={{ bgcolor: nameToColor(props.info.username), color: 'white !important',
-    width: props.size, height: props.size }}>
-    {nameToInitials(props.info.fullName)}
-  </Avatar>;
+  if (props.info.avatarUrl === undefined) {
+    return <Avatar sx={{ bgcolor: nameToColor(props.info.username), color: 'white !important',
+      width: props.size, height: props.size }}>
+      {nameToInitials(props.info.fullName)}
+    </Avatar>;
+  } else {
+    return <Avatar sx={{ width: props.size, height: props.size }} src={props.info.avatarUrl}/>;
+  }
 }
 
 export function FriendCard(props: React.PropsWithChildren<{ info: FriendInfo;}>): JSX.Element {

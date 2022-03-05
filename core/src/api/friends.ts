@@ -5,6 +5,7 @@ export type FriendInfo = {
   uuid: string;
   username: string;
   fullName: string;
+  avatarUrl: string | undefined;
 };
 
 export type FriendsListResponse = {
@@ -17,6 +18,7 @@ export const friendInfoSchema = Schemas.recordOf({
   uuid: Schemas.aString,
   username: Schemas.aString,
   fullName: Schemas.aString,
+  avatarUrl: Schemas.optional(Schemas.aString)
 });
 
 const friendsListResponseSchema: Schema<FriendsListResponse, FriendsListResponse> = Schemas.recordOf({

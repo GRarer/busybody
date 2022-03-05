@@ -4,14 +4,44 @@ import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
 import { absurd, dontValidate } from '../util/typeGuards.js';
 import { lookupSessionUser } from './authentication.js';
+import gravatar from 'gravatar';
+
+// convert from database results to friend info for response
+export function formatFriendInfo(params: {
+  user_uuid: string,
+  username: string,
+  full_name: string,
+  email: string,
+  use_gravatar: boolean
+}): FriendInfo {
+
+  const avatarUrl = params.use_gravatar
+    ? gravatar.url(params.email, {
+      s: "256", // scale images to 256x256 pixels
+      d: "identicon", // hash-based placeholder image if gravatar is not set
+      rating: "pg" // block images marked as containing nudity, violence, etc
+    })
+    : undefined;
+
+  return {
+    uuid: params.user_uuid,
+    username: params.username,
+    fullName: params.full_name,
+    avatarUrl
+  }
+}
 
 // also used to look up watcher information for tasks
-export const currentFriendsQuery = `select user_uuid, username, full_name from users join friends_symmetric
-on friends_symmetric.friend = users.user_uuid where friends_symmetric.this_user = $1;`;
+export const currentFriendsQuery = `select user_uuid, username, full_name, email, use_gravatar
+from users join friends_symmetric on friends_symmetric.friend = users.user_uuid
+where friends_symmetric.this_user = $1;`;
+
 export const databaseFriendInfoSchema = Schemas.recordOf({
   user_uuid: Schemas.aString,
   username: Schemas.aString,
-  full_name: Schemas.aString
+  full_name: Schemas.aString,
+  email: Schemas.aString,
+  use_gravatar: Schemas.aBoolean
 });
 
 export async function getUserFriendsList(token: string): Promise<FriendsListResponse> {
@@ -19,26 +49,20 @@ export async function getUserFriendsList(token: string): Promise<FriendsListResp
   const result = await dbTransaction(async query => {
     const friends = await query(currentFriendsQuery, [uuid], databaseFriendInfoSchema);
     const incoming = await query(
-      `select user_uuid, username, full_name
+      `select user_uuid, username, full_name, email, use_gravatar
       from users join friend_requests on friend_requests.from_user = users.user_uuid
       where friend_requests.to_user = $1;`, [uuid], databaseFriendInfoSchema
     );
     const outgoing = await query(
-      `select user_uuid, username, full_name
+      `select user_uuid, username, full_name, email, use_gravatar
       from users join friend_requests on friend_requests.to_user = users.user_uuid
       where friend_requests.from_user = $1;`, [uuid], databaseFriendInfoSchema
     );
 
-    const convertResult = (row: { user_uuid: string; username: string; full_name: string; }): FriendInfo => ({
-      uuid: row.user_uuid,
-      username: row.username,
-      fullName: row.full_name
-    });
-
     return {
-      friends: friends.map(convertResult),
-      incomingRequests: incoming.map(convertResult),
-      outgoingRequests: outgoing.map(convertResult),
+      friends: friends.map(formatFriendInfo),
+      incomingRequests: incoming.map(formatFriendInfo),
+      outgoingRequests: outgoing.map(formatFriendInfo),
     };
 
   });

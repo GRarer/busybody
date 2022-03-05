@@ -15,7 +15,8 @@ CREATE TABLE users(
     password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     nickname TEXT NOT NULL,
-    email TEXT NOT NULL
+    email TEXT NOT NULL,
+    use_gravatar BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- user log-in sessions
@@ -99,6 +100,12 @@ begin
     -- and probably only on windows
     (claudeUUID, 'Litre', 'Claude Emile Jean-Baptiste Litre', 'Claude', example_password_hash, 'gracerarer+claude_litre@gmail.com'),
     (josiaUUID, 'crackpot', 'Josiah S. Carberry', 'Jed', example_password_hash, 'gracerarer+carberry@gmail.com');
+
+    -- enable gravatar icon mode for some users
+    UPDATE users SET use_gravatar = True
+    where user_uuid = georgeUUID
+    or user_uuid = nicolasUUID
+    or user_uuid = johnUUID;
 
     INSERT INTO friendships (user_a, user_b) VALUES
     (georgeUUID, ramonaUUID),
