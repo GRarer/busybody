@@ -1,5 +1,5 @@
 import { Schemas } from '@nprindle/augustus';
-import { ExportedPersonalData, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
+import { ExportedPersonalData, FriendInfo, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
   usernameRequirementProblem } from 'busybody-core';
 import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
@@ -8,16 +8,20 @@ import { generateRandomToken, lookupSessionUser } from './authentication.js';
 import { dontValidate } from '../util/typeGuards.js';
 import { v4 as uuidV4 } from 'uuid';
 import { getOwnTodoList, getWatchedTasks } from './tasks.js';
+import { formatFriendInfo } from './friends.js';
 
 export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
   const results = await dbQuery(
-    'select username, full_name, nickname, email from sessions join users using (user_uuid) where token = $1;',
+    `select user_uuid, username, full_name, nickname, email, use_gravatar
+    from sessions join users using (user_uuid) where token = $1;`,
     [token],
     Schemas.recordOf({
+      user_uuid: Schemas.aString,
       username: Schemas.aString,
       full_name: Schemas.aString,
       nickname: Schemas.aString,
-      email: Schemas.aString
+      email: Schemas.aString,
+      use_gravatar: Schemas.aBoolean
     })
   );
   if (results.length === 0) {
@@ -25,10 +29,12 @@ export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
   }
   const result = results[0];
   return {
+    uuid: result.user_uuid,
     username: result.username,
     fullName: result.full_name,
     nickname: result.nickname,
-    email: result.email
+    email: result.email,
+    useGravatar: result.use_gravatar
   };
 }
 
@@ -105,6 +111,13 @@ export async function updatePassword(newPassword: string, sessionToken: string):
   const hash = await bcrypt.hash(newPassword, 10);
   await dbQuery('update users set password_hash = $1 where user_uuid = $2',
     [hash, userId], dontValidate
+  );
+}
+
+export async function updateGravatarSetting(useGravatar: boolean, sessionToken: string): Promise<void> {
+  const userId = await lookupSessionUser(sessionToken);
+  await dbQuery('update users set use_gravatar = $1 where user_uuid = $2',
+    [useGravatar, userId], dontValidate
   );
 }
 

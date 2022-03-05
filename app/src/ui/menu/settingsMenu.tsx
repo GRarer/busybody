@@ -1,4 +1,4 @@
-import { Logout, AccountBox, AlternateEmail, VpnKey, DataArray } from '@mui/icons-material';
+import { Logout, AccountBox, AlternateEmail, VpnKey, DataArray, FaceRetouchingNatural } from '@mui/icons-material';
 import { MenuItem, ListItemIcon, ListItemText, Divider, Menu, IconButton } from '@mui/material';
 import React, { useState } from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -8,6 +8,7 @@ import { ChangePersonalInfoDialog } from './changeInfoMenu';
 import { ChangeEmailDialog } from './changeEmailMenu';
 import { ChangePasswordDialog } from './changePasswordMenu';
 import { ManageDataDialog } from './manageDataMenu';
+import { AvatarSettingsMenu } from './avatarSettingsMenu';
 
 export function SettingsMenu(props: {
   token: string;
@@ -16,6 +17,7 @@ export function SettingsMenu(props: {
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [showNameDialog, setShowNameDialog] = useState(false);
+  const [showGravatarDialog, setShowGravatarDialog] = useState(false);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [showManageDataDialog, setShowManageDataDialog] = useState(false);
@@ -57,6 +59,10 @@ export function SettingsMenu(props: {
           <ListItemIcon><AccountBox fontSize="small" /></ListItemIcon>
           <ListItemText>Change Personal Info</ListItemText>
         </MenuItem>
+        <MenuItem onClick={() => setShowGravatarDialog(true)}>
+          <ListItemIcon><FaceRetouchingNatural fontSize="small" /></ListItemIcon>
+          <ListItemText>Customize Avatar Icon</ListItemText>
+        </MenuItem>
         <MenuItem onClick={() => setShowEmailDialog(true)}>
           <ListItemIcon><AlternateEmail fontSize="small" /></ListItemIcon>
           <ListItemText>Change Email Address</ListItemText>
@@ -78,6 +84,8 @@ export function SettingsMenu(props: {
       </Menu>
       <ChangePersonalInfoDialog token={props.token} open={showNameDialog}
         onClose={() => setShowNameDialog(false)}/>
+      <AvatarSettingsMenu token={props.token} open={showGravatarDialog}
+        onClose={() => setShowGravatarDialog(false)}/>
       <ChangeEmailDialog token={props.token} open={showEmailDialog}
         onClose={() => setShowEmailDialog(false)}/>
       <ChangePasswordDialog token={props.token} open={showPasswordDialog}

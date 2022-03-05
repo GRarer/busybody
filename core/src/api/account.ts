@@ -1,4 +1,4 @@
-import { DomainOf, Schemas } from '@nprindle/augustus';
+import { DomainOf, Schema, Schemas } from '@nprindle/augustus';
 import { DeleteEndpointSimple, GetEndpointSimple, PutEndpointSimple } from '../apis.js';
 import { friendInfoSchema } from './friends.js';
 import { ownTaskInfoSchema, watchedTasksResponseSchema } from './tasks.js';
@@ -19,18 +19,22 @@ export const registrationEndpoint = new PutEndpointSimple('/register', {
 });
 
 export type SelfInfoResponse = {
+  uuid: string;
   username: string;
   fullName: string;
   nickname: string;
   email: string;
+  useGravatar: boolean
 };
 
 export const selfInfoEndpoint = new GetEndpointSimple('/self',
   Schemas.recordOf({
+    uuid: Schemas.aString,
     username: Schemas.aString,
     fullName: Schemas.aString,
     nickname: Schemas.aString,
     email: Schemas.aString,
+    useGravatar: Schemas.aBoolean
   })
 );
 
@@ -45,6 +49,11 @@ export const updatePersonalInfoEndpoint = new PutEndpointSimple('/update_persona
 
 export const updateEmailEndpoint = new PutEndpointSimple('/update_email_address', {
   requestSchema: Schemas.aString,
+  responseSchema: Schemas.aNull
+});
+
+export const toggleGravatarEndpoint = new PutEndpointSimple('/set_gravatar_enabled', {
+  requestSchema: Schemas.aBoolean,
   responseSchema: Schemas.aNull
 });
 

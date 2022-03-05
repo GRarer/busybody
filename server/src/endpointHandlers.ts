@@ -4,10 +4,10 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
   updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
   updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint,
-  testEmailEndpoint } from 'busybody-core';
+  testEmailEndpoint, toggleGravatarEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
-  updatePassword } from './services/accountInfo.js';
+  updateGravatarSetting, updatePassword } from './services/accountInfo.js';
 import { getServerStatus, sendTestEmail } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { answerFriendRequest, cancelFriendRequest, getUserFriendsList, sendFriendRequest,
@@ -63,6 +63,10 @@ export function attachHandlers(server: FastifyInstance): void {
   });
   addHandler(updatePasswordEndpoint, async (body, params, token) => {
     await updatePassword(body, token);
+    return null;
+  });
+  addHandler(toggleGravatarEndpoint, async (body, params, token) => {
+    await updateGravatarSetting(body, token);
     return null;
   });
   addHandler(exportPersonalDataEndpoint, async (body, params, token) => {
