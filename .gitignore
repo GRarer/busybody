@@ -1,6 +1,5 @@
 # build output
 server/dist
-app/public
 core/dist
 # node modules
 server/node_modules
