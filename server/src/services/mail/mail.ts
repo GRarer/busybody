@@ -1,9 +1,10 @@
 import { serverConfiguration } from '../../util/config.js';
 import { WatcherEmailBody } from './mailTemplates.js';
 import ReactDOMServer from 'react-dom/server.js';
+import { smtpTransport } from './smtpConfig.js';
 
 function send(addresses: string[], subject: string, body: JSX.Element | string): void {
-  serverConfiguration.emailTransport.sendMail({
+  smtpTransport.sendMail({
     from: serverConfiguration.emailFromField,
     to: addresses.join(', '),
     subject,

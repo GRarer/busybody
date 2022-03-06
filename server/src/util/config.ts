@@ -1,7 +1,5 @@
 
 import pg from 'pg';
-import nodemailer from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { getIntEV, getBoolEV, getStringEV, getOptionalStringEV } from './evParsing.js';
 
 
@@ -9,7 +7,7 @@ export const serverConfiguration: {
   apiPort: number;
   postgresConfig: pg.PoolConfig;
   testingCommandsEnabled: boolean;
-  emailTransport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+  smtpConfig: string;
   emailFromField: string;
   appUrl: string;
   secondsBetweenChecks: number;
@@ -24,22 +22,7 @@ export const serverConfiguration: {
     user: getStringEV('BB_DB_USER'),
     password: getStringEV('BB_DB_PASSWORD')
   },
-  emailTransport: getBoolEV('BB_MAIL_ETHEREAL', false)
-    ? nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      auth: {
-        user: getStringEV('BB_MAIL_ETHEREAL_ADDRESS'),
-        pass: getStringEV('BB_MAIL_ETHEREAL_PASSWORD')
-      }
-    })
-    : nodemailer.createTransport({
-      service: getStringEV('BB_MAIL_LIVE_SERVICE'),
-      auth: {
-        user: getStringEV('BB_MAIL_LIVE_USERNAME'),
-        pass: getStringEV('BB_MAIL_LIVE_PASSWORD')
-      }
-    }),
+  smtpConfig: getStringEV('BB_MAIL_SMTP_CONFIG'),
   emailFromField: getStringEV('BB_EMAIL_FROM'),
   appUrl: getStringEV('BB_APP_URL'),
   secondsBetweenChecks: getIntEV('BB_LOOP_SECONDS'),

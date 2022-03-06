@@ -36,29 +36,26 @@ The server is configured with many environment variables, so it's helpful to cre
 directory. This file will contain your secret passwords, so you should not commit it to version control.
 
 ```sh
-# port number for Fastify web server
-BB_PORT = "3001"
-# setting local test mode to "true" enables special API endpoints for local testing.
+# server configuration
+BB_PORT = 3001
+# enables special API endpoints for local testing.
 # DO NOT ENABLE THIS IN PRODUCTION.
-BB_LOCAL_TEST_MODE = "false"
+BB_LOCAL_TEST_MODE = false
+# time between loops for detecting overdue tasks (seconds)
+BB_LOOP_SECONDS = 600 # every 10 minutes
+# link to app used in emails
+BB_APP_URL = "http://localhost:3000/" # or your production web url
 # database configuration
-BB_DB_HOST = "localhost" # or use the host and port of your cloud database provider
-BB_DB_PORT = "5432"
-BB_DB_DATABASE = "busybody"
-BB_DB_USER = "postgres"
-BB_DB_PASSWORD = "your_postgres_superuser_password"
+BB_DB_HOST = localhost # or your cloud database host
+BB_DB_PORT = 5432
+BB_DB_DATABASE = busybody
+BB_DB_USER = your_postgres_username
+BB_DB_PASSWORD = your_postgres_password
 # email configuration
 BB_EMAIL_FROM = '"Busybody Example" <busybody@example.com>'
-BB_MAIL_ETHEREAL = "true"
-# configuration for ethereal.mail for debugging email behavior
-BB_MAIL_ETHEREAL_ADDRESS = "randomly_generated_fake_address@ethereal.email"
-BB_MAIL_ETHEREAL_PASSWORD = "randomly_generated_password"
-# configuration for live email service
-BB_MAIL_LIVE_SERVICE = "service_name" # see https://nodemailer.com/smtp/well-known/
-BB_MAIL_LIVE_USERNAME = "your_email_username"
-BB_MAIL_LIVE_PASSWORD = "your_email_password"
-# link to app used in emails
-BB_APP_URL = "http://localhost:3000/" # or your production web-app URL
+BB_MAIL_SMTP_CONFIG = '{"host":"smtp.mailtrap.io","port":2525,"auth":{"user":"your_username","pass":"your_password"}}'
+# email to notify when sever starts
+BB_WAKEUP_EMAIL_ADDRESS = "your_email_address@example.com"
 ```
 ### Running locally
 
