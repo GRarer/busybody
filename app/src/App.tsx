@@ -6,6 +6,7 @@ import { HomeRoot, TabName } from './ui/home/homeRoot';
 import { LandingPage } from './ui/landing/Landing';
 import { SettingsMenu } from './ui/menu/settingsMenu';
 import { saveToken } from './util/persistence';
+import { TaskAlt } from '@mui/icons-material';
 
 // get page-specific link from url search parameters
 const goTo = new URLSearchParams(window.location.search).get('go');
@@ -70,6 +71,7 @@ function App(
   return (<Paper sx={{ height: '100vh', display: 'flex', flexDirection: 'column', borderRadius: 0 }}>
     <AppBar position="static">
       <Toolbar>
+        <TaskAlt sx={{marginRight: 1}}/>
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Busybody
         </Typography>
