@@ -3,14 +3,23 @@ import SMTPTransporter from 'nodemailer/lib/smtp-transport';
 import { serverConfiguration } from '../../util/config.js';
 import nodemailer from 'nodemailer';
 
-const validateSMTPConfig = Schemas.recordOf({
+
+// SMTP configuration may either specify a "well-known service" with build-in support in nodemailer
+// or may specify the host and port manually
+const validateSMTPConfig = Schemas.union(Schemas.recordOf({
+  service: Schemas.aString,
+  auth: Schemas.recordOf({
+    user: Schemas.aString,
+    pass: Schemas.aString
+  })
+}), Schemas.recordOf({
   host: Schemas.aString,
   port: Schemas.aNumber,
   auth: Schemas.recordOf({
     user: Schemas.aString,
     pass: Schemas.aString
   })
-}).validate;
+})).validate;
 
 export const smtpTransport: nodemailer.Transporter<SMTPTransporter.SentMessageInfo> = (() => {
   try {
