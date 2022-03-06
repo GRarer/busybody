@@ -16,8 +16,6 @@ export function WatcherEmailBody(props: {
   ownerFullName: string;
   ownerNickname: string;
 }): JSX.Element {
-  // TODO include link to open this task's details
-  // TODO improve style
   return <>
     <p>Your friend, <strong>{props.ownerFullName}</strong>, is overdue on one of their tasks.</p>
     <p>Task: {props.taskTitle}</p>

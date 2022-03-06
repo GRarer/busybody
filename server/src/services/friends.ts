@@ -11,6 +11,7 @@ export function formatFriendInfo(params: {
   user_uuid: string;
   username: string;
   full_name: string;
+  nickname: string;
   email: string;
   use_gravatar: boolean;
 }): FriendInfo {
@@ -18,12 +19,13 @@ export function formatFriendInfo(params: {
     uuid: params.user_uuid,
     username: params.username,
     fullName: params.full_name,
+    nickname: params.nickname,
     avatarUrl: params.use_gravatar ? emailToGravatarURL(params.email) : undefined
   };
 }
 
 // also used to look up watcher information for tasks
-export const currentFriendsQuery = `select user_uuid, username, full_name, email, use_gravatar
+export const currentFriendsQuery = `select user_uuid, username, full_name, nickname, email, use_gravatar
 from users join friends_symmetric on friends_symmetric.friend = users.user_uuid
 where friends_symmetric.this_user = $1;`;
 
@@ -31,6 +33,7 @@ export const databaseFriendInfoSchema = Schemas.recordOf({
   user_uuid: Schemas.aString,
   username: Schemas.aString,
   full_name: Schemas.aString,
+  nickname: Schemas.aString,
   email: Schemas.aString,
   use_gravatar: Schemas.aBoolean
 });
@@ -40,12 +43,12 @@ export async function getUserFriendsList(token: string): Promise<FriendsListResp
   const result = await dbTransaction(async query => {
     const friends = await query(currentFriendsQuery, [uuid], databaseFriendInfoSchema);
     const incoming = await query(
-      `select user_uuid, username, full_name, email, use_gravatar
+      `select user_uuid, username, full_name, nickname, email, use_gravatar
       from users join friend_requests on friend_requests.from_user = users.user_uuid
       where friend_requests.to_user = $1;`, [uuid], databaseFriendInfoSchema
     );
     const outgoing = await query(
-      `select user_uuid, username, full_name, email, use_gravatar
+      `select user_uuid, username, full_name, nickname, email, use_gravatar
       from users join friend_requests on friend_requests.to_user = users.user_uuid
       where friend_requests.from_user = $1;`, [uuid], databaseFriendInfoSchema
     );

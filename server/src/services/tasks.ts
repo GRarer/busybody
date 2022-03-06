@@ -64,7 +64,8 @@ export async function getWatchedTasks(token: string): Promise<WatchedTasksRespon
   const rows = await dbQuery(
     `with watched_tasks as (
       select * from watch_assignments join tasks on watch_assignments.task = tasks.task_id where watcher = $1
-    ) select task_id, task_owner, title, description_text, deadline_seconds, username, full_name, email, use_gravatar
+    ) select task_id, task_owner, title, description_text, deadline_seconds,
+    username, full_name, nickname, email, use_gravatar
     from watched_tasks join users on watched_tasks.task_owner = users.user_uuid;`, [watcherUUID],
     Schemas.recordOf({
       task_id: Schemas.aString,
@@ -74,6 +75,7 @@ export async function getWatchedTasks(token: string): Promise<WatchedTasksRespon
       deadline_seconds: Schemas.aNumber,
       username: Schemas.aString,
       full_name: Schemas.aString,
+      nickname: Schemas.aString,
       email: Schemas.aString,
       use_gravatar: Schemas.aBoolean
     }));
@@ -87,8 +89,8 @@ export async function getWatchedTasks(token: string): Promise<WatchedTasksRespon
       username: row.username,
       email: row.email,
       full_name: row.full_name,
+      nickname: row.nickname,
       use_gravatar: row.use_gravatar
-
     })
   }));
 }

@@ -26,7 +26,6 @@ export const smtpTransport: nodemailer.Transporter<SMTPTransporter.SentMessageIn
     const config: unknown = JSON.parse(serverConfiguration.smtpConfig);
     if (!validateSMTPConfig(config)) {
       console.error('invalid smtp config object');
-      console.error(config); // TODO remove before prod to not log credentials
       throw new Error('invalid smtp configuration');
     }
     return nodemailer.createTransport(config);

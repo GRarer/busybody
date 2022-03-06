@@ -35,12 +35,14 @@ export function AvatarSettingsMenu(
             withGravatar: {
               uuid: info.uuid,
               fullName: info.fullName,
+              nickname: info.nickname,
               username: info.username,
               avatarUrl: emailToGravatarURL(info.email)
             },
             withoutGravatar: {
               uuid: info.uuid,
               fullName: info.fullName,
+              nickname: info.nickname,
               username: info.username,
               avatarUrl: undefined
             }

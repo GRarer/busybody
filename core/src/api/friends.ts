@@ -5,6 +5,7 @@ export type FriendInfo = {
   uuid: string;
   username: string;
   fullName: string;
+  nickname: string;
   avatarUrl: string | undefined;
 };
 
@@ -14,10 +15,11 @@ export type FriendsListResponse = {
   outgoingRequests: FriendInfo[];
 };
 
-export const friendInfoSchema = Schemas.recordOf({
+export const friendInfoSchema: Schema<FriendInfo, FriendInfo> = Schemas.recordOf({
   uuid: Schemas.aString,
   username: Schemas.aString,
   fullName: Schemas.aString,
+  nickname: Schemas.aString,
   avatarUrl: Schemas.optional(Schemas.aString)
 });
 

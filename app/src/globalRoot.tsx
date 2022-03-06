@@ -25,7 +25,6 @@ const lightTheme = createTheme({
 
 export function GlobalRoot(): JSX.Element {
 
-  // TODO set default based on system preferences from media query
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>(savedThemeMode ?? 'dark');
   const currentTheme = themeMode === 'dark' ? darkTheme : lightTheme;
 
