@@ -1,5 +1,5 @@
 import React from 'react';
-import { serverConfiguration } from '../util/config.js';
+import { serverConfiguration } from '../../util/config.js';
 
 export function WatcherEmailBody(props: {
   taskTitle: string;

@@ -4,7 +4,7 @@ import { serverConfiguration } from '../util/config.js';
 import { dbQuery } from '../util/db.js';
 import { UserException } from '../util/errors.js';
 import { dontValidate } from '../util/typeGuards.js';
-import { sendPlaintextEmail } from './mail.js';
+import { sendPlaintextEmail } from './mail/mail.js';
 
 function requireTestingMode(): void {
   if (!serverConfiguration.testingCommandsEnabled) {

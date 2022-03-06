@@ -1,4 +1,4 @@
-import { serverConfiguration } from '../util/config.js';
+import { serverConfiguration } from '../../util/config.js';
 import { WatcherEmailBody } from './mailTemplates.js';
 import ReactDOMServer from 'react-dom/server.js';
 

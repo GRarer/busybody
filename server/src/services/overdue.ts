@@ -3,7 +3,7 @@ import { serverConfiguration } from '../util/config.js';
 import { dbTransaction } from '../util/db.js';
 import { currentTimeSeconds, sleepSeconds } from 'busybody-core';
 import { dontValidate, optionallyNullArrayOfSchema } from '../util/typeGuards.js';
-import { sendWatcherEmail } from './mail.js';
+import { sendWatcherEmail } from './mail/mail.js';
 
 
 export async function overdueCheckLoop(): Promise<void> {

@@ -1,7 +1,7 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { attachHandlers } from './endpointHandlers.js';
-import { sendPlaintextEmail } from './services/mail.js';
+import { sendPlaintextEmail } from './services/mail/mail.js';
 import { overdueCheckLoop } from './services/overdue.js';
 import { serverConfiguration } from './util/config.js';
 import { dbQuery, disconnectDatabase } from './util/db.js';
