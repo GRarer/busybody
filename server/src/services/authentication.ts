@@ -3,9 +3,9 @@ import { dbQuery, dbTransaction } from '../util/db.js';
 import { Schemas } from '@nprindle/augustus';
 import { UserException } from '../util/errors.js';
 import bcrypt from 'bcrypt';
-import { v4 as uuidV4 } from 'uuid';
 import { LoginRequest } from 'busybody-core';
 import { dontValidate } from '../util/typeGuards.js';
+import crypto from 'crypto';
 
 // maps recently-used session tokens to user uuids
 // extra type assertion is necessary here because DefinitelyTyped hasn't updated its lru-cache type definitions
@@ -14,7 +14,7 @@ const sessionCache = new LRUCache<string, string>({ max: 1000 }) as
   LRUCache<string, string> & {delete: (key: string) => void;};
 
 export function generateRandomToken(): string {
-  return `session-${uuidV4()}`;
+  return `session-${crypto.randomUUID()}`;
 }
 
 // logs user in, creates new session, and returns session token
