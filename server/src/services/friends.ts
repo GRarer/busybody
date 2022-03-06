@@ -4,6 +4,7 @@ import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
 import { absurd, dontValidate } from '../util/typeGuards.js';
 import { lookupSessionUser } from './authentication.js';
+import { sendFriendRequestEmail } from './mail/mail.js';
 
 // convert from database results to friend info for response
 export function formatFriendInfo(params: {
@@ -64,13 +65,14 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
   await dbTransaction(async query => {
     // look up UUID for the given username
     const recipientInfo = await query(
-      'select user_uuid from users where username=$1;', [recipient.username],
-      Schemas.recordOf({ user_uuid: Schemas.aString })
+      'select user_uuid, email from users where username=$1;', [recipient.username],
+      Schemas.recordOf({ user_uuid: Schemas.aString, email: Schemas.aString })
     );
     if (recipientInfo.length === 0) {
       throw new UserException(404, 'No user with that username exists');
     }
     const recipientUUID = recipientInfo[0].user_uuid;
+    const recipientEmail = recipientInfo[0].email;
     if (recipientUUID === senderUUID) {
       throw new UserException(409, 'You cannot send a friend request to yourself');
     }
@@ -114,10 +116,18 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
       }
     }
 
+    const senderFullName = (await query(
+      'select full_name from users where user_uuid=$1;', [senderUUID],
+      Schemas.recordOf({full_name: Schemas.aString })
+    ))[0]!.full_name;
+
     // create friend request
     await query(
       'INSERT INTO friend_requests (from_user, to_user) VALUES ($1, $2);', [senderUUID, recipientUUID], dontValidate
     );
+
+    // synchronously prepares email, does not wait for email to be sent
+    sendFriendRequestEmail({senderName: senderFullName, recipientEmailAddress: recipientEmail});
   });
 }
 

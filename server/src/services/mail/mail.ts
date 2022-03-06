@@ -1,5 +1,5 @@
 import { serverConfiguration } from '../../util/config.js';
-import { WatcherEmailBody } from './mailTemplates.js';
+import { FriendRequestEmailBody, WatcherEmailBody } from './mailTemplates.js';
 import ReactDOMServer from 'react-dom/server.js';
 import { smtpTransport } from './smtpConfig.js';
 
@@ -34,5 +34,16 @@ export function sendWatcherEmail(task: {
     task.watcherAddresses,
     `${task.ownerNickname} missed their deadline for the task ${task.taskTitle}`,
     WatcherEmailBody(task)
+  );
+}
+
+export function sendFriendRequestEmail(args: {
+  senderName: string,
+  recipientEmailAddress: string
+}): void {
+  send(
+    [args.recipientEmailAddress],
+    'new Busybody friend request',
+    FriendRequestEmailBody({senderName: args.senderName})
   );
 }
