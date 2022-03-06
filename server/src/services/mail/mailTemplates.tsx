@@ -1,7 +1,7 @@
 import React from 'react';
 import { serverConfiguration } from '../../util/config.js';
 
-function linkURL(goTo?: "friends"): string {
+function linkURL(goTo?: "friends" | "watching"): string {
   if (goTo === undefined) {
     return serverConfiguration.appUrl;
   }
@@ -25,6 +25,7 @@ export function WatcherEmailBody(props: {
       ? <></>
       : <p>Description: {props.taskDescription}</p>
     }
+    <a href={linkURL("watching")}>View Watched Tasks</a>
     <p style={{ marginTop: '20px', 'opacity': 0.5 }}>You are receiving this message
     because {props.ownerNickname} attached you as a watcher for this task
     on <a href={serverConfiguration.appUrl}>Busybody</a>.</p>

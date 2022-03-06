@@ -9,7 +9,6 @@ import { saveToken } from './util/persistence';
 
 // get page-specific link from url search parameters
 const goTo = new URLSearchParams(window.location.search).get('go');
-console.log("goTo", goTo);
 // remove query parameters
 window.history.replaceState({}, document.title, window.location.href.split('?')[0]);
 
@@ -28,9 +27,13 @@ function App(
   });
 
   const [defaultTabOverride, setDefaultTabOverride] = useState<TabName | undefined>(
-    goTo === "friends" ? "friends" : undefined
+    goTo
+    ? ({
+      "friends": "friends",
+      "watching": "watching"
+    } as const)[goTo]
+    : undefined
   );
-  console.log("defaultTabOverride", defaultTabOverride);
 
   const setToken = (token: string | null): void => {
     setLoginState({ token, uncheckedSavedToken: false });
