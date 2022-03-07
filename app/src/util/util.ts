@@ -11,3 +11,7 @@ export function errorToMessage(error: unknown): {code: number; message: string;}
   const message = (typeof data?.message === 'string' && data.message !== '') ? data.message : 'Something went wrong';
   return { code, message };
 }
+
+export function absurd(x: never): never {
+  throw new Error('This code should be unreachable');
+}
