@@ -45,7 +45,7 @@ async function apiRequest<
     post:    async (r: ReqRepr) => await axios.post(path, r, config),
     put:     async (r: ReqRepr) => await axios.put(path, r, config),
     get:     async () => await axios.get(path, config),
-    delete:  async () => await axios.get(path, config),
+    delete:  async () => await axios.delete(path, config),
   }[endpoint.method](payload);
   return decodeResult(result.data, endpoint.responseSchema);
 }
