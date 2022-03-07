@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { apiGet } from './util/requests';
 import { HomeRoot, TabName } from './ui/home/homeRoot';
 import { LandingPage } from './ui/landing/Landing';
-import { SettingsMenu } from './ui/menu/settingsMenu';
+import { LoggedOutMenu, SettingsMenu } from './ui/menu/settingsMenu';
 import { saveToken } from './util/persistence';
 import { TaskAlt } from '@mui/icons-material';
 import { Offline } from './ui/offline';
@@ -32,11 +32,11 @@ function App(
 
   const [defaultTabOverride, setDefaultTabOverride] = useState<TabName | undefined>(
     goTo
-    ? ({
-      "friends": "friends",
-      "watching": "watching"
-    } as const)[goTo]
-    : undefined
+      ? ({
+        "friends": "friends",
+        "watching": "watching"
+      } as const)[goTo]
+      : undefined
   );
 
   const setToken = (token: string | null): void => {
@@ -79,19 +79,19 @@ function App(
   let appBody: JSX.Element;
 
   if (offline) {
-    appBody = <Offline/>
+    appBody = <Offline />
   } else if (loginState.uncheckedSavedToken) {
-    appBody = <LinearProgress/>
+    appBody = <LinearProgress />
   } else if (loginState.token === null) {
     appBody = <LandingPage setSessionToken={changeSession} />;
   } else {
-    appBody = <HomeRoot token={loginState.token} initialTab={defaultTabOverride}/>;
+    appBody = <HomeRoot token={loginState.token} initialTab={defaultTabOverride} />;
   }
 
   return (<Paper sx={{ height: '100vh', display: 'flex', flexDirection: 'column', borderRadius: 0 }}>
     <AppBar position="static">
       <Toolbar>
-        <TaskAlt sx={{marginRight: 1}}/>
+        <TaskAlt sx={{ marginRight: 1 }} />
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Busybody
         </Typography>
@@ -101,7 +101,7 @@ function App(
             changeSession(null);
           }}
             changeTheme={props.changeTheme} currentThemeMode={props.currentThemeMode} />
-          : <></>
+          : <LoggedOutMenu changeTheme={props.changeTheme} currentThemeMode={props.currentThemeMode} />
         }
       </Toolbar>
     </AppBar>

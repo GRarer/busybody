@@ -105,7 +105,51 @@ export function SettingsMenu(props: {
         onClose={() => setShowPasswordDialog(false)}/>
       <ManageDataDialog token={props.token} open={showManageDataDialog}
         onClose={() => setShowManageDataDialog(false)} onDeleteAccount={props.onLogOut}/>
+    </>
+  );
+}
 
+export function LoggedOutMenu(props: {
+  changeTheme: (mode: 'light' | 'dark') => void;
+  currentThemeMode: 'light' | 'dark';
+}): JSX.Element {
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  function open(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void {
+    setAnchorEl(event.currentTarget);
+  }
+  function close(): void {
+    setAnchorEl(null);
+  }
+
+  return (
+    <>
+      <IconButton
+        size="large"
+        color="inherit"
+        onClick={open}
+      >
+        <SettingsIcon />
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={anchorEl !== null}
+        onClose={close}
+        onClick={close}
+      >
+        {
+          props.currentThemeMode === 'light'
+            ? <MenuItem onClick={() => props.changeTheme('dark')}>
+              <ListItemIcon><DarkMode fontSize="small" /></ListItemIcon>
+              <ListItemText>Toggle Dark Mode</ListItemText>
+            </MenuItem>
+            : <MenuItem onClick={() => props.changeTheme('light')}>
+              <ListItemIcon><LightMode fontSize="small" /></ListItemIcon>
+              <ListItemText>Toggle Light Mode</ListItemText>
+            </MenuItem>
+        }
+      </Menu>
     </>
   );
 }
