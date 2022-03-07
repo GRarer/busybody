@@ -17,3 +17,5 @@ export const testEmailEndpoint = new PostEndpointSimple('/test_email', {
   }),
   responseSchema: Schemas.aNull,
 });
+
+export const serverOnlineEndpoint = new GetEndpointSimple('/online', Schemas.literal(true));

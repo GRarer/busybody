@@ -1,5 +1,5 @@
 import { AppBar, Box, LinearProgress, Paper, Toolbar, Typography } from '@mui/material';
-import { sessionActiveEndpoint } from 'busybody-core';
+import { serverOnlineEndpoint, sessionActiveEndpoint } from 'busybody-core';
 import React, { useEffect, useState } from 'react';
 import { apiGet } from './util/requests';
 import { HomeRoot, TabName } from './ui/home/homeRoot';
@@ -7,6 +7,7 @@ import { LandingPage } from './ui/landing/Landing';
 import { SettingsMenu } from './ui/menu/settingsMenu';
 import { saveToken } from './util/persistence';
 import { TaskAlt } from '@mui/icons-material';
+import { Offline } from './ui/offline';
 
 // get page-specific link from url search parameters
 const goTo = new URLSearchParams(window.location.search).get('go');
@@ -20,6 +21,8 @@ function App(
     currentThemeMode: 'light' | 'dark';
   }
 ): JSX.Element {
+  const [offline, setOffline] = useState(false);
+
   // uncheckedSavedToken is true if we are using a token read from local storage
   // and have not yet checked it with the server to make sure it's still valid
   const [loginState, setLoginState] = useState<{ token: string | null; uncheckedSavedToken: boolean; }>({
@@ -53,19 +56,36 @@ function App(
           setToken(null);
         }
       }).catch(error => {
-        setToken(null);
+        console.log(error);
+        setOffline(true);
       });
     }
-  }, [loginState.uncheckedSavedToken]);
+  }, [loginState]);
+
+  // check at startup that server is online
+  useEffect(() => {
+    apiGet(serverOnlineEndpoint, {}, null).catch((error: unknown) => {
+      console.log(error);
+      setOffline(true);
+    });
+  }, []);
 
   const changeSession = (token: string | null): void => {
     saveToken(token);
     setToken(token);
   };
 
-  // show loading bar if we haven't yet validated the saved session
-  if (loginState.uncheckedSavedToken) {
-    return (<LinearProgress />);
+
+  let appBody: JSX.Element;
+
+  if (offline) {
+    appBody = <Offline/>
+  } else if (loginState.uncheckedSavedToken) {
+    appBody = <LinearProgress/>
+  } else if (loginState.token === null) {
+    appBody = <LandingPage setSessionToken={changeSession} />;
+  } else {
+    appBody = <HomeRoot token={loginState.token} initialTab={defaultTabOverride}/>;
   }
 
   return (<Paper sx={{ height: '100vh', display: 'flex', flexDirection: 'column', borderRadius: 0 }}>
@@ -75,7 +95,7 @@ function App(
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Busybody
         </Typography>
-        {loginState.token
+        {(loginState.token && !loginState.uncheckedSavedToken)
           ? <SettingsMenu token={loginState.token} onLogOut={() => {
             setDefaultTabOverride(undefined);
             changeSession(null);
@@ -86,9 +106,7 @@ function App(
       </Toolbar>
     </AppBar>
     <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-      {loginState.token
-        ? <HomeRoot token={loginState.token} initialTab={defaultTabOverride}/>
-        : <LandingPage setSessionToken={changeSession} />}
+      {appBody}
     </Box>
   </Paper>);
 
