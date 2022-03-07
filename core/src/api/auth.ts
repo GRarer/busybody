@@ -14,6 +14,6 @@ export const loginEndpoint = new PostEndpointSimple('/login', {
 });
 
 // no payload or queries because the session to be logged out will be identified by its token header
-export const logoutEndpoint = new DeleteEndpointSimple('/session_status', Schemas.aNull);
+export const logoutEndpoint = new DeleteEndpointSimple('/logout', Schemas.aNull);
 
 export const sessionActiveEndpoint = new GetEndpointSimple('/session_status', Schemas.aBoolean);

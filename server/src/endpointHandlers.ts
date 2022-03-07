@@ -46,6 +46,7 @@ export function attachHandlers(server: FastifyInstance): void {
   addHandler(loginEndpoint, logIn);
   addHandler(logoutEndpoint, async (body, params, token) => {
     await logOut(token);
+    console.log("logged out")
     return null;
   });
   addHandler(registrationEndpoint, register);

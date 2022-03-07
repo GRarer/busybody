@@ -33,6 +33,7 @@ export function SettingsMenu(props: {
   }
 
   function logOut(): void {
+    console.log(logoutEndpoint.relativePath);
     apiDelete(logoutEndpoint, {}, props.token)
       .then(props.onLogOut)
       .catch(error => {
