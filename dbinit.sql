@@ -9,13 +9,14 @@ CREATE DATABASE busybody
 
 \c busybody;
 
+
 CREATE TABLE users(
     user_uuid UUID PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     nickname TEXT NOT NULL,
-    email TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
     use_gravatar BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -59,6 +60,13 @@ CREATE VIEW tasks_with_watcher_uuids as
         select task, array_agg(watcher) as watcher_uuids
         from watch_assignments join users on users.user_uuid = watcher group by task
     ) select * from tasks left join watching on tasks.task_id = watching.task;
+
+CREATE TABLE password_reset_requests(
+    user_uuid UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE,
+    email TEXT NOT NULL,
+    reset_code_hash TEXT NOT NULL,
+    expiration BIGINT NOT NUll -- expiration time in unix time seconds
+);
 
 -- set up example data
 do $$

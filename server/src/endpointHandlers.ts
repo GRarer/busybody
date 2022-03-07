@@ -4,7 +4,7 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
   updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
   updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint,
-  testEmailEndpoint, toggleGravatarEndpoint, serverOnlineEndpoint } from 'busybody-core';
+  testEmailEndpoint, toggleGravatarEndpoint, serverOnlineEndpoint, resetPasswordRequestEndpoint, resetPasswordEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
 import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
   updateGravatarSetting, updatePassword } from './services/accountInfo.js';
@@ -12,6 +12,7 @@ import { getServerStatus, sendTestEmail } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { answerFriendRequest, cancelFriendRequest, getUserFriendsList, sendFriendRequest,
   unfriend } from './services/friends.js';
+import { requestPasswordReset, resetPassword } from './services/passwordReset.js';
 import { createTask, deleteTask, getOwnTodoList, getWatchedTasks, unfollowTask, updateTask } from './services/tasks.js';
 import { serverConfiguration } from './util/config.js';
 import { attachHandlerWithSafeWrapper } from './util/endpointWrapper.js';
@@ -79,6 +80,15 @@ export function attachHandlers(server: FastifyInstance): void {
     await deleteAccount(token);
     return null;
   });
+
+  // password reset
+  addHandler(resetPasswordRequestEndpoint, async (body, params, token) => {
+    await requestPasswordReset(body.email);
+    return null;
+  });
+  addHandler(resetPasswordEndpoint, async (body, params, token) => {
+    return await resetPassword(body);
+  })
 
   // friends lists
   addHandler(getFriendsListEndpoint, async (body, params, token) => {

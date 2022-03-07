@@ -25,8 +25,8 @@ export function WatcherEmailBody(props: {
     }
     <a href={linkURL("watching")}>View Watched Tasks</a>
     <p style={{ marginTop: '20px', 'opacity': 0.5 }}>You are receiving this message
-    because {props.ownerNickname} attached you as a watcher for this task
-    on <a href={serverConfiguration.appUrl}>Busybody</a>.</p>
+      because {props.ownerNickname} attached you as a watcher for this task
+      on <a href={serverConfiguration.appUrl}>Busybody</a>.</p>
   </>;
 }
 
@@ -39,3 +39,4 @@ export function FriendRequestEmailBody(props: {
     <a href={linkURL("friends")}>View Friend Request</a>
   </>;
 }
+

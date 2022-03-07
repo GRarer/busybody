@@ -90,6 +90,9 @@ export async function updateAccountInfo(request: {
       if (message.includes('duplicate key value violates unique constraint')) {
         if (message.includes('username')) {
           throw new UserException(409, 'That username is already taken');
+        } else if (message.includes('email')) {
+          // TODO prevent attackers from using this to get identify who has an account
+          throw new UserException(409, 'There is already an account with that email address');
         }
       }
     }

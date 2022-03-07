@@ -2,6 +2,7 @@ import { serverConfiguration } from '../../util/config.js';
 import { FriendRequestEmailBody, WatcherEmailBody } from './mailTemplates.js';
 import ReactDOMServer from 'react-dom/server.js';
 import { smtpTransport } from './smtpConfig.js';
+import React from 'react';
 
 function send(addresses: string[], subject: string, body: JSX.Element | string): void {
   smtpTransport.sendMail({
@@ -16,9 +17,9 @@ function send(addresses: string[], subject: string, body: JSX.Element | string):
   });
 }
 
-export async function sendPlaintextEmail(
+export function sendPlaintextEmail(
   addresses: string[], subject: string = 'Hello', body: string = 'Hello world'
-): Promise<void> {
+): void {
   send(addresses, subject, body);
 }
 
@@ -46,4 +47,35 @@ export function sendFriendRequestEmail(args: {
     'new Busybody friend request',
     FriendRequestEmailBody({senderName: args.senderName})
   );
+}
+
+export function sendPasswordResetEmail(params: {
+  address: string
+  username: string,
+  code: string
+}) {
+  send(
+    [params.address],
+    'Busybody password reset code',
+    <>
+      <p>Busybody received a password reset request for your account.</p>
+      <p>Busybody username: {params.username}</p>
+      <p>Temporary password reset code: {params.code}</p>
+      <p style={{marginTop: "1em"}}>If you didn't request a password reset, you can ignore this message. The reset code
+      will automatically expire after 1 hour.</p>
+    </>
+  )
+}
+
+export function sendPasswordResetAccountNotFoundEmail(email: string) {
+  send(
+    [email],
+    'You do not have a Busybody account',
+    <>
+      <p>Busybody received a password reset request for your email address, {email}. However,
+      there is no Busybody account associated with this address.</p>
+      <p><a href={serverConfiguration.appUrl}>To create a new Busybody account,
+      visit {serverConfiguration.appUrl}</a></p>
+    </>
+  )
 }
