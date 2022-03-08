@@ -1,12 +1,14 @@
+import { AlternateEmail, Send } from '@mui/icons-material';
 import {
   Button, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
-  LinearProgress
+  LinearProgress,
+  Typography
 } from '@mui/material';
-import { selfInfoEndpoint, updateEmailEndpoint } from 'busybody-core';
+import { requestEmailUpdateCodeEndpoint, selfInfoEndpoint, updateEmailEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
-import { apiGet, apiPut } from '../../util/requests';
-import { errorToMessage } from '../../util/util';
+import { apiGet, apiPost, apiPut } from '../../util/requests';
+import { absurd, errorToMessage } from '../../util/util';
 
 export function ChangeEmailDialog(
   props: {
@@ -17,59 +19,94 @@ export function ChangeEmailDialog(
 ): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [loadedCurrent, setLoadedCurrent] = useState(false);
-
+  const [step, setStep] = useState<"loading" | "address" | "sending" | "verification">("loading");
   const [email, setEmail] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+
+
+
+  // load current address when dialog opens
   useEffect(() => {
     // get info
     if (props.open) {
-      if (!loadedCurrent) {
+      if (step === "loading") {
         apiGet(selfInfoEndpoint, {}, props.token).then(info => {
           setEmail(info.email);
-          setLoadedCurrent(true);
+          setStep("address");
         }).catch(error => {
           enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
           props.onClose();
         });
       }
     } else {
-      setLoadedCurrent(false);
+      setStep("loading");
+      setEmail("");
+      setVerificationCode("");
     }
-  }, [props.open, props.token, loadedCurrent]);
+  }, [props.open, props.token, step]);
 
+  function sendCode() {
+    setStep("sending");
+    apiPost(requestEmailUpdateCodeEndpoint, {newEmail: email}, {}, props.token).then(() => {
+      setStep("verification")
+    }).catch(error => {
+      enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
+      setStep("address");
+    });
+  }
 
+  function updateEmail() {
+    apiPut(updateEmailEndpoint, {newEmail: email, verificationCode}, {}, props.token).then(() => {
+      enqueueSnackbar(`Your email address has been changed to ${email}`, { variant: 'success' });
+      props.onClose();
+    }).catch(error => {
+      enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
+      setStep("address");
+    });
+  }
 
-  const canUpdate = Boolean(email);
-
-  function update(): void {
-    apiPut(updateEmailEndpoint, email, {}, props.token)
-      .then(() => {
-        enqueueSnackbar(`Your email address has been updated to ${email}`, { variant: 'success' });
-        props.onClose();
-      })
-      .catch(error => {
-        enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
-      });
+  let contents: JSX.Element;
+  let actionButton: JSX.Element;
+  if (step === "loading" || step === "sending") {
+    contents = <LinearProgress />;
+  } else if (step === "address") {
+    contents = <>
+      <FormControl variant="filled" fullWidth >
+        <InputLabel htmlFor="email-input">New Email address</InputLabel>
+        <FilledInput id="email-input" value={email} onChange={ev => { setEmail(ev.target.value); }} />
+      </FormControl>
+      <Button variant="outlined" startIcon={<Send />} onClick={sendCode} disabled={!email}
+        sx={{marginTop: 1}}>
+        Get Verification Code
+      </Button>
+    </>
+  } else if (step === "verification") {
+    contents = <>
+      <Typography>A verification code has been sent to {email}. Enter the code here to update your email
+        address</Typography>
+      <FormControl variant="filled" fullWidth >
+        <InputLabel htmlFor="code-input">Verification Code</InputLabel>
+        <FilledInput id="code-input" value={verificationCode}
+          onChange={ev => { setVerificationCode(ev.target.value); }} />
+      </FormControl>
+      <Button variant="outlined" startIcon={<AlternateEmail />} onClick={updateEmail} disabled={!verificationCode}
+        sx={{marginTop: 1}}>
+        Update Email
+      </Button>
+    </>
+  } else {
+    contents = absurd(step);
   }
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>Change Email Address</DialogTitle>
-      {props.open && !loadedCurrent
-        ? <LinearProgress />
-        : <>
-          <DialogContent>
-            <FormControl variant="filled" fullWidth >
-              <InputLabel htmlFor="email-input">Email address</InputLabel>
-              <FilledInput id="email-input" value={email} onChange={ev => { setEmail(ev.target.value); }} />
-            </FormControl>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={props.onClose}>Cancel</Button>
-            <Button onClick={update} disabled={!canUpdate}>Update</Button>
-          </DialogActions>
-        </>}
+      <DialogContent>
+        {contents}
+      </DialogContent>
+      <DialogActions>
+          <Button onClick={props.onClose}>Cancel</Button>
+        </DialogActions>
     </Dialog>
   );
-
 }

@@ -1,5 +1,5 @@
 import { Schemas } from '@nprindle/augustus';
-import { ExportedPersonalData, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
+import { currentTimeSeconds, ExportedPersonalData, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
   usernameRequirementProblem } from 'busybody-core';
 import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
@@ -8,6 +8,9 @@ import { generateRandomToken, lookupSessionUser } from './authentication.js';
 import { dontValidate } from '../util/typeGuards.js';
 import { v4 as uuidV4 } from 'uuid';
 import { getOwnTodoList, getWatchedTasks } from './tasks.js';
+import { string } from 'pg-format';
+import { randomCode } from '../util/random.js';
+import { sendEmailChangeVerificationEmail } from './mail/mail.js';
 
 export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
   const results = await dbQuery(
@@ -100,9 +103,29 @@ export async function updateAccountInfo(request: {
   }
 }
 
-// TODO replace this one-step process with a two-step process that requires a validation code from the new email address
-export async function updateEmailAddress(newAddress: string, sessionToken: string): Promise<void> {
+export async function sendEmailVerificationCode(newAddress: string): Promise<void> {
+
+  // generate a random verification code
+  // unlike password-reset codes, this doesn't need to use a cryptographic-quality random number source
+  const code = randomCode(6, "insecure");
+
+  await dbQuery(
+    `insert into email_verification_codes ("email", "code", "expiration") values ($1, $2, $3);`,
+    [newAddress, code, currentTimeSeconds() + 3600], dontValidate
+  );
+
+  sendEmailChangeVerificationEmail(newAddress, code);
+}
+
+export async function updateEmailAddress(newAddress: string, verificationCode: string, sessionToken: string): Promise<void> {
   const userId = await lookupSessionUser(sessionToken);
+  const matchingCodes = await dbQuery(
+    `select 1 from email_verification_codes where email = $1 and code = $2`, [newAddress, verificationCode], dontValidate
+  );
+  if (matchingCodes.length === 0) {
+    throw new UserException(403, "Incorrect or expired validation code");
+  }
+
   await dbQuery('update users set email = $1 where user_uuid = $2',
     [newAddress, userId], dontValidate
   );

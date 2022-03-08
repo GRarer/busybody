@@ -79,3 +79,16 @@ export function sendPasswordResetAccountNotFoundEmail(email: string) {
     </>
   )
 }
+
+export function sendEmailChangeVerificationEmail(email: string, code: string): void {
+  send(
+    [email],
+    'Busybody email verification code',
+    <>
+      <p>To change the email associated with your Busybody account to {email}, enter the following
+      verification code: {code}</p>
+      <p style={{marginTop: "1em"}}>If you didn't request to change your email, you can ignore this message.
+      The verification code will automatically expire after 1 hour.</p>
+    </>
+  )
+}

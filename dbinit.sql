@@ -65,7 +65,13 @@ CREATE TABLE password_reset_requests(
     user_uuid UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE,
     email TEXT NOT NULL,
     reset_code_hash TEXT NOT NULL,
-    expiration BIGINT NOT NUll -- expiration time in unix time seconds
+    expiration BIGINT NOT NUll -- expiration time in unix time seconds // TODO clear expired codes
+);
+
+CREATE TABLE email_verification_codes(
+    email TEXT NOT NULL,
+    code TEXT NOT NULL,
+    expiration BIGINT NOT NUll -- expiration time in unix time seconds // TODO clear expired codes
 );
 
 -- set up example data

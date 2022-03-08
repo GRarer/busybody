@@ -7,6 +7,7 @@ import { currentTimeSeconds, resetPasswordEndpoint } from "busybody-core";
 import { sendPasswordResetAccountNotFoundEmail, sendPasswordResetEmail } from "./mail/mail.js";
 import { UserException } from "../util/errors.js";
 import { generateRandomToken } from "./authentication.js";
+import { randomCode } from "../util/random.js";
 
 export async function requestPasswordReset(email: string): Promise<void> {
   const result: {code: string, username: string} | null = await dbTransaction(async query => {
@@ -24,10 +25,9 @@ export async function requestPasswordReset(email: string): Promise<void> {
     const userUUID = userResults[0].user_uuid;
     const username = userResults[0].username;
 
+    // TODO 8-digit decimal numbers probably don't have enough entropy
     // generate random reset code
-    const codeDigits = 8
-    const codeNumber = crypto.randomInt(1, Math.floor((10**codeDigits)-1));
-    const code = "00000000".slice(0, 8-`${codeNumber}`.length) + `${codeNumber}`;
+    const code = randomCode(8, "cryptographic");
     const codeHash = await bcrypt.hash(code, 10);
 
     // TODO implement removing expired codes

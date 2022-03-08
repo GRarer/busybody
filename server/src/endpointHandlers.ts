@@ -4,9 +4,9 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
   updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
   updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint,
-  testEmailEndpoint, toggleGravatarEndpoint, serverOnlineEndpoint, resetPasswordRequestEndpoint, resetPasswordEndpoint } from 'busybody-core';
+  testEmailEndpoint, toggleGravatarEndpoint, serverOnlineEndpoint, resetPasswordRequestEndpoint, resetPasswordEndpoint, requestEmailUpdateCodeEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
-import { deleteAccount, exportAccountData, getSelfInfo, register, updateAccountInfo, updateEmailAddress,
+import { deleteAccount, exportAccountData, getSelfInfo, register, sendEmailVerificationCode, updateAccountInfo, updateEmailAddress,
   updateGravatarSetting, updatePassword } from './services/accountInfo.js';
 import { getServerStatus, sendTestEmail } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
@@ -61,8 +61,12 @@ export function attachHandlers(server: FastifyInstance): void {
     await updateAccountInfo(body, token);
     return null;
   });
+  addHandler(requestEmailUpdateCodeEndpoint, async body => {
+    sendEmailVerificationCode(body.newEmail);
+    return null;
+  });
   addHandler(updateEmailEndpoint, async (body, params, token) => {
-    await updateEmailAddress(body, token);
+    await updateEmailAddress(body.newEmail, body.verificationCode, token);
     return null;
   });
   addHandler(updatePasswordEndpoint, async (body, params, token) => {
