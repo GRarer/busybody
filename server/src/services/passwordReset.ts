@@ -38,9 +38,9 @@ export async function requestPasswordReset(email: string): Promise<void> {
     return ({ code, username });
   });
   if (result === null) {
-    sendPasswordResetAccountNotFoundEmail(email);
+    await sendPasswordResetAccountNotFoundEmail(email);
   } else {
-    sendPasswordResetEmail({ address: email, username: result.username, code: result.code });
+    await sendPasswordResetEmail({ address: email, username: result.username, code: result.code });
   }
 }
 

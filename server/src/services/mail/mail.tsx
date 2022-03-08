@@ -6,23 +6,27 @@ import React from 'react';
 
 // TODO some of these should be done synchronously and report if they can't be send
 
-function send(addresses: string[], subject: string, body: JSX.Element | string): void {
-  smtpTransport.sendMail({
+async function send(addresses: string[], subject: string, body: JSX.Element | string): Promise<void> {
+  await smtpTransport.sendMail({
     from: serverConfiguration.emailFromField,
     to: addresses.join(', '),
     subject,
     html: typeof body === 'string' ? undefined : ReactDOMServer.renderToStaticMarkup(body),
     text: typeof body === 'string' ? body : undefined
-  }).catch(err => {
+  });
+}
+
+function sendWithoutWaiting(addresses: string[], subject: string, body: JSX.Element | string): void {
+  send(addresses, subject, body).catch(err => {
     console.error('failed to send email');
     console.error(err);
   });
 }
 
-export function sendPlaintextEmail(
+export async function sendPlaintextEmail(
   addresses: string[], subject: string = 'Hello', body: string = 'Hello world'
-): void {
-  send(addresses, subject, body);
+): Promise<void> {
+  await send(addresses, subject, body);
 }
 
 // send watcher emails (and do not wait for transaction to be finished)
@@ -33,7 +37,7 @@ export function sendWatcherEmail(task: {
   ownerNickname: string;
   ownerFullName: string;
 }): void {
-  send(
+  sendWithoutWaiting(
     task.watcherAddresses,
     `${task.ownerNickname} missed their deadline for the task ${task.taskTitle}`,
     WatcherEmailBody(task)
@@ -44,19 +48,19 @@ export function sendFriendRequestEmail(args: {
   senderName: string;
   recipientEmailAddress: string;
 }): void {
-  send(
+  sendWithoutWaiting(
     [args.recipientEmailAddress],
     'new Busybody friend request',
     FriendRequestEmailBody({ senderName: args.senderName })
   );
 }
 
-export function sendPasswordResetEmail(params: {
+export async function sendPasswordResetEmail(params: {
   address: string;
   username: string;
   code: string;
-}): void {
-  send(
+}): Promise<void> {
+  await send(
     [params.address],
     'Busybody password reset code',
     <>
@@ -69,8 +73,8 @@ export function sendPasswordResetEmail(params: {
   );
 }
 
-export function sendPasswordResetAccountNotFoundEmail(email: string): void {
-  send(
+export async function sendPasswordResetAccountNotFoundEmail(email: string): Promise<void> {
+  await send(
     [email],
     'You do not have a Busybody account',
     <>
@@ -82,8 +86,8 @@ export function sendPasswordResetAccountNotFoundEmail(email: string): void {
   );
 }
 
-export function sendEmailChangeVerificationEmail(email: string, code: string): void {
-  send(
+export async function sendEmailChangeVerificationEmail(email: string, code: string): Promise<void> {
+  await send(
     [email],
     'Busybody email verification code',
     <>
@@ -95,14 +99,14 @@ export function sendEmailChangeVerificationEmail(email: string, code: string): v
   );
 }
 
-export function sendRegistrationVerificationEmail(params: {
-  email: string,
-  username: string,
-  uuid: string,
-  verificationCode: string
-}): void {
+export async function sendRegistrationVerificationEmail(params: {
+  email: string;
+  username: string;
+  uuid: string;
+  verificationCode: string;
+}): Promise<void> {
   const link = serverConfiguration.appUrl + `?verify_account=${params.uuid}&code=${params.verificationCode}`;
-  send(
+  await send(
     [params.email],
     'Busybody registration verification',
     <>
@@ -111,15 +115,15 @@ export function sendRegistrationVerificationEmail(params: {
       Busybody to send you email notifications. You may change the email address associated with your account or
       even close your account at any time.</p>
     </>
-  )
+  );
 }
 
-export function sendAccountRegistrationEmailCollisionEmail(params: {
-  address: string,
-  newUsername: string,
-  existingUsername: string
-}): void {
-  send(
+export async function sendAccountRegistrationEmailCollisionEmail(params: {
+  address: string;
+  newUsername: string;
+  existingUsername: string;
+}): Promise<void> {
+  await send(
     [params.address],
     'You already have a busybody account',
     <>
@@ -128,5 +132,5 @@ export function sendAccountRegistrationEmailCollisionEmail(params: {
       with the username {params.existingUsername}.</p>
       <p>To log in to Busybody, visit <a href={serverConfiguration.appUrl}>{serverConfiguration.appUrl}</a></p>
     </>
-  )
+  );
 }

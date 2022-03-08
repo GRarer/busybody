@@ -54,6 +54,9 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
   const verificationCodeHash = await bcrypt.hash(verificationCode, 10);
 
   try {
+    await dbTransaction(async query => {
+
+    });
     await dbQuery(
       `insert into users
       ("user_uuid", "username", "password_hash", "full_name", "nickname", "email", "verification_code_hash")
@@ -61,9 +64,15 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
       [userId, request.username, hash, request.fullName, request.nickname, request.email, verificationCodeHash],
       dontValidate
     );
-    sendRegistrationVerificationEmail(
-      {email: request.email, uuid: userId, verificationCode, username: request.username}
-    );
+    try {
+      await sendRegistrationVerificationEmail(
+        {email: request.email, uuid: userId, verificationCode, username: request.username}
+      );
+    } catch (err) {
+      // remove pending account if confirmation email could not be sent
+      await dbQuery(`delete from users where user_id = $1;`, [userId], dontValidate);
+      throw err;
+    }
   } catch (err: unknown) {
     if (err instanceof Error) {
       const message = err.message;
@@ -84,7 +93,7 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
             throw new Error("cannot determine conflicting account ")
           }
           // inform owner of the email account to say that they already have an account
-          sendAccountRegistrationEmailCollisionEmail(
+          await sendAccountRegistrationEmailCollisionEmail(
             {address: request.email, newUsername: request.username, existingUsername: existing[0].username}
           );
           return;
@@ -161,7 +170,7 @@ export async function sendEmailVerificationCode(newAddress: string): Promise<voi
     [newAddress, code, currentTimeSeconds() + 3600], dontValidate
   );
 
-  sendEmailChangeVerificationEmail(newAddress, code);
+  await sendEmailChangeVerificationEmail(newAddress, code);
 }
 
 export async function updateEmailAddress(
@@ -235,6 +244,5 @@ export async function exportAccountData(token: string): Promise<ExportedPersonal
 
 export async function deleteAccount(token: string): Promise<void> {
   const userId = await lookupSessionUser(token);
-
-
+  await dbQuery(`delete from users where user_id = $1;`, [userId], dontValidate);
 }
