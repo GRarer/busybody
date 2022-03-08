@@ -36,7 +36,6 @@ export function ManageDataDialog(
   function downloadData(): void {
     apiGet(exportPersonalDataEndpoint, {}, props.token)
       .then((data => {
-        console.log(data);
         const json = JSON.stringify(data, null, 4);
         downloadFile(json, 'busybody_export.json');
         enqueueSnackbar('Download Complete', { variant: 'success' });

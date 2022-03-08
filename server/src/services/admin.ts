@@ -25,9 +25,6 @@ export async function getServerStatus(): Promise<ServerStatusResponse> {
 
 export async function sendTestEmail(request: DomainOf<typeof testEmailEndpoint.requestSchema>): Promise<void> {
   requireTestingMode();
-  console.log('test email request');
-  console.log(request);
-
   await sendPlaintextEmail(request.to);
 }
 

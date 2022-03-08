@@ -10,7 +10,6 @@ function decodeResult<D, R>(data: unknown, schema: Schema<D, R>): D {
     return schema.decode(data);
   } else {
     console.error('data does not match schema');
-    console.log(data);
     throw new Error('Server response did not match expected format');
   }
 }
