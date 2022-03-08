@@ -15,7 +15,15 @@ export type RegistrationRequest = DomainOf<typeof registrationRequestSchema>;
 
 export const registrationEndpoint = new PutEndpointSimple('/register', {
   requestSchema: registrationRequestSchema,
-  responseSchema: Schemas.aString
+  responseSchema: Schemas.aNull
+});
+
+export const verifyRegistrationEndpoint = new PutEndpointSimple('/verify_registration', {
+  requestSchema: Schemas.recordOf({
+    userUUID: Schemas.aString,
+    verificationCode: Schemas.aString
+  }),
+  responseSchema: Schemas.recordOf({token: Schemas.aString}),
 });
 
 export type SelfInfoResponse = {

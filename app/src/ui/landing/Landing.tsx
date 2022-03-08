@@ -18,7 +18,7 @@ export function LandingPage(props: {
         </Tabs>
       </Box>
       {showSignUp
-        ? <RegisterForm onSignIn={props.setSessionToken} />
+        ? <RegisterForm/>
         : <SignInForm onSignIn={props.setSessionToken} />
       }
     </Container>

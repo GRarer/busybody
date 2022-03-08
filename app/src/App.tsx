@@ -1,18 +1,34 @@
 import { AppBar, Box, LinearProgress, Paper, Toolbar, Typography } from '@mui/material';
-import { serverOnlineEndpoint, sessionActiveEndpoint } from 'busybody-core';
+import { serverOnlineEndpoint, sessionActiveEndpoint, verifyRegistrationEndpoint } from 'busybody-core';
 import React, { useEffect, useState } from 'react';
-import { apiGet } from './util/requests';
+import { apiGet, apiPut } from './util/requests';
 import { HomeRoot, TabName } from './ui/home/homeRoot';
 import { LandingPage } from './ui/landing/Landing';
 import { LoggedOutMenu, SettingsMenu } from './ui/menu/settingsMenu';
 import { saveToken } from './util/persistence';
-import { TaskAlt } from '@mui/icons-material';
+import { PanoramaSharp, TaskAlt } from '@mui/icons-material';
 import { Offline } from './ui/offline';
+import { VerifyRegistrationFailed } from './ui/verifyRegistrationFailed';
+import { errorToMessage } from './util/util';
 
 // get page-specific link from url search parameters
-const goTo = new URLSearchParams(window.location.search).get('go');
-// remove query parameters
-window.history.replaceState({}, document.title, window.location.href.split('?')[0]);
+const urlParams = new URLSearchParams(window.location.search);
+const goTo = urlParams.get('go');
+const verificationUUID = urlParams.get('verify_account');
+const verificationCode = urlParams.get('code');
+
+// remove query parameters for goto
+if(goTo) {
+  window.history.replaceState({}, document.title, window.location.href.split('?')[0]);
+}
+
+type AppState
+  = {state: "logged_out"}
+  | {state: "logged_in", token: string}
+  | {state: "unverified_saved_token", token: string}
+  | {state: "verify_registration", verificationUUID: string, verificationCode: string}
+  | {state: "verify_registration_failed", errorMessage: string}
+  | {state: "offline"};
 
 function App(
   props: {
@@ -21,14 +37,17 @@ function App(
     currentThemeMode: 'light' | 'dark';
   }
 ): JSX.Element {
-  const [offline, setOffline] = useState(false);
 
-  // uncheckedSavedToken is true if we are using a token read from local storage
-  // and have not yet checked it with the server to make sure it's still valid
-  const [loginState, setLoginState] = useState<{ token: string | null; uncheckedSavedToken: boolean; }>({
-    token: props.initialSavedToken,
-    uncheckedSavedToken: props.initialSavedToken !== null
-  });
+  let defaultState: AppState;
+  if (verificationUUID && verificationCode) {
+    defaultState = {state: "verify_registration", verificationUUID, verificationCode}
+  } else if (props.initialSavedToken !== null) {
+    defaultState = {state: "unverified_saved_token", token: props.initialSavedToken}
+  } else {
+    defaultState = {state: "logged_out"}
+  }
+
+  const [appState, setAppState] = useState<AppState>(defaultState);
 
   const [defaultTabOverride, setDefaultTabOverride] = useState<TabName | undefined>(
     goTo
@@ -40,34 +59,53 @@ function App(
   );
 
   const setToken = (token: string | null): void => {
-    setLoginState({ token, uncheckedSavedToken: false });
+    if(token === null) {
+      setAppState({ state: "logged_out"});
+    } else {
+      setAppState({ state: "logged_in", token });
+    }
   };
 
   // when using a saved token from local storage, we need to check with the server to make sure the session is valid
   useEffect(() => {
-    if (loginState.uncheckedSavedToken) {
-      apiGet(sessionActiveEndpoint, {}, loginState.token).then(sessionIsValid => {
+    if (appState.state === "unverified_saved_token") {
+      apiGet(sessionActiveEndpoint, {}, appState.token).then(sessionIsValid => {
         if (sessionIsValid) {
-          setLoginState({
-            token: loginState.token,
-            uncheckedSavedToken: false
-          });
+          setAppState({state: "logged_in", token: appState.token});
         } else {
-          setToken(null);
+          setAppState({state: "logged_out"});
         }
       }).catch(error => {
         console.log(error);
-        setOffline(true);
+        setAppState({state: "offline"})
       });
     }
-  }, [loginState]);
+  }, [appState]);
+
+  // when url query params contained a verification code, verify and log in account
+  useEffect(() => {
+    if (appState.state === "verify_registration") {
+      apiPut(verifyRegistrationEndpoint,
+        {userUUID: appState.verificationUUID, verificationCode: appState.verificationCode}, {}, null)
+      .then(response => {
+        window.history.replaceState({}, document.title, window.location.href.split('?')[0]);
+        setToken(response.token);
+      })
+      .catch(err => {
+        setAppState({state: "verify_registration_failed", errorMessage: errorToMessage(err).message});
+      });
+    }
+  }, [])
 
   // check at startup that server is online
   useEffect(() => {
-    apiGet(serverOnlineEndpoint, {}, null).catch((error: unknown) => {
-      console.log(error);
-      setOffline(true);
-    });
+    // not necessary if there's a saved token since a request will already be made for that
+    if(appState.state !== 'unverified_saved_token') {
+      apiGet(serverOnlineEndpoint, {}, null).catch((error: unknown) => {
+        console.log(error);
+        setAppState({state: "offline"});
+      });
+    }
   }, []);
 
   const changeSession = (token: string | null): void => {
@@ -77,15 +115,16 @@ function App(
 
 
   let appBody: JSX.Element;
-
-  if (offline) {
+  if (appState.state === "offline") {
     appBody = <Offline />;
-  } else if (loginState.uncheckedSavedToken) {
+  } else if (appState.state === "unverified_saved_token" || appState.state === "verify_registration") {
     appBody = <LinearProgress />;
-  } else if (loginState.token === null) {
-    appBody = <LandingPage setSessionToken={changeSession} />;
+  } else if (appState.state === "verify_registration_failed") {
+    appBody = <VerifyRegistrationFailed message={appState.errorMessage} onDismiss={() => setToken(null)}/>
+  } else if (appState.state === "logged_out") {
+    appBody = <LandingPage setSessionToken={changeSession} />
   } else {
-    appBody = <HomeRoot token={loginState.token} initialTab={defaultTabOverride} />;
+    appBody = <HomeRoot token={appState.token} initialTab={defaultTabOverride} />;
   }
 
   return (<Paper sx={{ height: '100vh', display: 'flex', flexDirection: 'column', borderRadius: 0 }}>
@@ -95,8 +134,8 @@ function App(
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Busybody
         </Typography>
-        {(loginState.token && !loginState.uncheckedSavedToken)
-          ? <SettingsMenu token={loginState.token} onLogOut={() => {
+        {(appState.state === "logged_in")
+          ? <SettingsMenu token={appState.token} onLogOut={() => {
             setDefaultTabOverride(undefined);
             changeSession(null);
           }}

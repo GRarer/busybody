@@ -4,6 +4,8 @@ import ReactDOMServer from 'react-dom/server.js';
 import { smtpTransport } from './smtpConfig.js';
 import React from 'react';
 
+// TODO some of these should be done synchronously and report if they can't be send
+
 function send(addresses: string[], subject: string, body: JSX.Element | string): void {
   smtpTransport.sendMail({
     from: serverConfiguration.emailFromField,
@@ -91,4 +93,40 @@ export function sendEmailChangeVerificationEmail(email: string, code: string): v
       The verification code will automatically expire after 1 hour.</p>
     </>
   );
+}
+
+export function sendRegistrationVerificationEmail(params: {
+  email: string,
+  username: string,
+  uuid: string,
+  verificationCode: string
+}): void {
+  const link = serverConfiguration.appUrl + `?verify_account=${params.uuid}&code=${params.verificationCode}`;
+  send(
+    [params.email],
+    'Busybody registration verification',
+    <>
+      <p>To complete registration of your Busybody account ({params.username}), <a href={link}>click here</a></p>.
+      <p>By registering your email address with Busybody, you agree to allow
+      Busybody to send you email notifications. You may change the email address associated with your account or
+      even close your account at any time.</p>
+    </>
+  )
+}
+
+export function sendAccountRegistrationEmailCollisionEmail(params: {
+  address: string,
+  newUsername: string,
+  existingUsername: string
+}): void {
+  send(
+    [params.address],
+    'You already have a busybody account',
+    <>
+      <p>You or somebody else attempted to register a new Busybody account with the username {params.newUsername} using
+      this email address ({params.address}). However, you already have a Busybody account associated with this address,
+      with the username {params.existingUsername}.</p>
+      <p>To log in to Busybody, visit <a href={serverConfiguration.appUrl}>{serverConfiguration.appUrl}</a></p>
+    </>
+  )
 }

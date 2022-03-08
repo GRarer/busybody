@@ -9,7 +9,7 @@ import { dontValidate } from '../util/typeGuards.js';
 import { v4 as uuidV4 } from 'uuid';
 import { getOwnTodoList, getWatchedTasks } from './tasks.js';
 import { randomCode } from '../util/random.js';
-import { sendEmailChangeVerificationEmail } from './mail/mail.js';
+import { sendAccountRegistrationEmailCollisionEmail, sendEmailChangeVerificationEmail, sendRegistrationVerificationEmail } from './mail/mail.js';
 
 export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
   const results = await dbQuery(
@@ -39,7 +39,7 @@ export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
   };
 }
 
-export async function register(request: RegistrationRequest): Promise<string> {
+export async function startRegistration(request: RegistrationRequest): Promise<void> {
   // validate username and password formats
   const usernameOrPasswordProblem
     = usernameRequirementProblem(request.username) ?? passwordRequirementProblem(request.password);
@@ -49,18 +49,21 @@ export async function register(request: RegistrationRequest): Promise<string> {
 
   const userId = uuidV4(); // generate a random permanent Universally Unique Identifier as the primary key of this user
   const hash = await bcrypt.hash(request.password, 10); // hashing passwords is asynchronous because it is slow
-  const token = generateRandomToken();
+
+  const verificationCode = randomCode(8, "cryptographic");
+  const verificationCodeHash = await bcrypt.hash(verificationCode, 10);
 
   try {
-    await dbTransaction(async query => {
-      await query(
-        `insert into users ("user_uuid", "username", "password_hash", "full_name", "nickname", "email")
-        values ($1, $2, $3, $4, $5, $6);`,
-        [userId, request.username, hash, request.fullName, request.nickname, request.email], dontValidate
-      );
-      await query('insert into sessions ("token", "user_uuid") values ($1, $2);', [token, userId], dontValidate);
-    });
-    return token;
+    await dbQuery(
+      `insert into users
+      ("user_uuid", "username", "password_hash", "full_name", "nickname", "email", "verification_code_hash")
+      values ($1, $2, $3, $4, $5, $6, $7);`,
+      [userId, request.username, hash, request.fullName, request.nickname, request.email, verificationCodeHash],
+      dontValidate
+    );
+    sendRegistrationVerificationEmail(
+      {email: request.email, uuid: userId, verificationCode, username: request.username}
+    );
   } catch (err: unknown) {
     if (err instanceof Error) {
       const message = err.message;
@@ -68,7 +71,23 @@ export async function register(request: RegistrationRequest): Promise<string> {
         if (message.includes('username')) {
           throw new UserException(409, 'That username is already taken');
         } else if (message.includes('email')) {
-          throw new UserException(409, 'There is already an account with that email address');
+          const existing = await dbQuery(
+            `select username from users where email = $1;`,
+            [request.email], Schemas.recordOf({
+              username: Schemas.aString
+            }));
+          if (existing.length === 0) {
+            /* this shouldn't ever happen since we just had a collision on email
+             * but it theoretically could occur if the existing user is deleted between our attempt to create the new
+             * account and our attempt to find the conflicting account
+             */
+            throw new Error("cannot determine conflicting account ")
+          }
+          // inform owner of the email account to say that they already have an account
+          sendAccountRegistrationEmailCollisionEmail(
+            {address: request.email, newUsername: request.username, existingUsername: existing[0].username}
+          );
+          return;
         }
       }
     }
@@ -76,6 +95,40 @@ export async function register(request: RegistrationRequest): Promise<string> {
     console.log(err);
     throw err;
   }
+}
+
+export async function completeRegistration(uuid: string, verificationCode: string): Promise<string> {
+  return await dbTransaction(async query => {
+    // get pending account information
+    const pendingResults = await query(
+      `select verification_code_hash from users where user_uuid = $1`, [uuid], Schemas.recordOf({
+        verification_code_hash: Schemas.union(Schemas.aString, Schemas.aNull)
+      })
+    );
+    if (pendingResults.length === 0) {
+      throw new UserException(404, "invalid user ID");
+    }
+    const codeHash = pendingResults[0].verification_code_hash;
+    if (codeHash === null) {
+      throw new UserException(403, "This account has already been verified");
+    }
+
+    // validate verification code
+    const valid = await bcrypt.compare(verificationCode, codeHash);
+    if(!valid) {
+      throw new UserException(403, "incorrect verification code");
+    }
+
+    // mark account as active by removing verification code hash
+    await query(
+      `update users set verification_code_hash = NULL where user_uuid = $1;`, [uuid], dontValidate
+    );
+
+    // create new session
+    const token = generateRandomToken();
+    await query('insert into sessions ("token", "user_uuid") values ($1, $2);', [token, uuid], dontValidate);
+    return token;
+  });
 }
 
 export async function updateAccountInfo(request: {
@@ -89,13 +142,8 @@ export async function updateAccountInfo(request: {
   } catch (err: unknown) {
     if (err instanceof Error) {
       const message = err.message;
-      if (message.includes('duplicate key value violates unique constraint')) {
-        if (message.includes('username')) {
-          throw new UserException(409, 'That username is already taken');
-        } else if (message.includes('email')) {
-          // TODO prevent attackers from using this to get identify who has an account
-          throw new UserException(409, 'There is already an account with that email address');
-        }
+      if (message.includes('duplicate key value violates unique constraint') && message.includes('username')) {
+        throw new UserException(409, 'That username is already taken');
       }
     }
     throw err;
@@ -128,6 +176,7 @@ export async function updateEmailAddress(
     throw new UserException(403, 'Incorrect or expired validation code');
   }
 
+  // TODO catch collisions
   await dbQuery('update users set email = $1 where user_uuid = $2',
     [newAddress, userId], dontValidate
   );
@@ -186,5 +235,6 @@ export async function exportAccountData(token: string): Promise<ExportedPersonal
 
 export async function deleteAccount(token: string): Promise<void> {
   const userId = await lookupSessionUser(token);
-  await dbQuery('delete from users where user_uuid = $1;', [userId], dontValidate);
+
+
 }

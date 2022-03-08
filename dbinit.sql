@@ -9,26 +9,26 @@ CREATE DATABASE busybody
 
 \c busybody;
 
-
 CREATE TABLE users(
     user_uuid UUID PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     full_name TEXT NOT NULL,
     nickname TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    use_gravatar BOOLEAN NOT NULL DEFAULT FALSE
+    use_gravatar BOOLEAN NOT NULL DEFAULT FALSE,
+    verification_code_hash TEXT -- null if account already verified
 );
 
 -- user log-in sessions
 CREATE TABLE sessions(
     token TEXT PRIMARY KEY,
-    user_uuid UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE
+    user_uuid UUID NOT NULL References users (user_uuid) ON DELETE CASCADE
 );
 
 CREATE TABLE friendships(
-    user_a UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE,
-    user_b UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE
+    user_a UUID NOT NULL References users (user_uuid) ON DELETE CASCADE,
+    user_b UUID NOT NULL References users (user_uuid) ON DELETE CASCADE
 );
 
 -- friendships can be represented in either order; unioning both directions makes it easier to list a user's friends

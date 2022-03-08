@@ -22,16 +22,21 @@ export function generateRandomToken(): string {
 export async function logIn(loginRequest: LoginRequest): Promise<string> {
   const { token, userId } = await dbTransaction(async query => {
     // retrieve credentials from database
+    // do not include users that haven't verified their email address
     const matching = await query(
-      'SELECT "user_uuid", "password_hash" from users where username = $1;',
+      'SELECT "user_uuid", "password_hash", "verification_code_hash" from users where username = $1;',
       [loginRequest.username],
       Schemas.recordOf({
         'user_uuid': Schemas.aString,
-        'password_hash': Schemas.aString
+        'password_hash': Schemas.aString,
+        'verification_code_hash': Schemas.union(Schemas.aString, Schemas.aNull)
       })
     );
     if (matching.length < 1) {
       throw new UserException(403, 'Incorrect username or password');
+    }
+    if (matching[0].verification_code_hash !== null) {
+      throw new UserException(403, 'You must verify your email before you can log in');
     }
     // validating bcrypt password hashes is asynchronous because it is slow by design
     if (!(await bcrypt.compare(loginRequest.password, matching[0].password_hash))) {

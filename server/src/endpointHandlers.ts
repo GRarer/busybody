@@ -5,9 +5,10 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
   updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint,
   testEmailEndpoint, toggleGravatarEndpoint, serverOnlineEndpoint, resetPasswordRequestEndpoint, resetPasswordEndpoint,
-  requestEmailUpdateCodeEndpoint } from 'busybody-core';
+  requestEmailUpdateCodeEndpoint,
+  verifyRegistrationEndpoint} from 'busybody-core';
 import { FastifyInstance } from 'fastify';
-import { deleteAccount, exportAccountData, getSelfInfo, register, sendEmailVerificationCode, updateAccountInfo,
+import { completeRegistration, deleteAccount, exportAccountData, getSelfInfo, sendEmailVerificationCode, startRegistration, updateAccountInfo,
   updateEmailAddress, updateGravatarSetting, updatePassword } from './services/accountInfo.js';
 import { getServerStatus, sendTestEmail } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
@@ -51,8 +52,16 @@ export function attachHandlers(server: FastifyInstance): void {
     console.log('logged out');
     return null;
   });
-  addHandler(registrationEndpoint, register);
   addHandler(sessionActiveEndpoint, async (body, params, token) => isValidSession(token));
+
+  // account registration
+  addHandler(registrationEndpoint, async body => {
+    await startRegistration(body);
+    return null
+  });
+  addHandler(verifyRegistrationEndpoint, async (body) => {
+    return ({token: await completeRegistration(body.userUUID, body.verificationCode)});
+  })
 
   // user accounts and settings
   addHandler(selfInfoEndpoint, async (body, params, token) => {

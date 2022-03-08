@@ -1,7 +1,8 @@
-import { Check } from '@mui/icons-material';
+import { Check, HowToReg, RestartAlt } from '@mui/icons-material';
 import {
   Button, FilledInput, FormControl, FormControlLabel, FormGroup, InputLabel,
-  Switch } from '@mui/material';
+  Switch,
+  Typography} from '@mui/material';
 import { Box } from '@mui/material';
 import { passwordRequirementProblem, registrationEndpoint, RegistrationRequest,
   usernameRequirementProblem } from 'busybody-core';
@@ -11,9 +12,7 @@ import { apiPut } from '../../util/requests';
 import { errorToMessage } from '../../util/util';
 import { OptionalInputWarning } from '../common';
 
-export function RegisterForm(props: {
-  onSignIn: (token: string) => void;
-}): JSX.Element {
+export function RegisterForm(): JSX.Element {
 
   const [username, setUsername] = useState('');
 
@@ -24,6 +23,8 @@ export function RegisterForm(props: {
   const [fullName, setFullName] = useState('');
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
+
+  const [verificationSent, setVerificationSent] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -45,7 +46,7 @@ export function RegisterForm(props: {
   function register(): void {
     const request: RegistrationRequest = { username, password, fullName, nickname, email };
     apiPut(registrationEndpoint, request, {}, null)
-      .then(props.onSignIn)
+      .then(() => setVerificationSent(true))
       .catch(error => {
         const problem = errorToMessage(error);
         const variant = problem.code === 500 ? 'error' : 'warning';
@@ -59,6 +60,16 @@ export function RegisterForm(props: {
     }
   };
 
+  if (verificationSent) {
+    return <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+    <HowToReg fontSize="large" sx={{ marginTop: 2, marginBottom: 1 }}/>
+    <Typography variant="body2">A verification email has been sent to {email}. Check your inbox for
+    a link to complete registration.</Typography>
+    <Button variant="outlined" startIcon={<RestartAlt/>}
+      size="small" sx={{marginTop: 2}}
+      onClick={() => setVerificationSent(false)}>Register a different account</Button>
+  </Box>
+  }
 
   return (
     <Box>
@@ -88,7 +99,7 @@ export function RegisterForm(props: {
         </FormGroup>
         <FormControl variant="filled" style={{ width: '100%' }}>
           <InputLabel htmlFor="full-name">Full Name</InputLabel>
-          <FilledInput id="full-name" placeholder='George P. Burdell' value={fullName}
+          <FilledInput id="full-name" value={fullName}
             onChange={ev => { setFullName(ev.target.value); }} />
         </FormControl>
         <FormControl variant="filled" style={{ width: '100%' }}>
