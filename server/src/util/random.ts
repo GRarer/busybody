@@ -1,10 +1,14 @@
 import crypto from 'crypto';
 
+const codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 export function randomCode(length: number, mode: 'cryptographic' | 'insecure'): string {
-  const maximum = Math.floor((10 ** length) - 1);
-  const codeNumber = mode === 'cryptographic'
-    ? crypto.randomInt(1, maximum)
-    : Math.ceil(maximum * Math.random());
-  const codeDigits = `${codeNumber}`;
-  return '0'.repeat(length - codeDigits.length) + codeDigits;
+  const chars: string[] = [];
+  for (let i = 0; i < length; i++) {
+    const digitIndex = mode === 'cryptographic'
+      ? crypto.randomInt(0, codeAlphabet.length - 1)
+      : Math.floor(codeAlphabet.length * Math.random());
+    chars.push(codeAlphabet[digitIndex]);
+  }
+  return chars.join('');
 }

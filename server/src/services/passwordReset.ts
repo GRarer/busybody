@@ -24,7 +24,6 @@ export async function requestPasswordReset(email: string): Promise<void> {
     const userUUID = userResults[0].user_uuid;
     const username = userResults[0].username;
 
-    // TODO 8-digit decimal numbers probably don't have enough entropy
     // generate random reset code
     const code = randomCode(8, 'cryptographic');
     const codeHash = await bcrypt.hash(code, 10);

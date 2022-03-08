@@ -84,10 +84,10 @@ export function ResetPasswordDialog(
 
     contents = <>
       <Typography sx={{ marginBottom: 1 }} variant="body1">A temporary reset code has been sent to {email}</Typography>
-      <FormControl variant="filled" style={{ width: '100%' }} error={Boolean(passwordProblem)}>
+      <FormControl variant="filled" style={{ width: '100%' }}>
         <InputLabel htmlFor="code-input">Password Reset Code</InputLabel>
         <FilledInput id="code-input" value={resetCode}
-          onChange={ev => { setResetCode(ev.target.value); }} />
+          onChange={ev => { setResetCode(ev.target.value.toUpperCase()); }} />
       </FormControl>
       <FormControl variant="filled" style={{ width: '100%' }} error={Boolean(passwordProblem)}>
         <InputLabel htmlFor="new-password-input">Password</InputLabel>

@@ -87,7 +87,7 @@ export function ChangeEmailDialog(
       <FormControl variant="filled" fullWidth >
         <InputLabel htmlFor="code-input">Verification Code</InputLabel>
         <FilledInput id="code-input" value={verificationCode}
-          onChange={ev => { setVerificationCode(ev.target.value); }} />
+          onChange={ev => { setVerificationCode(ev.target.value.toUpperCase()); }} />
       </FormControl>
       <Button variant="outlined" startIcon={<AlternateEmail />} onClick={updateEmail} disabled={!verificationCode}
         sx={{ marginTop: 1 }}>
