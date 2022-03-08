@@ -29,7 +29,6 @@ export async function requestPasswordReset(email: string): Promise<void> {
     const code = randomCode(8, 'cryptographic');
     const codeHash = await bcrypt.hash(code, 10);
 
-    // TODO implement removing expired codes
     await query(
       `insert into password_reset_requests ("user_uuid", "email", "reset_code_hash", "expiration")
       values ($1, $2, $3, $4);`,

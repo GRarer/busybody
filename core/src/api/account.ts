@@ -92,7 +92,6 @@ const exportedPersonalDataSchema = Schemas.recordOf({
   todoListTasks: Schemas.arrayOf(ownTaskInfoSchema),
   friends: Schemas.arrayOf(friendInfoSchema),
   watchedTasks: watchedTasksResponseSchema,
-  // TODO include any other account settings
 });
 
 export type ExportedPersonalData = DomainOf<typeof exportedPersonalDataSchema>;

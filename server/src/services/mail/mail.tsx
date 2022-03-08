@@ -4,8 +4,6 @@ import ReactDOMServer from 'react-dom/server.js';
 import { smtpTransport } from './smtpConfig.js';
 import React from 'react';
 
-// TODO some of these should be done synchronously and report if they can't be send
-
 async function send(addresses: string[], subject: string, body: JSX.Element | string): Promise<void> {
   await smtpTransport.sendMail({
     from: serverConfiguration.emailFromField,

@@ -2,7 +2,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { attachHandlers } from './endpointHandlers.js';
 import { sendPlaintextEmail } from './services/mail/mail.js';
-import { overdueCheckLoop } from './services/overdue.js';
+import { loop } from './services/loop.js';
 import { serverConfiguration } from './util/config.js';
 import { dbQuery, disconnectDatabase } from './util/db.js';
 import { dontValidate } from './util/typeGuards.js';
@@ -39,7 +39,7 @@ async function start(): Promise<void> {
   await dbQuery('select 1;', [], dontValidate);
   console.log('Database connected');
   // start loop to check for overdue tasks and send notifications
-  void overdueCheckLoop().catch(err => {
+  void loop().catch(err => {
     console.error('unhandled error in overdue task loop');
     console.error(err);
     triggerCleanShutdown();

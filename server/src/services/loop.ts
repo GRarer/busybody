@@ -1,14 +1,15 @@
 import { Schemas } from '@nprindle/augustus';
 import { serverConfiguration } from '../util/config.js';
-import { dbTransaction } from '../util/db.js';
+import { dbQuery, dbTransaction } from '../util/db.js';
 import { currentTimeSeconds, sleepSeconds } from 'busybody-core';
 import { dontValidate, optionallyNullArrayOfSchema } from '../util/typeGuards.js';
 import { sendWatcherEmail } from './mail/mail.js';
 
-
-export async function overdueCheckLoop(): Promise<void> {
+// loop to repeatedly check for overdue tasks or expired verification codes
+export async function loop(): Promise<void> {
   // eslint-disable-next-line no-constant-condition
   while (true) {
+    // send emails for overdue tasks
     try {
       const now = currentTimeSeconds();
       const tasksToNotify = await dbTransaction(async query => {
@@ -51,6 +52,14 @@ export async function overdueCheckLoop(): Promise<void> {
       }
     } catch (err) {
       console.error(err);
+    }
+    // delete expired verification codes
+    try {
+      const nowSeconds = currentTimeSeconds();
+      await dbQuery(`delete from password_reset_requests where expiration < $1;`, [nowSeconds], dontValidate);
+      await dbQuery(`delete from email_verification_codes where expiration < $1;`, [nowSeconds], dontValidate);
+    } catch (err) {
+      console.log(err);
     }
     await sleepSeconds(serverConfiguration.secondsBetweenChecks);
   }
