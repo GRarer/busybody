@@ -1,6 +1,8 @@
 import { Schemas } from '@nprindle/augustus';
-import { currentTimeSeconds, ExportedPersonalData, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
-  usernameRequirementProblem } from 'busybody-core';
+import {
+  currentTimeSeconds, ExportedPersonalData, passwordRequirementProblem, RegistrationRequest, SelfInfoResponse,
+  usernameRequirementProblem
+} from 'busybody-core';
 import { dbQuery, dbTransaction } from '../util/db.js';
 import { UserException } from '../util/errors.js';
 import bcrypt from 'bcrypt';
@@ -66,7 +68,7 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
     );
     try {
       await sendRegistrationVerificationEmail(
-        {email: request.email, uuid: userId, verificationCode, username: request.username}
+        { email: request.email, uuid: userId, verificationCode, username: request.username }
       );
     } catch (err) {
       // remove pending account if confirmation email could not be sent
@@ -94,7 +96,7 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
           }
           // inform owner of the email account to say that they already have an account
           await sendAccountRegistrationEmailCollisionEmail(
-            {address: request.email, newUsername: request.username, existingUsername: existing[0].username}
+            { address: request.email, newUsername: request.username, existingUsername: existing[0].username }
           );
           return;
         }
@@ -124,7 +126,7 @@ export async function completeRegistration(uuid: string, verificationCode: strin
 
     // validate verification code
     const valid = await bcrypt.compare(verificationCode, codeHash);
-    if(!valid) {
+    if (!valid) {
       throw new UserException(403, "incorrect verification code");
     }
 
@@ -185,10 +187,19 @@ export async function updateEmailAddress(
     throw new UserException(403, 'Incorrect or expired validation code');
   }
 
-  // TODO catch collisions
-  await dbQuery('update users set email = $1 where user_uuid = $2',
-    [newAddress, userId], dontValidate
-  );
+  try {
+    await dbQuery('update users set email = $1 where user_uuid = $2',
+      [newAddress, userId], dontValidate
+    );
+  } catch (err) {
+    if (err instanceof Error) {
+      const message = err.message;
+      if (message.includes('duplicate key value violates unique constraint') && message.includes('email')) {
+        throw new UserException(409, "That email address is already associated with another account");
+      }
+    }
+    throw err;
+  }
 }
 
 export async function updatePassword(newPassword: string, sessionToken: string): Promise<void> {
