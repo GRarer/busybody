@@ -39,21 +39,21 @@ export function sendWatcherEmail(task: {
 }
 
 export function sendFriendRequestEmail(args: {
-  senderName: string,
-  recipientEmailAddress: string
+  senderName: string;
+  recipientEmailAddress: string;
 }): void {
   send(
     [args.recipientEmailAddress],
     'new Busybody friend request',
-    FriendRequestEmailBody({senderName: args.senderName})
+    FriendRequestEmailBody({ senderName: args.senderName })
   );
 }
 
 export function sendPasswordResetEmail(params: {
-  address: string
-  username: string,
-  code: string
-}) {
+  address: string;
+  username: string;
+  code: string;
+}): void {
   send(
     [params.address],
     'Busybody password reset code',
@@ -61,13 +61,13 @@ export function sendPasswordResetEmail(params: {
       <p>Busybody received a password reset request for your account.</p>
       <p>Busybody username: {params.username}</p>
       <p>Temporary password reset code: {params.code}</p>
-      <p style={{marginTop: "1em"}}>If you didn't request a password reset, you can ignore this message. The reset code
-      will automatically expire after 1 hour.</p>
+      <p style={{ marginTop: '1em' }}>If you did not request a password reset, you can ignore this message. The reset
+      code will automatically expire after 1 hour.</p>
     </>
-  )
+  );
 }
 
-export function sendPasswordResetAccountNotFoundEmail(email: string) {
+export function sendPasswordResetAccountNotFoundEmail(email: string): void {
   send(
     [email],
     'You do not have a Busybody account',
@@ -77,7 +77,7 @@ export function sendPasswordResetAccountNotFoundEmail(email: string) {
       <p><a href={serverConfiguration.appUrl}>To create a new Busybody account,
       visit {serverConfiguration.appUrl}</a></p>
     </>
-  )
+  );
 }
 
 export function sendEmailChangeVerificationEmail(email: string, code: string): void {
@@ -87,8 +87,8 @@ export function sendEmailChangeVerificationEmail(email: string, code: string): v
     <>
       <p>To change the email associated with your Busybody account to {email}, enter the following
       verification code: {code}</p>
-      <p style={{marginTop: "1em"}}>If you didn't request to change your email, you can ignore this message.
+      <p style={{ marginTop: '1em' }}>If you did not request to change your email, you can ignore this message.
       The verification code will automatically expire after 1 hour.</p>
     </>
-  )
+  );
 }

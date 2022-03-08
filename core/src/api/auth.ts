@@ -1,5 +1,5 @@
 import { Schemas } from '@nprindle/augustus';
-import { DeleteEndpointSimple, GetEndpointSimple, PostEndpointSimple, PutEndpoint, PutEndpointSimple } from '../apis.js';
+import { DeleteEndpointSimple, GetEndpointSimple, PostEndpointSimple, PutEndpointSimple } from '../apis.js';
 
 export type LoginRequest = { username: string; password: string; };
 

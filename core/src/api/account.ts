@@ -1,5 +1,5 @@
 import { DomainOf, Schemas } from '@nprindle/augustus';
-import { DeleteEndpointSimple, GetEndpointSimple, PostEndpoint, PostEndpointSimple, PutEndpointSimple } from '../apis.js';
+import { DeleteEndpointSimple, GetEndpointSimple, PostEndpointSimple, PutEndpointSimple } from '../apis.js';
 import { friendInfoSchema } from './friends.js';
 import { ownTaskInfoSchema, watchedTasksResponseSchema } from './tasks.js';
 
@@ -52,7 +52,7 @@ export const requestEmailUpdateCodeEndpoint = new PostEndpointSimple('/request_e
     newEmail: Schemas.aString
   }),
   responseSchema: Schemas.aNull
-})
+});
 
 export const updateEmailEndpoint = new PutEndpointSimple('/update_email_address', {
   requestSchema: Schemas.recordOf({

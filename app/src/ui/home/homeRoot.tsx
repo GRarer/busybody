@@ -7,7 +7,7 @@ import { TasksList } from './tasks/tasksList';
 import { WatchList } from './tasks/watchList';
 import { FriendsPage } from './friends/friendsPage';
 
-export type TabName = "watching" | "tasks" | "friends";
+export type TabName = 'watching' | 'tasks' | 'friends';
 
 export function HomeRoot(props: {
   token: string;
@@ -16,9 +16,9 @@ export function HomeRoot(props: {
 
   const initialTabIndex = props.initialTab
     ? {
-      "watching": 0,
-      "tasks": 1,
-      "friends": 2
+      'watching': 0,
+      'tasks': 1,
+      'friends': 2
     }[props.initialTab]
     : 1;
 

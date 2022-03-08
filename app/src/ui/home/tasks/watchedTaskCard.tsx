@@ -32,10 +32,10 @@ export function WatchedTaskCard(props: {
       title={'Stop watching this task?'}
       body={<Typography>
         Do you want to stop watching the task <strong>{props.info.title};</strong> from <strong>
-        {props.info.owner.fullName}</strong>? It will no longer appear in your &quot;watching&quot; list
+          {props.info.owner.fullName}</strong>? It will no longer appear in your &quot;watching&quot; list
         and you will not be notified if {props.info.owner.nickname} misses the deadline.`
       </Typography>
-    }>
+      }>
       <Button onClick={() => {
         props.unfollow();
       }}>

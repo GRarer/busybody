@@ -60,7 +60,7 @@ export function SignInForm(props: {
           {
             forgotPasswordVisible
               ? <Button variant="text" sx={{ marginLeft: 1 }} startIcon={<LockReset />}
-                  onClick={() => setShowResetPasswordDialog(true)}>
+                onClick={() => setShowResetPasswordDialog(true)}>
                 Forgot  Password
               </Button>
               : <></>

@@ -121,7 +121,7 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
 
     const senderFullName = (await query(
       'select full_name from users where user_uuid=$1;', [senderUUID],
-      Schemas.recordOf({full_name: Schemas.aString })
+      Schemas.recordOf({ full_name: Schemas.aString })
     ))[0]!.full_name;
 
     // create friend request
@@ -130,7 +130,7 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
     );
 
     // synchronously prepares email, does not wait for email to be sent
-    sendFriendRequestEmail({senderName: senderFullName, recipientEmailAddress: recipientEmail});
+    sendFriendRequestEmail({ senderName: senderFullName, recipientEmailAddress: recipientEmail });
   });
 }
 

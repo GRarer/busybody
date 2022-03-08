@@ -4,10 +4,11 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   serverStatusEndpoint, sessionActiveEndpoint, unfriendEndpoint, updateEmailEndpoint, updatePasswordEndpoint,
   updatePersonalInfoEndpoint, cancelFriendRequestEndpoint, getTodoListEndpoint, getWatchedTasksEndpoint,
   updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint,
-  testEmailEndpoint, toggleGravatarEndpoint, serverOnlineEndpoint, resetPasswordRequestEndpoint, resetPasswordEndpoint, requestEmailUpdateCodeEndpoint } from 'busybody-core';
+  testEmailEndpoint, toggleGravatarEndpoint, serverOnlineEndpoint, resetPasswordRequestEndpoint, resetPasswordEndpoint,
+  requestEmailUpdateCodeEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
-import { deleteAccount, exportAccountData, getSelfInfo, register, sendEmailVerificationCode, updateAccountInfo, updateEmailAddress,
-  updateGravatarSetting, updatePassword } from './services/accountInfo.js';
+import { deleteAccount, exportAccountData, getSelfInfo, register, sendEmailVerificationCode, updateAccountInfo,
+  updateEmailAddress, updateGravatarSetting, updatePassword } from './services/accountInfo.js';
 import { getServerStatus, sendTestEmail } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
 import { answerFriendRequest, cancelFriendRequest, getUserFriendsList, sendFriendRequest,
@@ -41,13 +42,13 @@ export function attachHandlers(server: FastifyInstance): void {
     });
   }
 
-  addHandler(serverOnlineEndpoint, async () => {return true});
+  addHandler(serverOnlineEndpoint, async () => { return true; });
 
   // authentication
   addHandler(loginEndpoint, logIn);
   addHandler(logoutEndpoint, async (body, params, token) => {
     await logOut(token);
-    console.log("logged out")
+    console.log('logged out');
     return null;
   });
   addHandler(registrationEndpoint, register);
@@ -62,7 +63,7 @@ export function attachHandlers(server: FastifyInstance): void {
     return null;
   });
   addHandler(requestEmailUpdateCodeEndpoint, async body => {
-    sendEmailVerificationCode(body.newEmail);
+    await sendEmailVerificationCode(body.newEmail);
     return null;
   });
   addHandler(updateEmailEndpoint, async (body, params, token) => {
@@ -92,7 +93,7 @@ export function attachHandlers(server: FastifyInstance): void {
   });
   addHandler(resetPasswordEndpoint, async (body, params, token) => {
     return await resetPassword(body);
-  })
+  });
 
   // friends lists
   addHandler(getFriendsListEndpoint, async (body, params, token) => {

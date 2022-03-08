@@ -33,8 +33,8 @@ function App(
   const [defaultTabOverride, setDefaultTabOverride] = useState<TabName | undefined>(
     goTo
       ? ({
-        "friends": "friends",
-        "watching": "watching"
+        'friends': 'friends',
+        'watching': 'watching'
       } as const)[goTo]
       : undefined
   );
@@ -79,9 +79,9 @@ function App(
   let appBody: JSX.Element;
 
   if (offline) {
-    appBody = <Offline />
+    appBody = <Offline />;
   } else if (loginState.uncheckedSavedToken) {
-    appBody = <LinearProgress />
+    appBody = <LinearProgress />;
   } else if (loginState.token === null) {
     appBody = <LandingPage setSessionToken={changeSession} />;
   } else {
@@ -100,7 +100,7 @@ function App(
             setDefaultTabOverride(undefined);
             changeSession(null);
           }}
-            changeTheme={props.changeTheme} currentThemeMode={props.currentThemeMode} />
+          changeTheme={props.changeTheme} currentThemeMode={props.currentThemeMode} />
           : <LoggedOutMenu changeTheme={props.changeTheme} currentThemeMode={props.currentThemeMode} />
         }
       </Toolbar>

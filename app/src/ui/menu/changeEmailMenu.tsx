@@ -19,7 +19,7 @@ export function ChangeEmailDialog(
 ): JSX.Element {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [step, setStep] = useState<"loading" | "address" | "sending" | "verification">("loading");
+  const [step, setStep] = useState<'loading' | 'address' | 'sending' | 'verification'>('loading');
   const [email, setEmail] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
 
@@ -29,58 +29,58 @@ export function ChangeEmailDialog(
   useEffect(() => {
     // get info
     if (props.open) {
-      if (step === "loading") {
+      if (step === 'loading') {
         apiGet(selfInfoEndpoint, {}, props.token).then(info => {
           setEmail(info.email);
-          setStep("address");
+          setStep('address');
         }).catch(error => {
           enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
           props.onClose();
         });
       }
     } else {
-      setStep("loading");
-      setEmail("");
-      setVerificationCode("");
+      setStep('loading');
+      setEmail('');
+      setVerificationCode('');
     }
   }, [props.open, props.token, step]);
 
-  function sendCode() {
-    setStep("sending");
-    apiPost(requestEmailUpdateCodeEndpoint, {newEmail: email}, {}, props.token).then(() => {
-      setStep("verification")
+  function sendCode(): void {
+    setStep('sending');
+    apiPost(requestEmailUpdateCodeEndpoint, { newEmail: email }, {}, props.token).then(() => {
+      setStep('verification');
     }).catch(error => {
       enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
-      setStep("address");
+      setStep('address');
     });
   }
 
-  function updateEmail() {
-    apiPut(updateEmailEndpoint, {newEmail: email, verificationCode}, {}, props.token).then(() => {
+  function updateEmail(): void {
+    apiPut(updateEmailEndpoint, { newEmail: email, verificationCode }, {}, props.token).then(() => {
       enqueueSnackbar(`Your email address has been changed to ${email}`, { variant: 'success' });
       props.onClose();
     }).catch(error => {
       enqueueSnackbar(errorToMessage(error).message, { variant: 'error' });
-      setStep("address");
     });
   }
 
   let contents: JSX.Element;
-  let actionButton: JSX.Element;
-  if (step === "loading" || step === "sending") {
+  if (step === 'loading' || step === 'sending') {
     contents = <LinearProgress />;
-  } else if (step === "address") {
+  } else if (step === 'address') {
     contents = <>
       <FormControl variant="filled" fullWidth >
         <InputLabel htmlFor="email-input">New Email address</InputLabel>
         <FilledInput id="email-input" value={email} onChange={ev => { setEmail(ev.target.value); }} />
       </FormControl>
       <Button variant="outlined" startIcon={<Send />} onClick={sendCode} disabled={!email}
-        sx={{marginTop: 1}}>
+        sx={{ marginTop: 1 }}>
         Get Verification Code
       </Button>
-    </>
-  } else if (step === "verification") {
+    </>;
+  // this is for totality checking
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  } else if (step === 'verification') {
     contents = <>
       <Typography>A verification code has been sent to {email}. Enter the code here to update your email
         address</Typography>
@@ -90,10 +90,10 @@ export function ChangeEmailDialog(
           onChange={ev => { setVerificationCode(ev.target.value); }} />
       </FormControl>
       <Button variant="outlined" startIcon={<AlternateEmail />} onClick={updateEmail} disabled={!verificationCode}
-        sx={{marginTop: 1}}>
+        sx={{ marginTop: 1 }}>
         Update Email
       </Button>
-    </>
+    </>;
   } else {
     contents = absurd(step);
   }
@@ -105,8 +105,8 @@ export function ChangeEmailDialog(
         {contents}
       </DialogContent>
       <DialogActions>
-          <Button onClick={props.onClose}>Cancel</Button>
-        </DialogActions>
+        <Button onClick={props.onClose}>Cancel</Button>
+      </DialogActions>
     </Dialog>
   );
 }

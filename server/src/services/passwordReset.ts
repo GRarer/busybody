@@ -1,18 +1,17 @@
-import { DomainOf, Schemas } from "@nprindle/augustus";
-import { dbQuery, dbTransaction } from "../util/db.js";
-import crypto from 'crypto';
+import { DomainOf, Schemas } from '@nprindle/augustus';
+import { dbQuery, dbTransaction } from '../util/db.js';
 import bcrypt from 'bcrypt';
-import { dontValidate } from "../util/typeGuards.js";
-import { currentTimeSeconds, resetPasswordEndpoint } from "busybody-core";
-import { sendPasswordResetAccountNotFoundEmail, sendPasswordResetEmail } from "./mail/mail.js";
-import { UserException } from "../util/errors.js";
-import { generateRandomToken } from "./authentication.js";
-import { randomCode } from "../util/random.js";
+import { dontValidate } from '../util/typeGuards.js';
+import { currentTimeSeconds, resetPasswordEndpoint } from 'busybody-core';
+import { sendPasswordResetAccountNotFoundEmail, sendPasswordResetEmail } from './mail/mail.js';
+import { UserException } from '../util/errors.js';
+import { generateRandomToken } from './authentication.js';
+import { randomCode } from '../util/random.js';
 
 export async function requestPasswordReset(email: string): Promise<void> {
-  const result: {code: string, username: string} | null = await dbTransaction(async query => {
+  const result: {code: string; username: string;} | null = await dbTransaction(async query => {
     const userResults = await query(
-      `select user_uuid, username from users where email = $1;`, [email],
+      'select user_uuid, username from users where email = $1;', [email],
       Schemas.recordOf({
         user_uuid: Schemas.aString,
         username: Schemas.aString
@@ -27,7 +26,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
 
     // TODO 8-digit decimal numbers probably don't have enough entropy
     // generate random reset code
-    const code = randomCode(8, "cryptographic");
+    const code = randomCode(8, 'cryptographic');
     const codeHash = await bcrypt.hash(code, 10);
 
     // TODO implement removing expired codes
@@ -36,18 +35,18 @@ export async function requestPasswordReset(email: string): Promise<void> {
       values ($1, $2, $3, $4);`,
       [userUUID, email, codeHash, currentTimeSeconds() + 3600], dontValidate
     );
-    return ({code, username})
+    return ({ code, username });
   });
   if (result === null) {
     sendPasswordResetAccountNotFoundEmail(email);
   } else {
-    sendPasswordResetEmail({address: email, username: result.username, code: result.code});
+    sendPasswordResetEmail({ address: email, username: result.username, code: result.code });
   }
 }
 
 export async function resetPassword(args: DomainOf<typeof resetPasswordEndpoint.requestSchema>): Promise<string> {
   const matchingResetRequests = await dbQuery(
-    `select user_uuid, reset_code_hash from password_reset_requests where email = $1;`,
+    'select user_uuid, reset_code_hash from password_reset_requests where email = $1;',
     [args.email],
     Schemas.recordOf({
       user_uuid: Schemas.aString,
@@ -57,12 +56,12 @@ export async function resetPassword(args: DomainOf<typeof resetPasswordEndpoint.
 
   let authorized = false;
   for (const hash of matchingResetRequests.map(r => r.reset_code_hash)) {
-    if(!authorized && (await bcrypt.compare(args.resetCode, hash))) {
+    if (!authorized && (await bcrypt.compare(args.resetCode, hash))) {
       authorized = true;
     }
   }
-  if(!authorized) {
-    throw new UserException(403, "Incorrect or expired reset code");
+  if (!authorized) {
+    throw new UserException(403, 'Incorrect or expired reset code');
   }
 
   const userUUID = matchingResetRequests[0].user_uuid;
