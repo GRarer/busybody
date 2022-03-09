@@ -31,6 +31,12 @@ export function ResetPasswordDialog(
 
   function resetAndClose(): void {
     props.onClose();
+    setStep("email");
+    setEmail("");
+    setResetCode("");
+    setNewPassword("")
+    setNewPasswordConfirm("");
+    setShowPassword(false);
   }
 
   function requestReset(): void {
