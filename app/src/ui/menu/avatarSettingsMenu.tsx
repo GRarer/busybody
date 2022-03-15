@@ -1,6 +1,7 @@
 import {
   Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel,
-  LinearProgress, Radio, RadioGroup, Typography } from '@mui/material';
+  LinearProgress, Radio, RadioGroup, Typography
+} from '@mui/material';
 import { emailToGravatarURL, FriendInfo, selfInfoEndpoint, toggleGravatarEndpoint } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -106,6 +107,9 @@ export function AvatarSettingsMenu(
                 rel="noreferrer">gravatar.com</a> and sign in or create an account using the same email address that you
               use for Busybody ({email}). Gravatar is a service provided by Automattic, the company behind Wordpress.
             </Typography>
+            <Typography variant="body2">
+              Changes on Gravatar may take a few minutes to show up. If you change the email address of your Busybody
+              account, your Gravatar will change too. </Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={props.onClose}>Cancel</Button>
