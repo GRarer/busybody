@@ -13,6 +13,7 @@ console.log('Starting busybody server...');
 
 const server: FastifyInstance = Fastify({});
 
+console.log('setting up shutdown handlers');
 // set up handlers for server shutdown
 async function cleanShutdown(): Promise<void> {
   await server.close();
@@ -36,9 +37,12 @@ function triggerCleanShutdown(): void {
 
 async function start(): Promise<void> {
   // verify database is connected
+  console.log(serverConfiguration.postgresConfig);
+  console.log('checking database connection...');
   await dbQuery('select 1;', [], dontValidate);
   console.log('Database connected');
   // start loop to check for overdue tasks and send notifications
+  console.log('starting loops...');
   void loop().catch(err => {
     console.error('unhandled error in overdue task loop');
     console.error(err);
@@ -67,6 +71,7 @@ async function start(): Promise<void> {
 
 start().catch(err => {
   server.log.error(err);
+  triggerCleanShutdown();
   process.exit(1);
 });
 
