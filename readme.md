@@ -51,6 +51,7 @@ BB_DB_PORT = 5432
 BB_DB_DATABASE = busybody
 BB_DB_USER = your_postgres_username
 BB_DB_PASSWORD = your_postgres_password
+BB_DB_SSL_ENABLED = true
 # email configuration
 BB_EMAIL_FROM = '"Busybody Example" <busybody@example.com>'
 BB_MAIL_SMTP_CONFIG = '{"host":"smtp.mailtrap.io","port":2525,"auth":{"user":"your_username","pass":"your_password"}}'

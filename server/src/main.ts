@@ -37,7 +37,6 @@ function triggerCleanShutdown(): void {
 
 async function start(): Promise<void> {
   // verify database is connected
-  console.log(serverConfiguration.postgresConfig);
   console.log('checking database connection...');
   await dbQuery('select 1;', [], dontValidate);
   console.log('Database connected');
@@ -70,7 +69,7 @@ async function start(): Promise<void> {
 }
 
 start().catch(err => {
-  server.log.error(err);
+  console.error(err);
   triggerCleanShutdown();
   process.exit(1);
 });
