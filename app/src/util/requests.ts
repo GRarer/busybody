@@ -1,9 +1,10 @@
 import { Json, Schema } from '@nprindle/augustus';
 import axios from 'axios';
 import { BUSYBODY_TOKEN_HEADER_NAME, Endpoint } from 'busybody-core';
+import path from 'path-browserify';
 type JsonValue = Json.JsonValue;
 
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = process.env.REACT_APP_BB_SERVER_URL!;
 
 function decodeResult<D, R>(data: unknown, schema: Schema<D, R>): D {
   if (schema.validate(data)) {
@@ -34,17 +35,17 @@ async function apiRequest<
   queryParams: Query,
   token: string | null
 ): Promise<Response> {
-  const path = new URL(endpoint.relativePath, API_BASE_URL).toString();
+  const url = new URL(path.join(new URL(API_BASE_URL).pathname, endpoint.relativePath), API_BASE_URL).toString();
   const config = {
     params: endpoint.querySchema.encode(queryParams),
     headers: getHeader(token)
   };
   const payload = endpoint.requestSchema.encode(request);
   const result = await {
-    post:    async (r: ReqRepr) => await axios.post(path, r, config),
-    put:     async (r: ReqRepr) => await axios.put(path, r, config),
-    get:     async () => await axios.get(path, config),
-    delete:  async () => await axios.delete(path, config),
+    post:    async (r: ReqRepr) => await axios.post(url, r, config),
+    put:     async (r: ReqRepr) => await axios.put(url, r, config),
+    get:     async () => await axios.get(url, config),
+    delete:  async () => await axios.delete(url, config),
   }[endpoint.method](payload);
   return decodeResult(result.data, endpoint.responseSchema);
 }
