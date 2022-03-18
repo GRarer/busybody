@@ -6,7 +6,7 @@ import { HomeRoot, TabName } from './ui/home/homeRoot';
 import { LandingPage } from './ui/landing/Landing';
 import { LoggedOutMenu, SettingsMenu } from './ui/menu/settingsMenu';
 import { saveToken } from './util/persistence';
-import { PanoramaSharp, TaskAlt } from '@mui/icons-material';
+import { TaskAlt } from '@mui/icons-material';
 import { Offline } from './ui/offline';
 import { VerifyRegistrationFailed } from './ui/verifyRegistrationFailed';
 import { errorToMessage } from './util/util';
