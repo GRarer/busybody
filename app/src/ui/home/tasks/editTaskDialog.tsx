@@ -151,6 +151,8 @@ export function EditTaskDialog(props: {
               onClick={event => setAddWatcherMenuAnchorEl(event.currentTarget)}
             >Add Watcher</Button>
           </>}
+          <Typography variant='body2' sx={{opacity: "65%"}}>Users attached to this task as watchers will be notified by email if this
+          task becomes overdue</Typography>
 
         </LocalizationProvider>
 
