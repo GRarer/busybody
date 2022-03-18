@@ -18,17 +18,17 @@ const verificationUUID = urlParams.get('verify_account');
 const verificationCode = urlParams.get('code');
 
 // remove query parameters for goto
-if(goTo) {
+if (goTo) {
   window.history.replaceState({}, document.title, window.location.href.split('?')[0]);
 }
 
 type AppState
-  = {state: "logged_out"}
-  | {state: "logged_in", token: string}
-  | {state: "unverified_saved_token", token: string}
-  | {state: "verify_registration", verificationUUID: string, verificationCode: string}
-  | {state: "verify_registration_failed", errorMessage: string}
-  | {state: "offline"};
+  = {state: 'logged_out';}
+  | {state: 'logged_in'; token: string;}
+  | {state: 'unverified_saved_token'; token: string;}
+  | {state: 'verify_registration'; verificationUUID: string; verificationCode: string;}
+  | {state: 'verify_registration_failed'; errorMessage: string;}
+  | {state: 'offline';};
 
 function App(
   props: {
@@ -40,11 +40,11 @@ function App(
 
   let defaultState: AppState;
   if (verificationUUID && verificationCode) {
-    defaultState = {state: "verify_registration", verificationUUID, verificationCode}
+    defaultState = { state: 'verify_registration', verificationUUID, verificationCode };
   } else if (props.initialSavedToken !== null) {
-    defaultState = {state: "unverified_saved_token", token: props.initialSavedToken}
+    defaultState = { state: 'unverified_saved_token', token: props.initialSavedToken };
   } else {
-    defaultState = {state: "logged_out"}
+    defaultState = { state: 'logged_out' };
   }
 
   const [appState, setAppState] = useState<AppState>(defaultState);
@@ -59,51 +59,51 @@ function App(
   );
 
   const setToken = (token: string | null): void => {
-    if(token === null) {
-      setAppState({ state: "logged_out"});
+    if (token === null) {
+      setAppState({ state: 'logged_out' });
     } else {
-      setAppState({ state: "logged_in", token });
+      setAppState({ state: 'logged_in', token });
     }
   };
 
   // when using a saved token from local storage, we need to check with the server to make sure the session is valid
   useEffect(() => {
-    if (appState.state === "unverified_saved_token") {
+    if (appState.state === 'unverified_saved_token') {
       apiGet(sessionActiveEndpoint, {}, appState.token).then(sessionIsValid => {
         if (sessionIsValid) {
-          setAppState({state: "logged_in", token: appState.token});
+          setAppState({ state: 'logged_in', token: appState.token });
         } else {
-          setAppState({state: "logged_out"});
+          setAppState({ state: 'logged_out' });
         }
       }).catch(error => {
         console.log(error);
-        setAppState({state: "offline"})
+        setAppState({ state: 'offline' });
       });
     }
   }, [appState]);
 
   // when url query params contained a verification code, verify and log in account
   useEffect(() => {
-    if (appState.state === "verify_registration") {
+    if (appState.state === 'verify_registration') {
       apiPut(verifyRegistrationEndpoint,
-        {userUUID: appState.verificationUUID, verificationCode: appState.verificationCode}, {}, null)
-      .then(response => {
-        window.history.replaceState({}, document.title, window.location.href.split('?')[0]);
-        setToken(response.token);
-      })
-      .catch(err => {
-        setAppState({state: "verify_registration_failed", errorMessage: errorToMessage(err).message});
-      });
+        { userUUID: appState.verificationUUID, verificationCode: appState.verificationCode }, {}, null)
+        .then(response => {
+          window.history.replaceState({}, document.title, window.location.href.split('?')[0]);
+          setToken(response.token);
+        })
+        .catch(err => {
+          setAppState({ state: 'verify_registration_failed', errorMessage: errorToMessage(err).message });
+        });
     }
-  }, [])
+  }, []);
 
   // check at startup that server is online
   useEffect(() => {
     // not necessary if there's a saved token since a request will already be made for that
-    if(appState.state !== 'unverified_saved_token') {
+    if (appState.state !== 'unverified_saved_token') {
       apiGet(serverOnlineEndpoint, {}, null).catch((error: unknown) => {
         console.log(error);
-        setAppState({state: "offline"});
+        setAppState({ state: 'offline' });
       });
     }
   }, []);
@@ -115,14 +115,14 @@ function App(
 
 
   let appBody: JSX.Element;
-  if (appState.state === "offline") {
+  if (appState.state === 'offline') {
     appBody = <Offline />;
-  } else if (appState.state === "unverified_saved_token" || appState.state === "verify_registration") {
+  } else if (appState.state === 'unverified_saved_token' || appState.state === 'verify_registration') {
     appBody = <LinearProgress />;
-  } else if (appState.state === "verify_registration_failed") {
-    appBody = <VerifyRegistrationFailed message={appState.errorMessage} onDismiss={() => setToken(null)}/>
-  } else if (appState.state === "logged_out") {
-    appBody = <LandingPage setSessionToken={changeSession} />
+  } else if (appState.state === 'verify_registration_failed') {
+    appBody = <VerifyRegistrationFailed message={appState.errorMessage} onDismiss={() => setToken(null)}/>;
+  } else if (appState.state === 'logged_out') {
+    appBody = <LandingPage setSessionToken={changeSession} />;
   } else {
     appBody = <HomeRoot token={appState.token} initialTab={defaultTabOverride} />;
   }
@@ -134,7 +134,7 @@ function App(
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           Busybody
         </Typography>
-        {(appState.state === "logged_in")
+        {(appState.state === 'logged_in')
           ? <SettingsMenu token={appState.token} onLogOut={() => {
             setDefaultTabOverride(undefined);
             changeSession(null);

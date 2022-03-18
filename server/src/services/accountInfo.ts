@@ -11,7 +11,8 @@ import { dontValidate } from '../util/typeGuards.js';
 import { v4 as uuidV4 } from 'uuid';
 import { getOwnTodoList, getWatchedTasks } from './tasks.js';
 import { randomCode } from '../util/random.js';
-import { sendAccountRegistrationEmailCollisionEmail, sendEmailChangeVerificationEmail, sendRegistrationVerificationEmail } from './mail/mail.js';
+import { sendAccountRegistrationEmailCollisionEmail, sendEmailChangeVerificationEmail,
+  sendRegistrationVerificationEmail } from './mail/mail.js';
 
 export async function getSelfInfo(token: string): Promise<SelfInfoResponse> {
   const results = await dbQuery(
@@ -52,7 +53,7 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
   const userId = uuidV4(); // generate a random permanent Universally Unique Identifier as the primary key of this user
   const hash = await bcrypt.hash(request.password, 10); // hashing passwords is asynchronous because it is slow
 
-  const verificationCode = randomCode(8, "cryptographic");
+  const verificationCode = randomCode(8, 'cryptographic');
   const verificationCodeHash = await bcrypt.hash(verificationCode, 10);
 
   try {
@@ -72,7 +73,7 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
       );
     } catch (err) {
       // remove pending account if confirmation email could not be sent
-      await dbQuery(`delete from users where user_id = $1;`, [userId], dontValidate);
+      await dbQuery('delete from users where user_id = $1;', [userId], dontValidate);
       throw err;
     }
   } catch (err: unknown) {
@@ -83,7 +84,7 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
           throw new UserException(409, 'That username is already taken');
         } else if (message.includes('email')) {
           const existing = await dbQuery(
-            `select username from users where email = $1;`,
+            'select username from users where email = $1;',
             [request.email], Schemas.recordOf({
               username: Schemas.aString
             }));
@@ -92,7 +93,7 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
              * but it theoretically could occur if the existing user is deleted between our attempt to create the new
              * account and our attempt to find the conflicting account
              */
-            throw new Error("cannot determine conflicting account ")
+            throw new Error('cannot determine conflicting account ');
           }
           // inform owner of the email account to say that they already have an account
           await sendAccountRegistrationEmailCollisionEmail(
@@ -112,27 +113,27 @@ export async function completeRegistration(uuid: string, verificationCode: strin
   return await dbTransaction(async query => {
     // get pending account information
     const pendingResults = await query(
-      `select verification_code_hash from users where user_uuid = $1`, [uuid], Schemas.recordOf({
+      'select verification_code_hash from users where user_uuid = $1', [uuid], Schemas.recordOf({
         verification_code_hash: Schemas.union(Schemas.aString, Schemas.aNull)
       })
     );
     if (pendingResults.length === 0) {
-      throw new UserException(404, "invalid user ID");
+      throw new UserException(404, 'invalid user ID');
     }
     const codeHash = pendingResults[0].verification_code_hash;
     if (codeHash === null) {
-      throw new UserException(403, "This account has already been verified");
+      throw new UserException(403, 'This account has already been verified');
     }
 
     // validate verification code
     const valid = await bcrypt.compare(verificationCode, codeHash);
     if (!valid) {
-      throw new UserException(403, "incorrect verification code");
+      throw new UserException(403, 'incorrect verification code');
     }
 
     // mark account as active by removing verification code hash
     await query(
-      `update users set verification_code_hash = NULL where user_uuid = $1;`, [uuid], dontValidate
+      'update users set verification_code_hash = NULL where user_uuid = $1;', [uuid], dontValidate
     );
 
     // create new session
@@ -195,7 +196,7 @@ export async function updateEmailAddress(
     if (err instanceof Error) {
       const message = err.message;
       if (message.includes('duplicate key value violates unique constraint') && message.includes('email')) {
-        throw new UserException(409, "That email address is already associated with another account");
+        throw new UserException(409, 'That email address is already associated with another account');
       }
     }
     throw err;
@@ -255,5 +256,5 @@ export async function exportAccountData(token: string): Promise<ExportedPersonal
 
 export async function deleteAccount(token: string): Promise<void> {
   const userId = await lookupSessionUser(token);
-  await dbQuery(`delete from users where user_id = $1;`, [userId], dontValidate);
+  await dbQuery('delete from users where user_id = $1;', [userId], dontValidate);
 }

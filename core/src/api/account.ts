@@ -23,7 +23,7 @@ export const verifyRegistrationEndpoint = new PutEndpointSimple('/verify_registr
     userUUID: Schemas.aString,
     verificationCode: Schemas.aString
   }),
-  responseSchema: Schemas.recordOf({token: Schemas.aString}),
+  responseSchema: Schemas.recordOf({ token: Schemas.aString }),
 });
 
 export type SelfInfoResponse = {

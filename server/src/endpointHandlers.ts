@@ -6,9 +6,10 @@ import { answerRequestEndpoint, deleteAccountEndpoint, Endpoint, exportPersonalD
   updateTaskEndpoint, createTaskEndpoint, unfollowTaskEndpoint, deleteTaskEndpoint,
   testEmailEndpoint, toggleGravatarEndpoint, serverOnlineEndpoint, resetPasswordRequestEndpoint, resetPasswordEndpoint,
   requestEmailUpdateCodeEndpoint,
-  verifyRegistrationEndpoint} from 'busybody-core';
+  verifyRegistrationEndpoint } from 'busybody-core';
 import { FastifyInstance } from 'fastify';
-import { completeRegistration, deleteAccount, exportAccountData, getSelfInfo, sendEmailVerificationCode, startRegistration, updateAccountInfo,
+import { completeRegistration, deleteAccount, exportAccountData, getSelfInfo, sendEmailVerificationCode,
+  startRegistration, updateAccountInfo,
   updateEmailAddress, updateGravatarSetting, updatePassword } from './services/accountInfo.js';
 import { getServerStatus, sendTestEmail } from './services/admin.js';
 import { isValidSession, logIn, logOut } from './services/authentication.js';
@@ -56,11 +57,11 @@ export function attachHandlers(server: FastifyInstance): void {
   // account registration
   addHandler(registrationEndpoint, async body => {
     await startRegistration(body);
-    return null
+    return null;
   });
   addHandler(verifyRegistrationEndpoint, async (body) => {
-    return ({token: await completeRegistration(body.userUUID, body.verificationCode)});
-  })
+    return ({ token: await completeRegistration(body.userUUID, body.verificationCode) });
+  });
 
   // user accounts and settings
   addHandler(selfInfoEndpoint, async (body, params, token) => {

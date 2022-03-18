@@ -56,8 +56,8 @@ export async function loop(): Promise<void> {
     // delete expired verification codes
     try {
       const nowSeconds = currentTimeSeconds();
-      await dbQuery(`delete from password_reset_requests where expiration < $1;`, [nowSeconds], dontValidate);
-      await dbQuery(`delete from email_verification_codes where expiration < $1;`, [nowSeconds], dontValidate);
+      await dbQuery('delete from password_reset_requests where expiration < $1;', [nowSeconds], dontValidate);
+      await dbQuery('delete from email_verification_codes where expiration < $1;', [nowSeconds], dontValidate);
     } catch (err) {
       console.log(err);
     }

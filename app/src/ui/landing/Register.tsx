@@ -2,7 +2,7 @@ import { Check, HowToReg, RestartAlt } from '@mui/icons-material';
 import {
   Button, FilledInput, FormControl, FormControlLabel, FormGroup, InputLabel,
   Switch,
-  Typography} from '@mui/material';
+  Typography } from '@mui/material';
 import { Box } from '@mui/material';
 import { passwordRequirementProblem, registrationEndpoint, RegistrationRequest,
   usernameRequirementProblem } from 'busybody-core';
@@ -62,13 +62,13 @@ export function RegisterForm(): JSX.Element {
 
   if (verificationSent) {
     return <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-    <HowToReg fontSize="large" sx={{ marginTop: 2, marginBottom: 1 }}/>
-    <Typography variant="body2">A verification email has been sent to {email}. Check your inbox for
+      <HowToReg fontSize="large" sx={{ marginTop: 2, marginBottom: 1 }}/>
+      <Typography variant="body2">A verification email has been sent to {email}. Check your inbox for
     a link to complete registration.</Typography>
-    <Button variant="outlined" startIcon={<RestartAlt/>}
-      size="small" sx={{marginTop: 2}}
-      onClick={() => setVerificationSent(false)}>Register a different account</Button>
-  </Box>
+      <Button variant="outlined" startIcon={<RestartAlt/>}
+        size="small" sx={{ marginTop: 2 }}
+        onClick={() => setVerificationSent(false)}>Register a different account</Button>
+    </Box>;
   }
 
   return (

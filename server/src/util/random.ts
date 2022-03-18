@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-const codeAlphabet = "BCDFGHJKLMNPQRSTUVWXYZ2456789";
+const codeAlphabet = 'BCDFGHJKLMNPQRSTUVWXYZ2456789';
 
 export function randomCode(length: number, mode: 'cryptographic' | 'insecure'): string {
   const chars: string[] = [];

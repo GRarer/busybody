@@ -4,6 +4,8 @@ import { BUSYBODY_TOKEN_HEADER_NAME, Endpoint } from 'busybody-core';
 import path from 'path-browserify';
 type JsonValue = Json.JsonValue;
 
+// eslint doesn't see that process.env is defined by create-react-app
+// eslint-disable-next-line no-undef
 const API_BASE_URL = process.env.REACT_APP_BB_SERVER_URL!;
 
 function decodeResult<D, R>(data: unknown, schema: Schema<D, R>): D {
