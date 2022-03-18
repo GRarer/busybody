@@ -1,4 +1,4 @@
-import { AppBar, Box, LinearProgress, Paper, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, IconButton, LinearProgress, Paper, Toolbar, Typography } from '@mui/material';
 import { serverOnlineEndpoint, sessionActiveEndpoint, verifyRegistrationEndpoint } from 'busybody-core';
 import React, { useEffect, useState } from 'react';
 import { apiGet, apiPut } from './util/requests';
@@ -6,10 +6,12 @@ import { HomeRoot, TabName } from './ui/home/homeRoot';
 import { LandingPage } from './ui/landing/Landing';
 import { LoggedOutMenu, SettingsMenu } from './ui/menu/settingsMenu';
 import { saveToken } from './util/persistence';
-import { TaskAlt } from '@mui/icons-material';
+import { Help, TaskAlt } from '@mui/icons-material';
 import { Offline } from './ui/offline';
 import { VerifyRegistrationFailed } from './ui/verifyRegistrationFailed';
 import { errorToMessage } from './util/util';
+import { InfoDialog } from './ui/common/infoDialog';
+import { FAQ } from './ui/info';
 
 // get page-specific link from url search parameters
 const urlParams = new URLSearchParams(window.location.search);
@@ -23,12 +25,12 @@ if (goTo) {
 }
 
 type AppState
-  = {state: 'logged_out';}
-  | {state: 'logged_in'; token: string;}
-  | {state: 'unverified_saved_token'; token: string;}
-  | {state: 'verify_registration'; verificationUUID: string; verificationCode: string;}
-  | {state: 'verify_registration_failed'; errorMessage: string;}
-  | {state: 'offline';};
+  = { state: 'logged_out'; }
+  | { state: 'logged_in'; token: string; }
+  | { state: 'unverified_saved_token'; token: string; }
+  | { state: 'verify_registration'; verificationUUID: string; verificationCode: string; }
+  | { state: 'verify_registration_failed'; errorMessage: string; }
+  | { state: 'offline'; };
 
 function App(
   props: {
@@ -57,6 +59,8 @@ function App(
       } as const)[goTo]
       : undefined
   );
+
+  const [faqOpen, setFaqOpen] = useState(false);
 
   const setToken = (token: string | null): void => {
     if (token === null) {
@@ -120,7 +124,7 @@ function App(
   } else if (appState.state === 'unverified_saved_token' || appState.state === 'verify_registration') {
     appBody = <LinearProgress />;
   } else if (appState.state === 'verify_registration_failed') {
-    appBody = <VerifyRegistrationFailed message={appState.errorMessage} onDismiss={() => setToken(null)}/>;
+    appBody = <VerifyRegistrationFailed message={appState.errorMessage} onDismiss={() => setToken(null)} />;
   } else if (appState.state === 'logged_out') {
     appBody = <LandingPage setSessionToken={changeSession} />;
   } else {
@@ -142,6 +146,16 @@ function App(
           changeTheme={props.changeTheme} currentThemeMode={props.currentThemeMode} />
           : <LoggedOutMenu changeTheme={props.changeTheme} currentThemeMode={props.currentThemeMode} />
         }
+        <IconButton
+          size="large"
+          color="inherit"
+          onClick={() => setFaqOpen(true)}
+        >
+          <Help />
+        </IconButton>
+        <InfoDialog open={faqOpen} onClose={() => setFaqOpen(false)} title='Frequently Asked Questions'>
+          <FAQ/>
+        </InfoDialog>
       </Toolbar>
     </AppBar>
     <Box sx={{ flexGrow: 1, overflow: 'auto' }}>

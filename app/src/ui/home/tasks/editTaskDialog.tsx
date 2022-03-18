@@ -3,8 +3,10 @@ import {
   Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
   ListItemIcon, ListItemText, Menu, MenuItem, TextField, Typography, useMediaQuery, useTheme
 } from '@mui/material';
-import { createTaskEndpoint, CreateTaskRequest, FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint,
-  UpdateTaskRequest, dateToUnixSeconds, getNextWeek, unixSecondsToDate, dateFormatString } from 'busybody-core';
+import {
+  createTaskEndpoint, CreateTaskRequest, FriendInfo, OwnTaskInfo, TodoListResponse, updateTaskEndpoint,
+  UpdateTaskRequest, dateToUnixSeconds, getNextWeek, unixSecondsToDate, dateFormatString
+} from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 import { apiPost, apiPut } from '../../../util/requests';
@@ -146,14 +148,17 @@ export function EditTaskDialog(props: {
                 onDelete={() => removeWatcher(w)} />
             </Box>)}
           </>}
-          {unassignedFriends.length === 0 ? <></> : <>
-            <Button endIcon={<PersonAddAlt1Icon />}
-              onClick={event => setAddWatcherMenuAnchorEl(event.currentTarget)}
-            >Add Watcher</Button>
-          </>}
-          <Typography variant='body2' sx={{ opacity: '65%' }}>Users attached to this task as watchers will be
-          notified by email if this task becomes overdue</Typography>
-
+          {unassignedFriends.length === 0
+            ? <Typography variant='body2' sx={{ opacity: '65%' }}>To attach watchers to be
+              notified if this task becomes overdue, you must first connect with your friends by sending and accepting
+              friend requests.</Typography>
+            : <>
+              <Button endIcon={<PersonAddAlt1Icon />}
+                onClick={event => setAddWatcherMenuAnchorEl(event.currentTarget)}
+              >Add Watcher</Button>
+              <Typography variant='body2' sx={{ opacity: '65%' }}>Users attached to this task as watchers will be
+                notified by email if this task becomes overdue</Typography>
+            </>}
         </LocalizationProvider>
 
       </DialogContent>
