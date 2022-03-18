@@ -68,7 +68,7 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
   await dbTransaction(async query => {
     // look up UUID for the given username
     const recipientInfo = await query(
-      'select user_uuid, email from users where username=$1 and verification_code_hash = NULL;', [recipient.username],
+      'select user_uuid, email from users where username=$1 and verification_code_hash is NULL;', [recipient.username],
       Schemas.recordOf({ user_uuid: Schemas.aString, email: Schemas.aString })
     );
     if (recipientInfo.length === 0) {
