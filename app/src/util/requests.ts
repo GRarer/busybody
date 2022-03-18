@@ -5,7 +5,6 @@ import path from 'path-browserify';
 type JsonValue = Json.JsonValue;
 
 const API_BASE_URL = process.env.REACT_APP_BB_SERVER_URL!;
-console.log('api url:', API_BASE_URL); // TODO remove logging
 
 function decodeResult<D, R>(data: unknown, schema: Schema<D, R>): D {
   if (schema.validate(data)) {
@@ -37,7 +36,6 @@ async function apiRequest<
   token: string | null
 ): Promise<Response> {
   const url = new URL(path.join(new URL(API_BASE_URL).pathname, endpoint.relativePath), API_BASE_URL).toString();
-  console.log('request to', url); // TODO remove logging
   const config = {
     params: endpoint.querySchema.encode(queryParams),
     headers: getHeader(token)
