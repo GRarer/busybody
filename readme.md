@@ -7,6 +7,8 @@ Busybody is designed around the idea that social reinforcement makes it easier t
 Users will be able to designate their friends as "watchers" for particular tasks, and their watchers will be notified by
 email if the task is not completed on time.
 
+You can try out the prototype at https://grarer.github.io/busybody/
+
 ## Local Installation and Setup
 
 To install and run a local development version of Busybody, follow these instructions.
