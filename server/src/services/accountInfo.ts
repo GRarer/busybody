@@ -73,7 +73,7 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
       );
     } catch (err) {
       // remove pending account if confirmation email could not be sent
-      await dbQuery('delete from users where user_id = $1;', [userId], dontValidate);
+      await dbQuery('delete from users where user_uuid = $1;', [userId], dontValidate);
       throw err;
     }
   } catch (err: unknown) {
@@ -256,5 +256,5 @@ export async function exportAccountData(token: string): Promise<ExportedPersonal
 
 export async function deleteAccount(token: string): Promise<void> {
   const userId = await lookupSessionUser(token);
-  await dbQuery('delete from users where user_id = $1;', [userId], dontValidate);
+  await dbQuery('delete from users where user_uuid = $1;', [userId], dontValidate);
 }
