@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Box, Button, Chip, useMediaQuery } from '@mui/material';
 import { FriendInfo, getTodoListEndpoint, OwnTaskInfo, TodoListResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -11,6 +11,8 @@ import AddTaskIcon from '@mui/icons-material/AddTask';
 import { EditTaskDialog } from './editTaskDialog';
 
 type TaskSortKeys = 'date' | 'title' | 'watchers';
+
+const FILTER_SHOW_ALL = 'Show All';
 
 function sortWatchedTasks(
   tasks: OwnTaskInfo[], mode: TaskSortKeys, ascending: boolean
@@ -35,11 +37,15 @@ export function TasksList(props: {
   token: string;
 }): JSX.Element {
 
+  const smallWidth = useMediaQuery('(max-width: 800px)');
+  const chipSize = smallWidth ? 'small' : undefined;
+
   const { enqueueSnackbar } = useSnackbar();
 
   const [listData, setListData]
     = useState<{ friends: FriendInfo[]; tasks: OwnTaskInfo[]; categoryOptions: string[];} | null>(null);
   const [sortState, setSortState] = useState<SortControlState<TaskSortKeys>>({ field: 'date', ascending: true });
+  const [filterCategory, setFilterCategory] = useState<string>(FILTER_SHOW_ALL);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   function updateList(data: TodoListResponse): void {
@@ -81,15 +87,31 @@ export function TasksList(props: {
     return <TodoTaskListSkeleton />;
   }
 
+  const filteredTasks = (filterCategory === FILTER_SHOW_ALL)
+    ? listData.tasks
+    : listData.tasks.filter(t => t.category === filterCategory);
+
+  function CategoryFilterChip(props: {option: string; overrideLabel?: string;}): JSX.Element {
+    const opt = props.option;
+    const selected = filterCategory === opt;
+    return <Chip label={props.overrideLabel ?? opt} onClick={() => setFilterCategory(opt)}
+      variant={selected ? 'filled' : 'outlined'} color={selected ? 'primary' : undefined}
+      sx={{ margin: '2px' }} size={chipSize} />;
+  }
+
   return (<>
     <SortControls options={[
       { key: 'date', label: 'Due Date' },
       { key: 'title', label: 'Task Name' },
       { key: 'watchers', label: 'Watchers' }
     ]} mode={sortState} onChange={(state: SortControlState<TaskSortKeys>) => updateSortMode(state)} />
+    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
+      <CategoryFilterChip option={FILTER_SHOW_ALL} overrideLabel='Show All'/>
+      {listData.categoryOptions.map(opt => <CategoryFilterChip option={opt} key={opt}/>)}
+    </Box>
     <Button startIcon={<AddTaskIcon/>} fullWidth size="large"
       onClick={() => setShowCreateDialog(true)}>Add Task</Button>
-    {listData.tasks.map(t => <TodoTaskCard
+    {filteredTasks.map(t => <TodoTaskCard
       info={t} key={t.taskId} token={props.token} friendsList={listData.friends}
       categoryOptions={listData.categoryOptions} updateList={(data) => updateList(data)}
     />)}

@@ -119,7 +119,8 @@ export async function updateTask(request: UpdateTaskRequest, token: string): Pro
     // update task data
     if (request.dueDate > currentTimeSeconds()) {
       await query(
-        `update tasks set title = $1, description_text = $2, deadline_seconds = $3, category = $4, notification_sent = FALSE
+        `update tasks set title = $1, description_text = $2, deadline_seconds = $3, category = $4,
+        notification_sent = FALSE
         where task_id = $5`,
         [request.title, request.description, request.dueDate, request.category, request.taskId], dontValidate
       );
