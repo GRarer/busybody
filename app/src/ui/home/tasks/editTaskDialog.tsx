@@ -1,5 +1,6 @@
 import { LocalizationProvider, MobileDateTimePicker } from '@mui/lab';
 import {
+  Autocomplete,
   Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogTitle, FilledInput, FormControl, InputLabel,
   ListItemIcon, ListItemText, Menu, MenuItem, TextField, Typography, useMediaQuery, useTheme
 } from '@mui/material';
@@ -23,6 +24,7 @@ export function EditTaskDialog(props: {
   token: string;
   task: OwnTaskInfo | null; // set to null for creating a new task
   friendsList: FriendInfo[];
+  categoryOptions: string[];
 }
 ): JSX.Element {
   const theme = useTheme();
@@ -35,17 +37,20 @@ export function EditTaskDialog(props: {
     description: string;
     dueDate: number;
     watchers: FriendInfo[];
+    category: string;
   } = props.task ?? {
     title: '',
     description: '',
     dueDate: dateToUnixSeconds(getNextWeek()),
-    watchers: []
+    watchers: [],
+    category: 'To-Do'
   };
 
   const [title, setTitle] = useState(defaults.title);
   const [description, setDescription] = useState(defaults.description);
   const [dueDate, setDueDate] = useState<Date | null>(unixSecondsToDate(defaults.dueDate));
   const [watchers, setWatchers] = useState(defaults.watchers);
+  const [category, setCategory] = useState(defaults.category);
 
   const [addWatcherMenuAnchorEl, setAddWatcherMenuAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -65,7 +70,7 @@ export function EditTaskDialog(props: {
   const unassignedFriends = props.friendsList.filter(f => !assignedWatchersUUIDs.has(f.uuid));
 
 
-  const canSave = Boolean(title && (dueDate !== null));
+  const canSave = Boolean(title && (dueDate !== null) && category);
 
   // closes dialog and resets state
   function resetAndClose(): void {
@@ -79,7 +84,8 @@ export function EditTaskDialog(props: {
         title,
         description,
         dueDate: dateToUnixSeconds(dueDate!),
-        watcherUUIDs: watchers.map(w => w.uuid)
+        watcherUUIDs: watchers.map(w => w.uuid),
+        category: category
       };
       apiPost(createTaskEndpoint, request, {}, props.token)
         .then(newData => {
@@ -95,7 +101,8 @@ export function EditTaskDialog(props: {
         title: title,
         description: description,
         dueDate: dateToUnixSeconds(dueDate!),
-        watcherUUIDs: watchers.map(w => w.uuid)
+        watcherUUIDs: watchers.map(w => w.uuid),
+        category: category
       };
 
       apiPut(updateTaskEndpoint, updated, {}, props.token)
@@ -132,7 +139,7 @@ export function EditTaskDialog(props: {
             onChange={ev => { setDescription(ev.target.value); }} multiline />
         </FormControl>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <Box sx={{ marginTop: '10px' }}>
+          <Box sx={{ marginTop: '15px' }}>
             <MobileDateTimePicker
               label="Due Date"
               value={dueDate}
@@ -141,6 +148,18 @@ export function EditTaskDialog(props: {
               inputFormat={dateFormatString}
             />
           </Box>
+
+          <Autocomplete sx={{ marginTop: '15px' }}
+            id="task-category"
+            freeSolo
+            disableClearable
+            options={props.categoryOptions}
+            renderInput={(params) => <TextField {...params} label="Category" />}
+            value={category}
+            inputValue={category}
+            onInputChange={(ev, newValue) => setCategory(newValue)}
+          />
+
           {watchers.length === 0 ? <></> : <>
             <Typography>Watchers:</Typography>
             {watchers.map(w => <Box key={w.uuid} sx={{ paddingTop: '2px', paddingBottom: '3px' }}>

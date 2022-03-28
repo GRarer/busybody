@@ -37,14 +37,23 @@ export function TasksList(props: {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [listData, setListData] = useState<{ friends: FriendInfo[]; tasks: OwnTaskInfo[]; } | null>(null);
+  const [listData, setListData]
+    = useState<{ friends: FriendInfo[]; tasks: OwnTaskInfo[]; categoryOptions: string[];} | null>(null);
   const [sortState, setSortState] = useState<SortControlState<TaskSortKeys>>({ field: 'date', ascending: true });
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   function updateList(data: TodoListResponse): void {
+    const categorySet = new Set<string>();
+    for (const task of data.tasks) {
+      categorySet.add(task.category);
+    }
+    const categoryOptions = Array.from(categorySet);
+    categoryOptions.sort();
+
     setListData({
       friends: data.friends,
-      tasks: sortWatchedTasks(data.tasks, sortState.field, sortState.ascending)
+      tasks: sortWatchedTasks(data.tasks, sortState.field, sortState.ascending),
+      categoryOptions
     });
   }
 
@@ -64,7 +73,7 @@ export function TasksList(props: {
     setSortState(mode);
     if (listData !== null) {
       const sorted = sortWatchedTasks(listData.tasks, mode.field, mode.ascending);
-      setListData({ friends: listData.friends, tasks: sorted });
+      setListData({ friends: listData.friends, tasks: sorted, categoryOptions: listData.categoryOptions });
     }
   }
 
@@ -82,10 +91,11 @@ export function TasksList(props: {
       onClick={() => setShowCreateDialog(true)}>Add Task</Button>
     {listData.tasks.map(t => <TodoTaskCard
       info={t} key={t.taskId} token={props.token} friendsList={listData.friends}
-      updateList={(data) => updateList(data)}
+      categoryOptions={listData.categoryOptions} updateList={(data) => updateList(data)}
     />)}
     <EditTaskDialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)}
-      onUpdate={data => updateList(data)} token={props.token} task={null} friendsList={listData.friends}/>
+      onUpdate={data => updateList(data)} token={props.token} task={null}
+      friendsList={listData.friends} categoryOptions={listData.categoryOptions}/>
   </>);
 }
 

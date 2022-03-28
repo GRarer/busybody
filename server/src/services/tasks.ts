@@ -26,6 +26,7 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
         description_text: Schemas.aString,
         deadline_seconds: Schemas.aNumber,
         watcher_uuids: optionallyNullArrayOfSchema(Schemas.aString),
+        category: Schemas.aString
       })
     );
     return { friendRows, taskRows };
@@ -48,6 +49,7 @@ export async function getOwnTodoList(token: string): Promise<TodoListResponse> {
       title: taskRow.title,
       description: taskRow.description_text,
       dueDate: taskRow.deadline_seconds,
+      category: taskRow.category,
       watchers
     });
   }
@@ -117,14 +119,14 @@ export async function updateTask(request: UpdateTaskRequest, token: string): Pro
     // update task data
     if (request.dueDate > currentTimeSeconds()) {
       await query(
-        `update tasks set title = $1, description_text = $2, deadline_seconds = $3, notification_sent = FALSE
-        where task_id = $4`,
-        [request.title, request.description, request.dueDate, request.taskId], dontValidate
+        `update tasks set title = $1, description_text = $2, deadline_seconds = $3, category = $4, notification_sent = FALSE
+        where task_id = $5`,
+        [request.title, request.description, request.dueDate, request.category, request.taskId], dontValidate
       );
     } else {
       await query(
-        'update tasks set title = $1, description_text = $2, deadline_seconds = $3 where task_id = $4',
-        [request.title, request.description, request.dueDate, request.taskId], dontValidate
+        'update tasks set title = $1, description_text = $2, deadline_seconds = $3, category = $4 where task_id = $5',
+        [request.title, request.description, request.dueDate, request.category, request.taskId], dontValidate
       );
     }
 
@@ -144,8 +146,9 @@ export async function createTask(request: CreateTaskRequest, token: string): Pro
 
   await dbTransaction(async query => {
     await query(
-      `insert into tasks ("task_id", "task_owner", "title", "description_text", "deadline_seconds")
-      VALUES ($1, $2, $3, $4, $5);`, [taskId, userUUID, request.title, request.description, request.dueDate],
+      `insert into tasks ("task_id", "task_owner", "title", "description_text", "deadline_seconds", "category")
+      VALUES ($1, $2, $3, $4, $5, $6);`,
+      [taskId, userUUID, request.title, request.description, request.dueDate, request.category],
       dontValidate
     );
 

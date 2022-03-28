@@ -46,6 +46,7 @@ CREATE TABLE tasks(
     task_owner UUID NOT NULL REFERENCES users (user_uuid) ON DELETE CASCADE,
     title TEXT not null,
     description_text TEXT not null,
+    category TEXT not null,
     deadline_seconds BIGINT not null, -- data/time represented as seconds since epoch,
     notification_sent BOOLEAN not null default FALSE
 );
@@ -132,13 +133,13 @@ begin
     (nicolasUUID, ramonaUUID),
     (nicolasUUID, georgeUUID);
 
-    INSERT into tasks (task_id, task_owner, title, description_text, deadline_seconds) VALUES
-    (taskIdTrisect, johnUUID, 'Trisect Angle', 'Demonstrate trisecting an angle with a compass and straight-edge. This is definitely possible.', dateNewYearsEve22),
-    (taskIdSquareCircle, johnUUID, 'Square The Circle', 'Demonstrate making a square the same size as a given circle using a compass and straight edge.', dateJanuary31),
-    (taskIdEthicsHW, georgeUUID, 'Object Oriented Ethics Homework #1', 'The first homework for CS 3221 Object Oriented Ethics.', dateApril1),
-    (taskIdStealT, georgeUUID, 'Steal the T', 'Participate in this Georgia Tech tradition.', dateNewYearsEve22),
-    (taskIdRegister, georgeUUID, 'Register for classes', '', dateMarch15),
-    (taskIdAlumniEvent, ramonaUUID, 'Organize alumni event', 'Coordinate preparation for Agnes Scott Alumni Event', dateApril1);
+    INSERT into tasks (task_id, task_owner, title, description_text, deadline_seconds, category) VALUES
+    (taskIdTrisect, johnUUID, 'Trisect Angle', 'Demonstrate trisecting an angle with a compass and straight-edge. This is definitely possible.', dateNewYearsEve22, 'Math'),
+    (taskIdSquareCircle, johnUUID, 'Square The Circle', 'Demonstrate making a square the same size as a given circle using a compass and straight edge.', dateJanuary31, 'Math'),
+    (taskIdEthicsHW, georgeUUID, 'Object Oriented Ethics Homework #1', 'The first homework for CS 3221 Object Oriented Ethics.', dateApril1, 'School'),
+    (taskIdStealT, georgeUUID, 'Steal the T', 'Participate in this Georgia Tech tradition.', dateNewYearsEve22, 'To-do'),
+    (taskIdRegister, georgeUUID, 'Register for classes', '', dateMarch15, 'School'),
+    (taskIdAlumniEvent, ramonaUUID, 'Organize alumni event', 'Coordinate preparation for Agnes Scott Alumni Event', dateApril1, 'To-do');
 
     INSERT into watch_assignments (watcher, task) VALUES
     (georgeUUID, taskIdTrisect),

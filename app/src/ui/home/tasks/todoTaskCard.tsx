@@ -14,6 +14,7 @@ export function TodoTaskCard(props: {
   friendsList: FriendInfo[];
   token: string;
   updateList: (data: TodoListResponse) => void;
+  categoryOptions: string[];
 }): JSX.Element {
 
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
@@ -61,7 +62,7 @@ export function TodoTaskCard(props: {
       <Button size="small" onClick={() => deleteTask()}>Complete Task</Button>
     </ConfirmDialog>
     <EditTaskDialog open={showEditDialog} onClose={() => setShowEditDialog(false)}
-      token={props.token} task={props.info} friendsList={props.friendsList}
+      token={props.token} task={props.info} friendsList={props.friendsList} categoryOptions={props.categoryOptions}
       onUpdate={(newData) => props.updateList(newData)}/>
   </>;
 }

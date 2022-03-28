@@ -1,4 +1,4 @@
-import { DomainOf, Schemas } from '@nprindle/augustus';
+import { DomainOf, Schema, Schemas } from '@nprindle/augustus';
 import { DeleteEndpoint, GetEndpointSimple, PostEndpointSimple, PutEndpointSimple } from '../apis.js';
 import { FriendInfo, friendInfoSchema } from './friends.js';
 
@@ -11,6 +11,7 @@ type BasicTaskInfo = {
 
 export type OwnTaskInfo = BasicTaskInfo & {
   watchers: FriendInfo[];
+  category: string;
 };
 
 export type TodoListResponse = {
@@ -23,10 +24,11 @@ export type WatchedTaskInfo = BasicTaskInfo & {
   owner: FriendInfo;
 };
 
-export const ownTaskInfoSchema = Schemas.recordOf({
+export const ownTaskInfoSchema: Schema<OwnTaskInfo, OwnTaskInfo> = Schemas.recordOf({
   taskId: Schemas.aString,
   title: Schemas.aString,
   description: Schemas.aString,
+  category: Schemas.aString,
   dueDate: Schemas.aNumber,
   watchers: Schemas.arrayOf(friendInfoSchema)
 });
@@ -54,16 +56,7 @@ export const getWatchedTasksEndpoint = new GetEndpointSimple('/watched', Schemas
   owner: friendInfoSchema
 })));
 
-export type UpdateTaskRequest = BasicTaskInfo & {
-  watcherUUIDs: string[];
-};
 
-export type CreateTaskRequest = {
-  title: BasicTaskInfo['title'];
-  description: BasicTaskInfo['description'];
-  dueDate: BasicTaskInfo['dueDate'];
-  watcherUUIDs: string[];
-};
 
 export const updateTaskEndpoint = new PutEndpointSimple('/update_task', {
   requestSchema: Schemas.recordOf({
@@ -71,20 +64,26 @@ export const updateTaskEndpoint = new PutEndpointSimple('/update_task', {
     title: Schemas.aString,
     description: Schemas.aString,
     dueDate: Schemas.aNumber,
-    watcherUUIDs: Schemas.arrayOf(Schemas.aString)
+    watcherUUIDs: Schemas.arrayOf(Schemas.aString),
+    category: Schemas.aString
   }),
   responseSchema: getTodoListEndpoint.responseSchema
 });
+
+export type UpdateTaskRequest = DomainOf<typeof updateTaskEndpoint.requestSchema>;
 
 export const createTaskEndpoint = new PostEndpointSimple('/new_task', {
   requestSchema: Schemas.recordOf({
     title: Schemas.aString,
     description: Schemas.aString,
     dueDate: Schemas.aNumber,
-    watcherUUIDs: Schemas.arrayOf(Schemas.aString)
+    watcherUUIDs: Schemas.arrayOf(Schemas.aString),
+    category: Schemas.aString
   }),
   responseSchema: getTodoListEndpoint.responseSchema
 });
+
+export type CreateTaskRequest = DomainOf<typeof createTaskEndpoint.requestSchema>;
 
 export const unfollowTaskEndpoint = new DeleteEndpoint('/unfollow_task', {
   querySchema: Schemas.recordOf({ task_id: Schemas.aString }),
