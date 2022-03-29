@@ -16,6 +16,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { FriendAvatar } from '../friends/friendCard';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import React from 'react';
+import { TASK_FILTER_SHOW_ALL_KEY } from './tasksList';
 
 export function EditTaskDialog(props: {
   open: boolean;
@@ -79,6 +80,15 @@ export function EditTaskDialog(props: {
   }
 
   function save(): void {
+
+    if (category === TASK_FILTER_SHOW_ALL_KEY) {
+      enqueueSnackbar(
+        `'${TASK_FILTER_SHOW_ALL_KEY}' is not allowed as a category name`,
+        { variant: 'error' }
+      );
+      return;
+    }
+
     if (props.task === null) {
       const request: CreateTaskRequest = {
         title,

@@ -12,7 +12,9 @@ import { EditTaskDialog } from './editTaskDialog';
 
 type TaskSortKeys = 'date' | 'title' | 'watchers';
 
-const FILTER_SHOW_ALL = 'Show All';
+// if anyone names their category this they won't be able to filter for it
+// but that's very unlikely and the resulting behavior will not be very severe
+export const TASK_FILTER_SHOW_ALL_KEY = 'Show All';
 
 function sortWatchedTasks(
   tasks: OwnTaskInfo[], mode: TaskSortKeys, ascending: boolean
@@ -45,7 +47,7 @@ export function TasksList(props: {
   const [listData, setListData]
     = useState<{ friends: FriendInfo[]; tasks: OwnTaskInfo[]; categoryOptions: string[];} | null>(null);
   const [sortState, setSortState] = useState<SortControlState<TaskSortKeys>>({ field: 'date', ascending: true });
-  const [filterCategory, setFilterCategory] = useState<string>(FILTER_SHOW_ALL);
+  const [filterCategory, setFilterCategory] = useState<string>(TASK_FILTER_SHOW_ALL_KEY);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   function updateList(data: TodoListResponse): void {
@@ -61,6 +63,10 @@ export function TasksList(props: {
       tasks: sortWatchedTasks(data.tasks, sortState.field, sortState.ascending),
       categoryOptions
     });
+
+    if (!categoryOptions.includes(filterCategory)) {
+      setFilterCategory(TASK_FILTER_SHOW_ALL_KEY);
+    }
   }
 
   useEffect(() => {
@@ -87,7 +93,7 @@ export function TasksList(props: {
     return <TodoTaskListSkeleton />;
   }
 
-  const filteredTasks = (filterCategory === FILTER_SHOW_ALL)
+  const filteredTasks = (filterCategory === TASK_FILTER_SHOW_ALL_KEY)
     ? listData.tasks
     : listData.tasks.filter(t => t.category === filterCategory);
 
@@ -105,16 +111,21 @@ export function TasksList(props: {
       { key: 'title', label: 'Task Name' },
       { key: 'watchers', label: 'Watchers' }
     ]} mode={sortState} onChange={(state: SortControlState<TaskSortKeys>) => updateSortMode(state)} />
-    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
-      <CategoryFilterChip option={FILTER_SHOW_ALL} overrideLabel='Show All'/>
-      {listData.categoryOptions.map(opt => <CategoryFilterChip option={opt} key={opt}/>)}
-    </Box>
+    {
+      listData.tasks.length > 0
+        ? <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <CategoryFilterChip option={TASK_FILTER_SHOW_ALL_KEY} overrideLabel='Show All'/>
+          {listData.categoryOptions.map(opt => <CategoryFilterChip option={opt} key={opt}/>)}
+        </Box>
+        : <></>
+    }
     <Button startIcon={<AddTaskIcon/>} fullWidth size="large"
       onClick={() => setShowCreateDialog(true)}>Add Task</Button>
     {filteredTasks.map(t => <TodoTaskCard
       info={t} key={t.taskId} token={props.token} friendsList={listData.friends}
       categoryOptions={listData.categoryOptions} updateList={(data) => updateList(data)}
     />)}
+    {/* dialog for creating new tasks, not associated with an existing task card */}
     <EditTaskDialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)}
       onUpdate={data => updateList(data)} token={props.token} task={null}
       friendsList={listData.friends} categoryOptions={listData.categoryOptions}/>
