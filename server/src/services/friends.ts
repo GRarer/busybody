@@ -83,12 +83,9 @@ export async function sendFriendRequest(senderToken: string, recipient: { userna
     // check for existing friendship or friend request
     const countsRowSchema = Schemas.recordOf({
       count: Schemas.aNumber,
-      // TODO there's gotta be a better way to define 3-element schemas. maybe PR augustus?
-      category: Schemas.union(
-        Schemas.literal('existing' as const),
-        Schemas.union(Schemas.literal('incoming' as const), Schemas.literal('outgoing' as const))
-      )
+      category: Schemas.literalUnionMany(...['existing', 'incoming', 'outgoing'] as const)
     });
+
     const counts = await query(
       `with existing as (
         select count(*), 'existing' as category from friends_symmetric
