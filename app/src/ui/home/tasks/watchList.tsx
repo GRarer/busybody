@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { getWatchedTasksEndpoint, unfollowTaskEndpoint, WatchedTasksResponse } from 'busybody-core';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -77,5 +78,15 @@ export function WatchList(props: {
     {watchedTasks.map(task =>
       <WatchedTaskCard info={task} key={task.taskId} unfollow={() => unfollowTask(task.taskId)}/>
     )}
+
+    {
+      /* Placeholder text for when there are no watched tasks */
+      watchedTasks.length > 0 ? <></> : <>
+        <Typography variant='body1' sx={{ marginTop: '10px' }}>You currently have no watched tasks.</Typography>
+        <Typography variant='body1' sx={{ marginTop: '10px' }}>When your friends attach you as a watcher to their tasks,
+        those tasks will appear here, and you will be notified by email if those tasks are not completed on
+        time.</Typography>
+      </>
+    }
   </>);
 }
