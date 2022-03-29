@@ -60,6 +60,7 @@ export function EditTaskDialog(props: {
     setDescription(defaults.description);
     setDueDate(unixSecondsToDate(defaults.dueDate));
     setWatchers(defaults.watchers);
+    setCategory(defaults.category);
   }
 
   // ensures that fields are always reset whenever props are changed
