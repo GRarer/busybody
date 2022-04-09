@@ -93,7 +93,7 @@ function App(
         { userUUID: appState.verificationUUID, verificationCode: appState.verificationCode }, {}, null)
         .then(response => {
           window.history.replaceState({}, document.title, window.location.href.split('?')[0]);
-          setToken(response.token);
+          changeSession(response.token);
         })
         .catch(err => {
           setAppState({ state: 'verify_registration_failed', errorMessage: errorToMessage(err).message });

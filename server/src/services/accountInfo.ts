@@ -74,6 +74,9 @@ export async function startRegistration(request: RegistrationRequest): Promise<v
     } catch (err) {
       // remove pending account if confirmation email could not be sent
       await dbQuery('delete from users where user_uuid = $1;', [userId], dontValidate);
+      if (err instanceof Error && err.message === 'No recipients defined') {
+        throw new UserException(500, 'Invalid email address');
+      }
       throw err;
     }
   } catch (err: unknown) {
