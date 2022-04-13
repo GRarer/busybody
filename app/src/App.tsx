@@ -86,6 +86,11 @@ function App(
     }
   }, [appState]);
 
+  const changeSession = (token: string | null): void => {
+    saveToken(token);
+    setToken(token);
+  };
+
   // when url query params contained a verification code, verify and log in account
   useEffect(() => {
     if (appState.state === 'verify_registration') {
@@ -111,12 +116,6 @@ function App(
       });
     }
   }, []);
-
-  const changeSession = (token: string | null): void => {
-    saveToken(token);
-    setToken(token);
-  };
-
 
   let appBody: JSX.Element;
   if (appState.state === 'offline') {
