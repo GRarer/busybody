@@ -32,7 +32,8 @@ export function attachHandlerWithSafeWrapper<
       const request = endpoint.requestSchema.decode(reqBody);
       const query = endpoint.querySchema.decode(reqQueryParams);
 
-      return await handler(request, query, token);
+      const responseBody = await handler(request, query, token);
+      return endpoint.responseSchema.encode(responseBody);
     } catch (error: unknown) {
       if (error instanceof UserException) {
         return error;
