@@ -1,13 +1,11 @@
 # Busybody
 
-Busybody is a prototype social todo list application currently being developed by Grace Rarer as her semester-long
+Busybody is a prototype social todo list application developed as a semester-long
 project for CS 4365 (Intro to Enterprise Computing) at Georgia Tech.
 
 Busybody is designed around the idea that social reinforcement makes it easier to meet our self-imposed goals.
-Users will be able to designate their friends as "watchers" for particular tasks, and their watchers will be notified by
-email if the task is not completed on time.
-
-You can try out the prototype at https://grarer.github.io/busybody/
+Users can designate their friends as "watchers" for particular tasks, and their watchers will be notified
+by email if the task is not completed on time.
 
 ## Local Installation and Setup
 
